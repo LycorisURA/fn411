@@ -1,0 +1,268 @@
+
+  <!-- ==================== PANEL: opt ==================== -->
+  <article class="panel" id="p-opt" hidden>
+    <div class="panel-head">
+      <span class="eyebrow">Tail 04 · VaR for options</span>
+      <h2>Options as portfolios</h2>
+      <p class="lede">An option's price depends on the underlying and on the interest rate, so it has two risk factors and a two-element weight vector. Build it two ways — from the Greeks, or from an equivalent stock-and-bond portfolio — and they agree.</p>
+    </div>
+
+    <section class="block">
+      <h3>Payoffs, and why leverage is the whole problem</h3>
+      <div class="sheet">
+        <table>
+          <caption>European option value at t = T</caption>
+          <thead><tr><th class="l"></th><th class="l">S<sub>T</sub> ≤ K · long</th><th class="l">S<sub>T</sub> ≥ K · long</th><th class="l">General form · long</th><th class="l">General form · short</th></tr></thead>
+          <tbody>
+            <tr><td class="l">Call</td><td class="l">0</td><td class="l">S<sub>T</sub> − K</td><td class="l">Max(S<sub>T</sub> − K, 0)</td><td class="l">Min(K − S<sub>T</sub>, 0)</td></tr>
+            <tr><td class="l">Put</td><td class="l">K − S<sub>T</sub></td><td class="l">0</td><td class="l">Max(K − S<sub>T</sub>, 0)</td><td class="l">Min(S<sub>T</sub> − K, 0)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note"><span class="eyebrow">Why this matters</span>The deck's framing of option risk is <span class="term">gearing</span>. A call on one share costs far less than the share, so a small percentage move in the asset produces a much larger percentage move in the option. <strong>Gearing amplifies returns on the upside and applies equally to the downside</strong> — an option's value can reach zero very fast. That is why the weight vectors on this panel come out as numbers like <strong>9.47</strong> and <strong>−10.45</strong> rather than fractions: an option is a hugely levered position on its factors.</div>
+      <div class="prose">
+        <p>The deck's route to VaR: an option's two major determinants are the <strong>underlying price</strong> and the <strong>interest rate</strong>, so its market risk is the price risk of the underlying plus interest rate risk. Treat the option as <strong>a portfolio of stock and bond</strong>.</p>
+      </div>
+    </section>
+
+    <section class="block">
+      <h3>Black-Scholes-Merton, in the course's notation</h3>
+      <div class="eq">C = S<sub>0</sub>N(d<sub>1</sub>) − Ke<sup>−yT</sup>N(d<sub>2</sub>)&nbsp;&nbsp;&nbsp;P = Ke<sup>−yT</sup>N(−d<sub>2</sub>) − S<sub>0</sub>N(−d<sub>1</sub>)
+        <span class="lbl">N(x) = NORMSDIST(x). The rate is written y here, not r, because it is the same y whose changes drive the bond leg.</span></div>
+      <div class="eq">d<sub>1</sub> = <span class="fr"><span>ln(S<sub>0</sub>/K) + (y + σ<sup>2</sup>/2)T</span><span>σ√T</span></span>&nbsp;&nbsp;&nbsp;d<sub>2</sub> = d<sub>1</sub> − σ√T
+        <span class="lbl">=(LN(A7/B7)+(D7^2/2+E7)*C7)/(D7*SQRT(C7)) — the class calculator's exact cell formula.</span></div>
+      <div class="prose">
+        <p>The stock price is lognormal: dS/S = μdt + σdz̃, so r<sub>S</sub> ~ Normal(μ − σ²/2, σ²).</p>
+      </div>
+      <div class="sheet">
+        <table>
+          <caption>Deck example: S = 100, σ = 5% per month, y = 1% per month, T = 12 months, X = 80</caption>
+          <thead><tr><th class="l">Quantity</th><th>Deck</th><th>Recomputed</th></tr></thead>
+          <tbody>
+            <tr><td class="l">d₁</td><td>2.07</td><td>2.067743</td></tr>
+            <tr><td class="l">N(d₁)</td><td>0.98</td><td>0.980668</td></tr>
+            <tr><td class="l">d₂</td><td>1.89</td><td>1.894538</td></tr>
+            <tr><td class="l">N(d₂)</td><td>0.97</td><td>0.970923</td></tr>
+            <tr class="pick"><td class="l">Call</td><td>29.17</td><td>29.176296</td></tr>
+            <tr><td class="l">Put</td><td>0.13</td><td>0.129900</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note"><span class="eyebrow">Fine print</span>Note the units: σ and y are both <strong>per month</strong> and T is <strong>12 months</strong>. The formula does not care what the period is, as long as σ, y and T all use the <em>same</em> one. Mixing an annual σ with T in months is the single most common way to destroy an option calculation.</div>
+      <div class="fxlist">
+        <div class="fxrow"><code>=NORMSDIST(B17)</code><div>N(d₁) and N(d₂). The modern equivalent is <code>NORM.S.DIST(B17,TRUE)</code> — note the extra <b>TRUE</b>, which the legacy function does not take.</div></div>
+        <div class="fxrow"><code>=EXP(-(B17^2)/2)/SQRT(2*22/7)</code><div>The class calculator's standard normal <b>density</b>, used by Vega and Gamma. <b>22/7 is an approximation to π</b> — see the workbook check below.</div></div>
+        <div class="fxrow trap"><code>LN, never LOG</code><div>Excel's <code>LOG</code> defaults to base 10. Using it scales d₁ by ln(10) = 2.3026 and silently ruins every number downstream.</div></div>
+      </div>
+      <div class="warn"><span class="eyebrow">Workbook check</span>Three of the four class option calculators compute the normal density as <span class="fx">=EXP(-(d^2)/2)/SQRT(2*<b>22/7</b>)</span>. <strong>22/7 = 3.142857 is not π = 3.141593.</strong> Because it sits in the denominator, the density comes out <strong>0.02012% too small</strong>, and so do <strong>Vega</strong> and <strong>Gamma</strong>, which are the only outputs that use it. On the 1382.41 example, Gamma 0.00213928 should be <strong>0.00213971</strong> and Vega 542.51655 should be <strong>542.62572</strong>. The <em>digital option</em> sheet already uses <span class="fx">SQRT(2*PI())</span> correctly, so the fix is a one-character edit. <strong>Delta, Rho, and both option prices are unaffected</strong> — they use <code>NORMSDIST</code>, not the density — so every VaR on this panel is fine.</div>
+    </section>
+
+    <section class="block">
+      <h3>Two Greeks, not five</h3>
+      <div class="prose">
+        <p>This course needs exactly two: the sensitivity to the underlying and the sensitivity to the rate. Gamma, Vega and Theta appear in the calculator but not in the VaR.</p>
+      </div>
+      <div class="sheet">
+        <table>
+          <thead><tr><th class="l">Greek</th><th class="l">Definition</th><th class="l">Call</th><th class="l">Put</th></tr></thead>
+          <tbody>
+            <tr class="pick"><td class="l">Delta</td><td class="l">∂Op/∂S</td><td class="l">N(d₁)</td><td class="l">−N(−d₁)</td></tr>
+            <tr><td class="l">Rho</td><td class="l">∂Op/∂y</td><td class="l">T·K·e<sup>−yT</sup>·N(d₂)</td><td class="l">−T·K·e<sup>−yT</sup>·N(−d₂)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="eq">dOp(S,y) = <span class="fr"><span>∂Op</span><span>∂S</span></span>dS + <span class="fr"><span>∂Op</span><span>∂y</span></span>dy = Delta × dS + Rho × dy
+        <span class="lbl">A first-order Taylor expansion in two variables. The second-order terms — gamma — are dropped, which is the approximation this whole method rests on.</span></div>
+      <div class="eq">r<sub>Op</sub> = Delta × <span class="fr"><span>S</span><span>Op</span></span> × r<sub>S</sub> + Rho × <span class="fr"><span>1</span><span>Op</span></span> × dy
+        <span class="lbl">Divide through by Op and multiply the first term by S/S. The two coefficients ARE the weight vector.</span></div>
+      <div class="eq"><b>w</b><sub>C</sub> = <span class="fr"><span>N(d<sub>1</sub>) S / C</span><span>T K e<sup>−yT</sup> N(d<sub>2</sub>) / C</span></span>&nbsp;&nbsp;&nbsp;<b>w</b><sub>P</sub> = <span class="fr"><span>−N(−d<sub>1</sub>) S / P</span><span>−T K e<sup>−yT</sup> N(−d<sub>2</sub>) / P</span></span>&nbsp;&nbsp;&nbsp;<b>Ω</b> = <span class="fr"><span>σ<sup>2</sup><sub>rS</sub>&nbsp;&nbsp;σ<sub>rS,dy</sub></span><span>σ<sub>rS,dy</sub>&nbsp;&nbsp;σ<sup>2</sup><sub>dy</sub></span></span>
+        <span class="lbl">Then VaR = w'μ + z·SQRT(w'Ωw), exactly as in lecture 3. Only w changed.</span></div>
+      <div class="note"><span class="eyebrow">Concept check</span>The class workbook orders the vector <strong>dy first, then r<sub>S</sub></strong>, because the Ω matrix is built from columns laid out as dY1 then rS. <strong>The order of w must match the order of Ω</strong>, or <code>MMULT</code> will silently pair the stock weight with the yield variance. It will not error. Check the labels every time.</div>
+    </section>
+
+    <section class="block">
+      <h3>The main example, worked to the workbook's digits</h3>
+      <div class="prose">
+        <p>At-the-money European call and put on stock A, <strong>T = 1 year</strong>, 99% confidence. From 250 days of class data: <strong>S<sub>0</sub> = K = 1,382.41</strong>, one-year spot rate <strong>y = 1.510592%</strong>, and σ<sub>S</sub> = <strong>0.8359212% per day</strong>, which annualises to <strong>13.269837%</strong> via <span class="fx">=STDEV(returns)*SQRT(252)</span>.</p>
+      </div>
+      <div class="sheet">
+        <table>
+          <thead><tr><th class="l">Quantity</th><th>Value</th><th class="l">Note</th></tr></thead>
+          <tbody>
+            <tr><td class="l">d₁</td><td>0.1801857</td><td class="l"></td></tr>
+            <tr><td class="l">d₂</td><td>0.0474873</td><td class="l">= d₁ − σ√T</td></tr>
+            <tr><td class="l">N(d₁)</td><td>0.5714966</td><td class="l">deck prints 0.5714</td></tr>
+            <tr><td class="l">N(d₂)</td><td>0.5189376</td><td class="l">deck prints 0.5186</td></tr>
+            <tr class="pick"><td class="l">Call C</td><td>83.4134316</td><td class="l">deck 83.41</td></tr>
+            <tr class="pick"><td class="l">Put P</td><td>62.6877908</td><td class="l">deck 62.69</td></tr>
+            <tr><td class="l">Rho call</td><td>706.629194</td><td class="l">= 1 × 1382.41 × e<sup>−0.01510592</sup> × 0.5189376</td></tr>
+            <tr><td class="l">Rho put</td><td>−655.055165</td><td class="l"></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="warn"><span class="eyebrow">Slide check</span>On the weight-vector slide the call uses <strong>N(d₁) = 0.5714</strong> but the put uses <strong>0.5716</strong> — for the same option, on the same slide. The workbook value is <strong>0.5714966</strong>, so <strong>0.5716 is a typo</strong>. The deck's <strong>N(d₂) = 0.5186</strong> is also slightly off; the workbook gives <strong>0.5189376</strong>. Neither changes the final VaR at the printed precision, because the deck's own w values (9.47, 8.47, −9.45, −10.45) were taken from the workbook, not from the rounded N values.</div>
+      <div class="sheet">
+        <table>
+          <caption>Weight vectors, dy first then r<sub>S</sub></caption>
+          <thead><tr><th class="l">Option</th><th class="l">Excel</th><th>for dy</th><th>for r<sub>S</sub></th></tr></thead>
+          <tbody>
+            <tr><td class="l">Call</td><td class="f">=T*X*EXP(-y*T)*N(d2)/C  and  =N(d1)*S/C</td><td>8.4714078</td><td>9.4714078</td></tr>
+            <tr class="pick"><td class="l">Put</td><td class="f">=-T*X*EXP(-y*T)*N(-d2)/P  and  =-N(-d1)*S/P</td><td>−10.4494856</td><td>−9.4494856</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note"><span class="eyebrow">Concept check</span>Look at those two pairs: <strong>9.4714078 − 8.4714078 = 1</strong>, and <strong>−9.4494856 − (−10.4494856) = 1</strong>. That is not a coincidence, and it is a free check on your sheet. Because C = S·N(d₁) − Ke<sup>−yT</sup>N(d₂), dividing by C gives <strong>w<sub>rS</sub> − w<sub>dy</sub> = C/C = 1 exactly</strong>. The same identity holds for the put. <strong>If your two weights do not differ by exactly 1, you have made an arithmetic error.</strong></div>
+      <div class="sheet">
+        <table>
+          <thead><tr><th class="l"></th><th class="l">Excel</th><th>μ</th><th>σ</th><th>VaR 1%, 1 day</th></tr></thead>
+          <tbody>
+            <tr><td class="l">Call</td><td class="f">=MMULT(TRANSPOSE(w),mu) · =SQRT(MMULT(MMULT(TRANSPOSE(w),Om),w))</td><td>−0.4524017%</td><td>7.9249710%</td><td>−18.888641%</td></tr>
+            <tr class="pick"><td class="l">Put</td><td class="f">same, with w<sub>P</sub></td><td>+0.4553653%</td><td>7.9086722%</td><td>−17.942957%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note"><span class="eyebrow">Why this matters</span>Both options have a one-day VaR near <strong>−18%</strong>, against the underlying's <strong>−1.99%</strong>. That is gearing, quantified: roughly <strong>nine times</strong> the risk of the stock. Note also that μ is <em>negative</em> for the call and <em>positive</em> for the put — the index drifted down over the window, which helps a put and hurts a call. The call ends up the riskier of the two almost entirely because of that mean, since the two σ values are within 0.02 percentage points of each other.</div>
+
+      <div class="tool">
+        <div class="tool-h"><div><span class="eyebrow">Tool</span><h4>Option VaR bench</h4></div><span class="chip">NORMSDIST · Delta · Rho · w'Ωw</span></div>
+        <div class="tool-b">
+          <div class="ctrls">
+            <label class="f">Spot S₀<input id="ovS" type="number" step="10" value="1382.41"></label>
+            <label class="f">Strike K<input id="ovK" type="number" step="10" value="1382.41"></label>
+            <label class="f">Rate y (%)<input id="ovY" type="number" step="0.1" value="1.510592"></label>
+            <label class="f">σ annual (%)<input id="ovV" type="number" step="0.5" value="13.269837"></label>
+            <label class="f">T (years)<input id="ovT" type="number" step="0.25" value="1" min="0.02"></label>
+            <label class="f">Type<select id="ovType"><option value="c">Call</option><option value="p">Put</option></select></label>
+            <label class="f">μ of r<sub>S</sub> (daily)<input id="ovMs" type="number" step="0.0001" value="-0.000459693"></label>
+            <label class="f">σ of r<sub>S</sub> (daily)<input id="ovSs" type="number" step="0.001" value="0.008359212"></label>
+            <label class="f">μ of dy (daily)<input id="ovMy" type="number" step="0.00001" value="-0.0000200767"></label>
+            <label class="f">σ of dy (daily)<input id="ovSy" type="number" step="0.00001" value="0.000137097"></label>
+            <label class="f">Corr(r<sub>S</sub>, dy)<input id="ovR" type="number" step="0.01" value="0.0583" min="-1" max="1"></label>
+            <label class="f">Confidence (%)<input id="ovC" type="number" step="0.5" value="99"></label>
+          </div>
+          <div class="out">
+            <div class="readout">
+              <div class="ro"><div class="k">Option price</div><div class="v" id="ovPx">—</div></div>
+              <div class="ro"><div class="k">Delta</div><div class="v" id="ovD">—</div></div>
+              <div class="ro"><div class="k">Rho</div><div class="v" id="ovRho">—</div></div>
+              <div class="ro"><div class="k">w for dy</div><div class="v" id="ovWy">—</div></div>
+              <div class="ro"><div class="k">w for r<sub>S</sub></div><div class="v" id="ovWs">—</div></div>
+              <div class="ro"><div class="k">w<sub>rS</sub> − w<sub>dy</sub></div><div class="v" id="ovChk">—</div></div>
+              <div class="ro"><div class="k">σ of option return</div><div class="v" id="ovSig">—</div></div>
+              <div class="ro hi"><div class="k">VaR (1 day)</div><div class="v" id="ovVar">—</div></div>
+              <div class="ro"><div class="k">VaR of the stock</div><div class="v" id="ovVs">—</div></div>
+              <div class="ro"><div class="k">Gearing</div><div class="v" id="ovGear">—</div></div>
+            </div>
+            <div class="fxbar"><span class="fxn">Excel</span><span class="fxv" id="ovFx">—</span></div>
+            <div class="chartwrap"><svg class="chart" id="ovChart" viewBox="0 0 560 220" role="img" aria-label="Option value against the underlying price, with the delta tangent line"></svg></div>
+            <div class="legend"><span><i style="background:var(--accent)"></i>option value</span><span><i style="background:var(--gold)"></i>delta tangent</span><span><i style="background:var(--bad)"></i>current spot</span></div>
+            <div class="verdict" id="ovNote">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="note"><span class="eyebrow">Fine print</span>The bench's default Ω comes from the class workbook: Var(dy) = 1.8796×10<sup>−8</sup>, Var(r<sub>S</sub>) = 6.9876×10<sup>−5</sup>, Cov = 6.6829×10<sup>−8</sup>, which is a correlation of only <strong>0.0583</strong>. Yields and the index are almost uncorrelated over this window, which is why the two option VaRs come out so close to Delta×S/Op × σ<sub>S</sub> on its own.</div>
+    </section>
+
+    <section class="block">
+      <h3>The building block route: option = stock + bond</h3>
+      <div class="prose">
+        <p>The deck's alternative, which it calls the <span class="term">LEGO approach</span>. Two blocks: the underlying asset, and a zero-coupon bond. In a one-period binomial world you can solve for the exact holdings that replicate the option, because two states give two equations in two unknowns.</p>
+      </div>
+      <div class="eq">C<sub>1u</sub> = ΔS<sub>1u</sub> + B(1+y)&nbsp;&nbsp;&nbsp;C<sub>1d</sub> = ΔS<sub>1d</sub> + B(1+y)
+        <span class="lbl">Two equations, two unknowns Δ and B. Subtract to eliminate B.</span></div>
+      <div class="eq">Δ = <span class="fr"><span>C<sub>1u</sub> − C<sub>1d</sub></span><span>S(u − d)</span></span>&nbsp;&nbsp;&nbsp;B = <span class="fr"><span>C<sub>1d</sub>(1+u) − C<sub>1u</sub>(1+d)</span><span>(1+y)(u − d)</span></span>&nbsp;&nbsp;&nbsp;u = e<sup>σ</sup> − 1, d = e<sup>−σ</sup> − 1
+        <span class="lbl">=(J25-J26)/(H23*(H21-H22)) and =(J26*(1+H21)-J25*(1+H22))/((1+H19)*(H21-H22)) in the class sheet.</span></div>
+      <div class="eq">r<sub>C</sub> = <span class="fr"><span>ΔS</span><span>C</span></span> r<sub>S</sub> + <span class="fr"><span>B</span><span>C</span></span> r<sub>B</sub> = <span class="fr"><span>ΔS</span><span>C</span></span> r<sub>S</sub> + <span class="fr"><span>B</span><span>C</span></span>(−<span class="fr"><span>T</span><span>1+y</span></span>) dy&nbsp;&nbsp;⟹&nbsp;&nbsp;<b>w</b><sub>C</sub><sup>T</sup> = [ <span class="fr"><span>ΔS</span><span>C</span></span> , −<span class="fr"><span>B</span><span>C</span></span><span class="fr"><span>T</span><span>1+y</span></span> ]
+        <span class="lbl">If the bond is priced continuously as e^(-y_T T), the duration is T rather than T/(1+y).</span></div>
+      <div class="sheet">
+        <table>
+          <caption>Deck example: S₀ = K = 1,000, σ<sub>S</sub> = 10%, y = 3%, T = 1</caption>
+          <thead><tr><th class="l">Step</th><th class="l">Working</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td class="l">u</td><td class="f">=EXP(0.10)-1</td><td>10.5171%</td></tr>
+            <tr><td class="l">d</td><td class="f">=EXP(-0.10)-1</td><td>−9.5163%</td></tr>
+            <tr><td class="l">S₁u</td><td class="l">1000 × 1.105171</td><td>1,105.17</td></tr>
+            <tr><td class="l">C₁u</td><td class="l">Max(0, 1105.17 − 1000)</td><td>105.17</td></tr>
+            <tr><td class="l">S₁d</td><td class="l">1000 × 0.904837</td><td>904.84</td></tr>
+            <tr><td class="l">C₁d</td><td class="l">Max(0, 904.84 − 1000)</td><td>0.00</td></tr>
+            <tr><td class="l">Δ</td><td class="l">105.17 / (1000 × 0.2003340)</td><td>0.524979</td></tr>
+            <tr><td class="l">ΔS</td><td class="l">stock block</td><td>524.98</td></tr>
+            <tr><td class="l">B</td><td class="l">bond block, negative = borrowing</td><td>−461.19</td></tr>
+            <tr class="pick"><td class="l">C</td><td class="l">524.98 − 461.19</td><td>63.79</td></tr>
+            <tr><td class="l">Stock weight</td><td class="f">=524.98/63.79</td><td>8.23</td></tr>
+            <tr><td class="l">Bond weight</td><td class="f">=-461.19/63.79</td><td>−7.23</td></tr>
+            <tr class="pick"><td class="l">w<sup>T</sup></td><td class="l">[ ΔS/C , −(B/C)·T/(1+y) ]</td><td>[8.23 , 7.02]</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="warn"><span class="eyebrow">Slide check</span>A small labelling slip on the analysis slide: it reads "<strong>C1u</strong> = Max(0, 904.84 − 1000) = 0.00" when that line is the <strong>down</strong> state and should read <strong>C1d</strong>. The value 0.00 is correct. Also note the bond block: recomputing with unrounded u and d gives <strong>B = −461.1853</strong> against the deck's −461.19, and C = <strong>63.7939</strong> against 63.79 — rounding only.</div>
+      <div class="note"><span class="eyebrow">Concept check</span>The two weights are <strong>+8.23 on the stock and −7.23 on the bond before discounting</strong>, and those differ by exactly <strong>1</strong> again, for the same reason as before: ΔS + B = C. The second element becomes 7.02 only after multiplying by T/(1+y) = 1/1.03. <strong>Check the raw blocks differ by 1 before you apply the duration factor.</strong></div>
+      <div class="note"><span class="eyebrow">Fine print</span>A one-step binomial is a crude pricer. On the additional-questions put (strike 1,050, T = 1) the binomial gives <strong>0.7864</strong> while Black-Scholes gives <strong>3.5367</strong> — a factor of four and a half. Yet the two VaRs come out at <strong>−10.7423%</strong> and <strong>−10.7474%</strong>, within 0.005 percentage points. <strong>The weight vector is far more robust than the price</strong>, because the gearing and the price errors largely cancel in the ratio.</div>
+    </section>
+
+    <section class="block">
+      <h3>Greeks by numerical differentiation</h3>
+      <div class="prose">
+        <p>Some options have no closed-form Greeks. The deck's answer is a <strong>central difference</strong>:</p>
+      </div>
+      <div class="eq"><span class="fr"><span>dy</span><span>dx</span></span> ≈ <span class="fr"><span>y(x + Δx) − y(x − Δx)</span><span>2 × Δx</span></span>&nbsp;&nbsp;as Δx → 0
+        <span class="lbl">=(E4-E5)/(2*$C$2) in the class sheet. Two revaluations per Greek, one up and one down.</span></div>
+      <div class="sheet">
+        <table>
+          <caption>Class sheet: ΔS = 1 for delta, Δy = 0.0001 for rho</caption>
+          <thead><tr><th class="l">Greek</th><th class="l">Revaluations</th><th>Numerical</th><th>Analytical</th></tr></thead>
+          <tbody>
+            <tr><td class="l">Delta (call)</td><td class="l">C(1383.41) = 83.98600, C(1381.41) = 82.84301</td><td>0.5714966</td><td>0.5714966</td></tr>
+            <tr class="pick"><td class="l">Rho (call)</td><td class="l">C(y+0.0001) = 83.48411, C(y−0.0001) = 83.34279</td><td>706.6292</td><td>706.6292</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note"><span class="eyebrow">Why this matters</span>The deck's sanity check is worth repeating because it makes the method obvious: for y = 2x + 1 with x = 10 and Δx = 0.1, the central difference gives (21.2 − 20.8)/0.2 = <strong>exactly 2</strong>, which is the true derivative. For a <strong>linear</strong> function the central difference is exact at any step size; for a curved one, a step that is too large picks up curvature and a step that is too small loses precision to rounding. <strong>ΔS = 1 on a spot of 1,382 is about 0.07% — a good default.</strong></div>
+      <div class="note"><span class="eyebrow">Fine print</span>The deck also gives <span class="term">cash-or-nothing digital options</span>, which pay $1 in the money and have closed forms: <span class="fx">C = e<sup>−yT</sup>N(d₂)</span> and <span class="fx">P = e<sup>−yT</sup>N(−d₂)</span>. Their deltas and rhos come from the same machinery, and the class digital sheet confirms the numerical and analytical rho agree to seven digits — <strong>0.6739535</strong> for the call.</div>
+    </section>
+
+    <section class="block">
+      <h3>Managing the risk once you have measured it</h3>
+      <div class="prose">
+        <p>The deck closes with three levers, each with a worked number.</p>
+      </div>
+      <div class="sheet">
+        <table>
+          <caption>1 · Reduce exposure. 10 shares at THB 70, r ~ N(10%, 30%)</caption>
+          <thead><tr><th class="l">Position</th><th class="l">w</th><th>μ<sub>Port</sub></th><th>σ<sub>Port</sub></th><th>VaR 1%</th></tr></thead>
+          <tbody>
+            <tr><td class="l">All in shares</td><td class="l">[1]</td><td>10%</td><td>30%</td><td>−59.90%</td></tr>
+            <tr class="pick"><td class="l">Sell 5, hold THB 350 cash</td><td class="l">[0.5, 0.5]</td><td>5%</td><td>15%</td><td>−29.95%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note"><span class="eyebrow">The rule</span><strong>Cash has zero risk and zero return</strong>, so its row in Ω is all zeros. σ<sub>Port</sub> = √(0.5²×0.3² + 0 + 0) = 15%, exactly half. Halving a risky position halves both μ and σ, so VaR halves too — a linear lever, unlike diversification.</div>
+      <div class="eq">delta hedge:&nbsp; dPortfolio = dOp − Delta × dS = Delta × dS − Delta × dS = <b>0</b>
+        <span class="lbl">Hold −Delta shares against a long option. VaR_α = z_α |Delta × S/Op| σ_rS is the unhedged figure this removes.</span></div>
+      <div class="eq">rho hedge ratio = − <span class="fr"><span>Rho</span><span>−T e<sup>−y<sub>T</sub>T</sup></span></span> = <span class="fr"><span>Rho</span><span>T e<sup>−y<sub>T</sub>T</sup></span></span>
+        <span class="lbl">Held in a zero-coupon bond with FV = 1 and maturity T, because dB = −T e^(−yT) dy is the bond's own rate exposure.</span></div>
+      <div class="sheet">
+        <table>
+          <caption>3 · Diversification. μ<sub>A</sub> = μ<sub>B</sub> = 12%, σ<sub>A</sub> = σ<sub>B</sub> = 25%, ρ = 0.55</caption>
+          <thead><tr><th class="l">w</th><th>σ<sub>Port</sub></th><th>VaR 1%</th></tr></thead>
+          <tbody>
+            <tr><td class="l">[100%, 0%]</td><td>25.00%</td><td>−46.25%</td></tr>
+            <tr class="pick"><td class="l">[50%, 50%]</td><td>22.01%</td><td>−39.28%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="eq">σ<sub>Port</sub> = √(2 × 0.5<sup>2</sup> × 0.25<sup>2</sup> + 2 × 0.55 × 0.5 × 0.5 × 0.25<sup>2</sup>) = √0.0484375 = <b>22.0085%</b>
+        <span class="lbl">The mean is unchanged at 12%, because both assets have the same μ. Diversification buys 2.99 points of volatility and 6.97 points of VaR, for free.</span></div>
+      <div class="note"><span class="eyebrow">Concept check</span>The deck's four notes are the summary of the whole course. Portfolio return is the <strong>weighted average</strong> of asset returns. <strong>Cash has zero risk.</strong> Assets with the <strong>same source of risk</strong> — a stock and an option on it — can be offset exactly, which is delta hedging. Assets with <strong>non-zero correlation</strong> can only be partly offset, which is diversification. <strong>Hedging removes risk; diversification dilutes it.</strong></div>
+    </section>
+
+    <section class="block">
+      <h3>Concepts without a calculator</h3>
+      <div class="cards" data-flash="opt"></div>
+    </section>
+
+    <section class="block">
+      <h3>Check yourself</h3>
+      <div class="quiz" data-quiz="opt"></div>
+    </section>
+  </article>

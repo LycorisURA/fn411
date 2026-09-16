@@ -1,0 +1,257 @@
+
+  <!-- ==================== PANEL: fut ==================== -->
+  <article class="panel" id="p-fut" hidden>
+    <div class="panel-head">
+      <span class="eyebrow">Tail 05 · VaR for forwards and futures</span>
+      <h2>Contracts worth nothing</h2>
+      <p class="lede">A futures contract has no value when you enter it, so it has no percentage return. That breaks every formula so far — and the fix is to work the whole thing in <em>money</em> instead.</p>
+    </div>
+
+    <section class="block">
+      <h3>Two decompositions, and why each is used</h3>
+      <div class="grid2">
+        <div class="deep"><div class="deep-tag">Deck 05<b>Forward</b></div><div class="deep-body">
+          <h4>Long one call + short one put</h4>
+          <p>Both struck at the forward price <sub>0</sub>F<sub>T</sub>. The payoffs match in every state, so the risks match. Useful because you already know how to risk-decompose an option.</p>
+        </div></div>
+        <div class="deep b2"><div class="deep-tag">Deck 05<b>Futures</b></div><div class="deep-body">
+          <h4>Long the asset + borrow its spot price</h4>
+          <p>The cost-of-carry portfolio. Useful because it turns a zero-value contract into two instruments that each have a value and a known exposure.</p>
+        </div></div>
+      </div>
+      <div class="sheet" style="margin-top:14px">
+        <table>
+          <caption>Cash flows at T — the proof that a forward is a call minus a put</caption>
+          <thead><tr><th class="l">Asset</th><th class="l">S<sub>T</sub> &gt; <sub>0</sub>F<sub>T</sub></th><th class="l">S<sub>T</sub> ≤ <sub>0</sub>F<sub>T</sub></th></tr></thead>
+          <tbody>
+            <tr class="pick"><td class="l">Long forward</td><td class="l">S<sub>T</sub> − <sub>0</sub>F<sub>T</sub></td><td class="l">S<sub>T</sub> − <sub>0</sub>F<sub>T</sub></td></tr>
+            <tr><td class="l">Long call, K = <sub>0</sub>F<sub>T</sub></td><td class="l">S<sub>T</sub> − <sub>0</sub>F<sub>T</sub></td><td class="l">0</td></tr>
+            <tr><td class="l">Short put, K = <sub>0</sub>F<sub>T</sub></td><td class="l">0</td><td class="l">−(<sub>0</sub>F<sub>T</sub> − S<sub>T</sub>) = S<sub>T</sub> − <sub>0</sub>F<sub>T</sub></td></tr>
+            <tr><td class="l">Portfolio</td><td class="l">S<sub>T</sub> − <sub>0</sub>F<sub>T</sub></td><td class="l">S<sub>T</sub> − <sub>0</sub>F<sub>T</sub></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note"><span class="eyebrow">The rule</span>Identical payoffs in <em>every</em> state means identical price and identical risk. So V<sub>F</sub> = C − P at t = 0, and the forward's weight vector is the call's minus the put's, scaled by each leg's share of V<sub>F</sub>. This is the deck's definition of <span class="term">equivalent assets</span>; the related idea of a <span class="term">dominant asset</span> — higher payoff in one state, no worse in the others — is what makes an arbitrage argument work.</div>
+    </section>
+
+    <section class="block">
+      <h3>The forward example, and the deck's biggest error</h3>
+      <div class="prose">
+        <p>A forward to buy one share in one year at <strong><sub>0</sub>F<sub>T</sub> = THB 120</strong>, with <strong>S<sub>0</sub> = 118</strong>, <strong>σ = 30%</strong> p.a. and a one-year spot rate of <strong>y = 2%</strong>. Price both options at K = 120.</p>
+      </div>
+      <div class="sheet">
+        <table>
+          <thead><tr><th class="l">Quantity</th><th>Deck</th><th>Class calculator</th><th class="l">Note</th></tr></thead>
+          <tbody>
+            <tr><td class="l">Call price</td><td>14.24</td><td>14.236219</td><td class="l">✓</td></tr>
+            <tr><td class="l">Delta (call)</td><td>0.56</td><td>0.563813</td><td class="l">✓</td></tr>
+            <tr class="pick"><td class="l">Rho (call)</td><td>25.29</td><td>52.293678</td><td class="l"><b>deck is wrong</b></td></tr>
+            <tr><td class="l">Put price</td><td>13.86</td><td>13.860060</td><td class="l">✓</td></tr>
+            <tr><td class="l">Delta (put)</td><td>−0.44</td><td>−0.436187</td><td class="l">✓</td></tr>
+            <tr><td class="l">Rho (put)</td><td>−65.33</td><td>−65.330163</td><td class="l">✓</td></tr>
+            <tr><td class="l">Forward value V<sub>F</sub> = C − P</td><td>0.38</td><td>0.376159</td><td class="l">✓</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="warn"><span class="eyebrow">Slide check</span>The deck lists <strong>Rho(Call) = 25.29</strong>. The class Black-Scholes calculator, on exactly these inputs, returns <strong>52.293678</strong> — and <span class="fx">=T*K*EXP(-y*T)*NORMSDIST(d2)</span> = 1 × 120 × e<sup>−0.02</sup> × 0.444584 confirms it. <strong>25.29 looks like a transposition of 52.29.</strong> It matters, because the deck then propagates it: 25.29/0.38 = 66.55 appears as the first half of the dy weight, giving a total of <strong>238.47</strong>. With the correct Rho the figure is <strong>309.54</strong> on the deck's rounded V<sub>F</sub> = 0.38, or <strong>312.70</strong> using the unrounded 0.376159.</div>
+      <div class="eq">r<sub>VF</sub> = [ <span class="fr"><span>C</span><span>V<sub>F</sub></span></span>Δ<sub>C</sub><span class="fr"><span>S</span><span>C</span></span> − <span class="fr"><span>P</span><span>V<sub>F</sub></span></span>Δ<sub>P</sub><span class="fr"><span>S</span><span>P</span></span> ] r<sub>S</sub> + [ <span class="fr"><span>C</span><span>V<sub>F</sub></span></span>ρ<sub>C</sub><span class="fr"><span>1</span><span>C</span></span> − <span class="fr"><span>P</span><span>V<sub>F</sub></span></span>ρ<sub>P</sub><span class="fr"><span>1</span><span>P</span></span> ] dy
+        <span class="lbl">The C's and P's cancel, which is the whole trick — see the simplification below.</span></div>
+      <div class="eq">w<sub>rS</sub> = <span class="fr"><span>(Δ<sub>C</sub> − Δ<sub>P</sub>) S</span><span>V<sub>F</sub></span></span> = <span class="fr"><span>S</span><span>V<sub>F</sub></span></span>&nbsp;&nbsp;&nbsp;w<sub>dy</sub> = <span class="fr"><span>ρ<sub>C</sub> − ρ<sub>P</sub></span><span>V<sub>F</sub></span></span> = <span class="fr"><span>T K e<sup>−yT</sup></span><span>V<sub>F</sub></span></span>
+        <span class="lbl">Because Δ_C − Δ_P = N(d1) − (N(d1) − 1) = 1 exactly, and ρ_C − ρ_P = TKe^(−yT)[N(d2) + N(−d2)] = TKe^(−yT) exactly.</span></div>
+      <div class="sheet">
+        <table>
+          <thead><tr><th class="l">Weight</th><th class="l">Deck</th><th>Correct</th></tr></thead>
+          <tbody>
+            <tr><td class="l">for r<sub>S</sub></td><td class="l">173.89 + 136.63 = 310.52</td><td>313.70</td></tr>
+            <tr class="pick"><td class="l">for dy</td><td class="l">66.55 + 171.92 = 238.47</td><td>312.70</td></tr>
+            <tr><td class="l">Difference</td><td class="l">72.05</td><td>1.000000</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note"><span class="eyebrow">Concept check</span>Use the <strong>difference-of-one identity</strong> as your check, exactly as on the options panel. Here S/V<sub>F</sub> − TKe<sup>−yT</sup>/V<sub>F</sub> = (118 − 117.6238)/0.376159 = <strong>1.000000</strong>. The deck's pair differs by 72.05, which is the single fastest way to see that something is wrong. <strong>If a forward's two weights do not differ by exactly 1, recheck Rho.</strong></div>
+    </section>
+
+    <section class="block">
+      <h3>Cost of carry, and the weight vector in money</h3>
+      <div class="prose">
+        <p>Borrow S<sub>0</sub> at y for T periods, buy the asset, hold it. Net cash flow today is zero; at T you owe S<sub>0</sub>e<sup>y<sub>T</sub>T</sup> and hold the asset. No arbitrage forces:</p>
+      </div>
+      <div class="eq"><sub>0</sub>F<sub>T</sub> = S<sub>0</sub> e<sup>y<sub>T</sub>T</sup>&nbsp;&nbsp;&nbsp;example: 100 × e<sup>(3%/12)×6</sup> = 100 × e<sup>0.015</sup> = <b>101.5113</b>
+        <span class="lbl">=100*EXP(0.03/12*6). The deck's 101.51.</span></div>
+      <div class="prose">
+        <p>Now decompose. Fu = +1 S − 1 B, where B<sub>T</sub> = S<sub>0</sub>e<sup>y<sub>T</sub>T</sup> and B<sub>0</sub> = S<sub>0</sub>. Differentiating the bond leg:</p>
+      </div>
+      <div class="eq">dB = −T B<sub>0</sub> dy<sub>T</sub> = −T S<sub>0</sub> dy<sub>T</sub>&nbsp;&nbsp;⟹&nbsp;&nbsp;dFu = dS − dB = <b>dS + T S<sub>0</sub> dy<sub>T</sub></b>
+        <span class="lbl">Two minus signs make a plus. A long futures position GAINS when rates rise, because it is short a bond.</span></div>
+      <div class="eq">dFu = <span class="fr"><span>dS</span><span>S</span></span>S + T S<sub>0</sub> dy<sub>T</sub> = S<sub>0</sub> r<sub>S</sub> + T S<sub>0</sub> dy<sub>T</sub>&nbsp;&nbsp;⟹&nbsp;&nbsp;<b>w</b> = <span class="fr"><span>S<sub>0</sub></span><span>T S<sub>0</sub></span></span> = <span class="fr"><span>100</span><span>(6/12) × 100</span></span> = <span class="fr"><span>100</span><span>50</span></span>
+        <span class="lbl">Factors are r_S and dy_6M. The weights are in MONEY, so VaR comes out in money, not percent.</span></div>
+      <div class="warn"><span class="eyebrow">The rule</span>The deck asks, and answers: <strong>"Can we find % return for a futures contract?"</strong> <strong>No.</strong> The contract's value at inception is zero, so there is nothing to divide by — a percentage return would be division by zero. Everything about futures VaR is done in <strong>money units</strong>: w in money, μ and Ω on the raw factors, and VaR in Baht. This is the one lecture where VaR is <em>not</em> a percentage.</div>
+    </section>
+
+    <section class="block">
+      <h3>Zero-coupon bond futures</h3>
+      <div class="prose">
+        <p>Now the underlying is itself rate-sensitive, so there are two yields: the one that discounts the <strong>underlying bond</strong> (maturity T+N) and the one that finances the <strong>carry</strong> (maturity T).</p>
+      </div>
+      <div class="eq"><sub>0</sub>F<sub>T</sub> = e<sup>−y<sub>T+N</sub>(T+N)</sup> × e<sup>y<sub>T</sub>T</sup> = e<sup>−y<sub>T+N</sub>(T+N) + y<sub>T</sub>T</sup>
+        <span class="lbl">Buy the long bond, borrow for T. =EXP(-y_TN*(T+N)+y_T*T)</span></div>
+      <div class="eq">dFu = −(T+N) B<sub>0</sub> dy<sub>T+N</sub> + T B<sub>0</sub> dy<sub>T</sub>&nbsp;&nbsp;⟹&nbsp;&nbsp;<b>w</b> = <span class="fr"><span>−(T+N)</span><span>+T</span></span> × B<sub>0</sub>
+        <span class="lbl">B₀ is the underlying ZCB's price today, e^(−y_(T+N)(T+N)). Opposite signs: the long bond loses when its own yield rises, the short financing leg gains when the funding yield rises.</span></div>
+      <div class="sheet">
+        <table>
+          <caption>Deck example: T = 1 year, underlying ZCB has 6 months left at delivery, FV = $1, y<sub>T</sub> = 5%, y<sub>T+N</sub> = 5.2%</caption>
+          <thead><tr><th class="l">Quantity</th><th class="l">Working</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td class="l"><sub>0</sub>F<sub>T</sub></td><td class="f">=EXP(-0.052*1.5+0.05*1)</td><td>0.972388</td></tr>
+            <tr><td class="l">B₀</td><td class="f">=EXP(-0.052*1.5)</td><td>0.924963</td></tr>
+            <tr class="pick"><td class="l">w for dy<sub>1.5Y</sub></td><td class="f">=-1.5*0.924963</td><td>−1.387445</td></tr>
+            <tr class="pick"><td class="l">w for dy<sub>1Y</sub></td><td class="f">=+1.0*0.924963</td><td>+0.924963</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note"><span class="eyebrow">Concept check</span>The two weights do <strong>not</strong> cancel: −1.3874 + 0.9250 = −0.4624. A long bond-futures position is <strong>net long duration</strong>, because the underlying bond is longer-dated than the financing. The gap is exactly <strong>N × B₀</strong> = 0.5 × 0.924963 — the extra six months of exposure you are buying. <strong>N is the source of the residual risk</strong>, which is why a futures hedge can never be perfect unless the contract's underlying matures exactly when the contract delivers.</div>
+    </section>
+
+    <section class="block">
+      <h3>Coupon bond futures, and the second big error</h3>
+      <div class="prose">
+        <p>A coupon bond is a portfolio of zeros, so a coupon-bond future is a portfolio of ZCB futures — one per post-delivery cash flow. Only cash flows <em>after</em> delivery belong in the futures price.</p>
+      </div>
+      <div class="eq"><sub>0</sub>F<sub>T</sub> = { C<sub>T+1</sub>e<sup>−y<sub>T+1</sub>(T+1)</sup> + … + (C<sub>T+N</sub> + 100)e<sup>−y<sub>T+N</sub>(T+N)</sup> } × e<sup>y<sub>T</sub>T</sup>
+        <span class="lbl">Equivalently, discount at the FORWARD rates: 0F_T = ΣCF·e^(−(T)f(k)·k), where (T)f(K) = [y_(T+K)(T+K) − y_T·T] / K.</span></div>
+      <div class="prose">
+        <p>The deck's example: futures on a coupon bond, <strong>T = 1 year</strong>, FV = $100, <strong>C = 4% p.a. paid semiannually</strong>, and the underlying has <strong>2 years</strong> left at delivery. Periods are half-years, so delivery is period 2 and the four remaining coupons fall at periods 3, 4, 5 and 6.</p>
+      </div>
+      <div class="sheet">
+        <table>
+          <caption>Spot rates, and the post-delivery cash flows discounted at (annual rate ÷ 2) × period</caption>
+          <thead><tr><th class="l">Period</th><th class="l">Maturity</th><th>Spot (% p.a.)</th><th>Cash flow</th><th>PV</th></tr></thead>
+          <tbody>
+            <tr><td class="l">2</td><td class="l">1.0 Y</td><td>1.50</td><td class="l">delivery</td><td>—</td></tr>
+            <tr><td class="l">3</td><td class="l">1.5 Y</td><td>2.00</td><td>2</td><td>1.940891</td></tr>
+            <tr><td class="l">4</td><td class="l">2.0 Y</td><td>2.50</td><td>2</td><td>1.902459</td></tr>
+            <tr><td class="l">5</td><td class="l">2.5 Y</td><td>3.00</td><td>2</td><td>1.855487</td></tr>
+            <tr><td class="l">6</td><td class="l">3.0 Y</td><td>3.50</td><td>102</td><td>91.833101</td></tr>
+            <tr class="pick"><td class="l">Total</td><td class="l"></td><td>—</td><td>108</td><td>97.531938</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="eq"><sub>0</sub>F<sub>T</sub> = 97.531938 × e<sup>(1.5%/2)×2</sup> = 97.531938 × 1.015113 = <b>99.0059</b>
+        <span class="lbl">=SUMPRODUCT(CF, EXP(-rates/2*periods)) * EXP(0.015/2*2)</span></div>
+      <div class="warn"><span class="eyebrow">Slide check</span>The deck reports the bracket as <strong>119.61</strong> and the futures price as <strong>121.42</strong>. Both are impossible: the <strong>undiscounted</strong> post-delivery cash flows total only <strong>108</strong> (2 + 2 + 2 + 102), so no positive discount rate can produce 119.61, and carrying forward for one year at 1.5% cannot get 108 to 121.42. Recomputing term by term gives <strong>97.531938</strong> and a futures price of <strong>99.0059</strong>. The deck's multiplier e<sup>0.0075×2</sup> = <strong>1.0151</strong> is correct, and 119.61 × 1.0151 = 121.42, so the two printed figures are internally consistent — <strong>the error is upstream, in the bracket.</strong></div>
+      <div class="note"><span class="eyebrow">Fine print</span>The sanity check to use on any futures-price question: <strong>the futures price must lie between the PV of the post-delivery flows and their undiscounted sum</strong>, here between 97.53 and 108. A figure above the undiscounted total is arithmetically impossible whenever rates are positive. <strong>This one check would have caught the slide.</strong></div>
+      <div class="eq"><b>w</b> = <span class="fr"><span>−(T+N) X<sub>N</sub> B<sub>N,0</sub></span><span>−(T+M) X<sub>M</sub> B<sub>M,0</sub></span></span> stacked over <span class="fr"><span></span><span>+T (X<sub>N</sub> B<sub>N,0</sub> + X<sub>M</sub> B<sub>M,0</sub>)</span></span>&nbsp;&nbsp;for factors&nbsp;<span class="fr"><span>dy<sub>T+N</sub>, dy<sub>T+M</sub></span><span>dy<sub>T</sub></span></span>
+        <span class="lbl">Every underlying cash flow gets its own long-bond row; ALL of them share one financing row, because they are all funded at y_T.</span></div>
+      <div class="sheet">
+        <table>
+          <caption>Deck example: <b>T = 2</b> periods, contract 1 delivers a ZCB with X<sub>N</sub> = $2 and N = 1, contract 2 delivers X<sub>M</sub> = $102 with M = 2</caption>
+          <thead><tr><th class="l">Row</th><th class="l">Working</th><th>Deck</th><th>Correct</th></tr></thead>
+          <tbody>
+            <tr><td class="l">B<sub>N,0</sub>, y₃ = 7%</td><td class="f">=EXP(-0.07*3)</td><td>0.8106</td><td>0.810584</td></tr>
+            <tr><td class="l">B<sub>M,0</sub>, y₄ = 8%</td><td class="f">=EXP(-0.08*4)</td><td>0.7261</td><td>0.726149</td></tr>
+            <tr><td class="l">w for dy₃</td><td class="l">−(2+1) × 2 × 0.810584</td><td>−4.86</td><td>−4.8635</td></tr>
+            <tr><td class="l">w for dy₄</td><td class="l">−(2+2) × 102 × 0.726149</td><td>296.25</td><td>−296.2688</td></tr>
+            <tr class="pick"><td class="l">w for dy₂</td><td class="l">+2 × (2×0.810584 + 102×0.726149)</td><td>75.68</td><td>151.3767</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="warn"><span class="eyebrow">Slide check</span>Two problems in that vector. The third element is computed as <strong>1 × (2×0.8106 + 102×0.7261) = 75.68</strong> — the coefficient <strong>T was dropped</strong>. The slide states T = 2 and uses it correctly in the first two rows, −(2+1) and −(2+2), so the financing row should be <strong>2 × 75.6884 = 151.3767</strong>. The companion practice workbook has T = 1, where the coefficient really is 1, which is probably where the slip came from. Second, the middle element is printed as <strong>+296.25</strong> when the formula −(T+M)X<sub>M</sub>B<sub>M,0</sub> gives <strong>−296.2688</strong>; the deck's stray leading minus outside the vector suggests a sign that got moved rather than applied.</div>
+    </section>
+
+    <section class="block">
+      <h3>The practice problem, worked from the answer workbook</h3>
+      <div class="prose">
+        <p>A government bond with <strong>5-year TTM, FV = THB 1,000, C = 6% p.a. paid annually</strong>, priced off the Thai zero curve with continuous discounting. Then hedge it with one-year ZCB futures.</p>
+      </div>
+      <div class="sheet">
+        <table>
+          <caption>=EXP(-D3*B3)*C3 per row, weight =F3/$F$8, adjusted weight =G3*-B3</caption>
+          <thead><tr><th class="l">t</th><th>Spot (%)</th><th>CF</th><th>PVIF</th><th>PVCF</th><th>Weight</th><th>Adj. weight</th></tr></thead>
+          <tbody>
+            <tr><td class="l">1</td><td>1.510592</td><td>60</td><td>0.9850076</td><td>59.100456</td><td>5.037250%</td><td>−0.0503725</td></tr>
+            <tr><td class="l">2</td><td>1.621256</td><td>60</td><td>0.9680949</td><td>58.085696</td><td>4.950760%</td><td>−0.0990152</td></tr>
+            <tr><td class="l">3</td><td>1.777315</td><td>60</td><td>0.9480771</td><td>56.884626</td><td>4.848390%</td><td>−0.1454517</td></tr>
+            <tr><td class="l">4</td><td>1.910292</td><td>60</td><td>0.9264347</td><td>55.586084</td><td>4.737713%</td><td>−0.1895085</td></tr>
+            <tr class="pick"><td class="l">5</td><td>2.326193</td><td>1,060</td><td>0.8901995</td><td>943.611502</td><td>80.425888%</td><td>−4.0212944</td></tr>
+            <tr><td class="l">Total</td><td>—</td><td>1,300</td><td>—</td><td>1,173.268365</td><td>100%</td><td>−4.5056423</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="grid3">
+        <div class="ro"><div class="k">D<sub>mac</sub> = SUMPRODUCT(t,w)</div><div class="v">4.5056423</div></div>
+        <div class="ro"><div class="k">σ<sub>P</sub></div><div class="v">0.14171%</div></div>
+        <div class="ro hi"><div class="k">VaR 1% · bond</div><div class="v">−0.32720%</div></div>
+      </div>
+      <div class="eq">VaR<sub>bond</sub> = 0.0000246702 + (−2.326348 × 0.0014170812) = −0.0032719537&nbsp;⟹&nbsp;× 1,173.268 = <b>−3.8389 Baht</b>
+        <span class="lbl">=D10+C15*D12, then =D13*F8. A 6% five-year bond risks about 3.84 Baht a day per 1,173 of value.</span></div>
+      <div class="prose">
+        <p>Now the five futures contracts, T = 1 year, on ZCBs maturing at 2, 3, 4, 5 and 6 years. Each futures price can be found two equivalent ways — carry the spot price forward, or discount at the forward rate — and the workbook computes both as a check.</p>
+      </div>
+      <div class="sheet">
+        <table>
+          <thead><tr><th class="l">T+N</th><th class="l">=CF*EXP(-y*(T+N))*EXP(y_T*T)</th><th class="l">forward rate (T)f(N)</th><th>Futures price</th></tr></thead>
+          <tbody>
+            <tr><td class="l">2</td><td class="f">carry forward</td><td>1.73192%</td><td>58.969795</td></tr>
+            <tr><td class="l">3</td><td class="f">carry forward</td><td>1.910677%</td><td>57.750444</td></tr>
+            <tr><td class="l">4</td><td class="f">carry forward</td><td>2.043525%</td><td>56.432137</td></tr>
+            <tr><td class="l">5</td><td class="f">carry forward</td><td>2.530093%</td><td>54.224934</td></tr>
+            <tr class="pick"><td class="l">6</td><td class="f">carry forward</td><td>2.575820%</td><td>931.907152</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="eq">(T)f(N) = <span class="fr"><span>y<sub>T+N</sub>(T+N) − y<sub>T</sub>T</span><span>N</span></span>
+        <span class="lbl">=(E26*C26-$E$25*$C$25)/(C26-$C$25). Discounting at this rate for N periods reproduces the futures price exactly — a built-in check.</span></div>
+      <div class="grid3">
+        <div class="ro"><div class="k">μ of the futures book</div><div class="v">0.0525646</div></div>
+        <div class="ro"><div class="k">σ (money)</div><div class="v">1.7048701</div></div>
+        <div class="ro hi"><div class="k">VaR 1% · futures</div><div class="v">−3.9136 Baht</div></div>
+      </div>
+      <div class="note"><span class="eyebrow">Why this matters</span>Note the units: this VaR is <strong>−3.9136 Baht</strong>, not a percentage, because the futures weights are in money. Against the bond's −3.8389 Baht the two are strikingly close, which is what makes the hedge work. But the answer to the deck's question — <em>can the remaining net risk be completely eliminated?</em> — is <strong>no</strong>. The bond loads on dy₁…dy₅ while the futures book loads on dy₂…dy₆ <em>and</em> dy₁ through the financing leg. Six factors, five contracts, and a different loading pattern: you can minimise the residual but not zero it. <strong>That residual is basis risk.</strong></div>
+
+      <div class="tool">
+        <div class="tool-h"><div><span class="eyebrow">Tool</span><h4>Futures VaR bench</h4></div><span class="chip">cost of carry · w in money · forward rates</span></div>
+        <div class="tool-b">
+          <div class="ctrls">
+            <label class="f">Contract<select id="fuKind">
+              <option value="asset" selected>Futures on an asset</option>
+              <option value="zcb">Futures on a ZCB</option>
+            </select></label>
+            <label class="f">Spot S₀ / face<input id="fuS" type="number" step="10" value="100"></label>
+            <label class="f">Time to delivery T (yrs)<input id="fuT" type="number" step="0.25" value="0.5" min="0.05"></label>
+            <label class="f">y<sub>T</sub> financing (%)<input id="fuY" type="number" step="0.1" value="3"></label>
+            <label class="f">N: extra life of underlying (yrs)<input id="fuN" type="number" step="0.25" value="0.5" min="0"></label>
+            <label class="f">y<sub>T+N</sub> (%)<input id="fuYn" type="number" step="0.1" value="5.2"></label>
+            <label class="f">σ of r<sub>S</sub> (daily)<input id="fuSs" type="number" step="0.001" value="0.008359212"></label>
+            <label class="f">σ of dy<sub>T</sub> (daily)<input id="fuSy" type="number" step="0.00001" value="0.000137097"></label>
+            <label class="f">σ of dy<sub>T+N</sub> (daily)<input id="fuSy2" type="number" step="0.00001" value="0.000177" ></label>
+            <label class="f">Corr between factors<input id="fuR" type="number" step="0.05" value="0.8" min="-1" max="1"></label>
+            <label class="f">Confidence (%)<input id="fuC" type="number" step="0.5" value="99"></label>
+          </div>
+          <div class="out">
+            <div class="readout">
+              <div class="ro"><div class="k">Futures price</div><div class="v" id="fuF">—</div></div>
+              <div class="ro"><div class="k">Forward rate (T)f(N)</div><div class="v" id="fuFwd">—</div></div>
+              <div class="ro"><div class="k">w · long leg</div><div class="v" id="fuW1">—</div></div>
+              <div class="ro"><div class="k">w · financing leg</div><div class="v" id="fuW2">—</div></div>
+              <div class="ro"><div class="k">σ of dFu (money)</div><div class="v" id="fuSig">—</div></div>
+              <div class="ro hi"><div class="k">VaR (money)</div><div class="v" id="fuVar">—</div></div>
+            </div>
+            <div class="fxbar"><span class="fxn">Excel</span><span class="fxv" id="fuFx">—</span></div>
+            <div class="chartwrap"><svg class="chart" id="fuChart" viewBox="0 0 560 220" role="img" aria-label="Futures price against time to delivery under cost of carry"></svg></div>
+            <div class="legend"><span><i style="background:var(--accent)"></i>futures price vs T</span><span><i style="background:var(--gold)"></i>spot / underlying</span><span><i style="background:var(--bad)"></i>your T</span></div>
+            <div class="verdict" id="fuNote">—</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h3>Concepts without a calculator</h3>
+      <div class="cards" data-flash="fut"></div>
+    </section>
+
+    <section class="block">
+      <h3>Check yourself</h3>
+      <div class="quiz" data-quiz="fut"></div>
+    </section>
+  </article>

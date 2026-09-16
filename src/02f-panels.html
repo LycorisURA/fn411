@@ -1,0 +1,212 @@
+
+  <!-- ==================== PANEL: xl ==================== -->
+  <article class="panel" id="p-xl" hidden>
+    <div class="panel-head">
+      <span class="eyebrow">Tail XL · Excel</span>
+      <h2>The spreadsheet layer</h2>
+      <p class="lede">Every function the class workbooks use, the modern name for each, the keystrokes that make array formulas work, and the traps that return a plausible wrong number instead of an error.</p>
+    </div>
+
+    <section class="block">
+      <h3>The build order of every class workbook</h3>
+      <div class="prose">
+        <p>All nine workbooks have the same skeleton. Recognising it means you can rebuild any of them from a blank sheet in about five minutes.</p>
+      </div>
+      <div class="sheet">
+        <table>
+          <thead><tr><th class="l">Step</th><th class="l">What goes in the column</th><th class="l">Excel</th></tr></thead>
+          <tbody>
+            <tr><td class="l">1 · raw data</td><td class="l">250 rows of spot rates and prices</td><td class="f">paste</td></tr>
+            <tr><td class="l">2 · factor changes</td><td class="l">dy in decimal, r<sub>S</sub> as a log return</td><td class="f">=(B5-B4)/100 · =LN(E5/E4)</td></tr>
+            <tr><td class="l">3 · means</td><td class="l">one per factor, stacked into μ</td><td class="f">=AVERAGE(F5:F255)</td></tr>
+            <tr class="pick"><td class="l">4 · Ω</td><td class="l">the variance-covariance matrix</td><td class="f">=varcovar(F5:H255)</td></tr>
+            <tr><td class="l">5 · instrument</td><td class="l">price, PV weights, durations or Greeks</td><td class="f">=EXP(-y*t)*CF · =NORMSDIST(d1)</td></tr>
+            <tr><td class="l">6 · w</td><td class="l">weight × (−duration), or Δ·S/Op</td><td class="f">=L12*-1 · =I21*I23/I27</td></tr>
+            <tr><td class="l">7 · μ<sub>P</sub>, σ<sub>P</sub></td><td class="l">two array formulas</td><td class="f">=MMULT(TRANSPOSE(w),mu)</td></tr>
+            <tr><td class="l">8 · VaR</td><td class="l">one line</td><td class="f">=muP+NORMSINV(alpha)*sdP</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="fxbar"><span class="fxn">Steps 7–8</span><span class="fxv">=<b>MMULT</b>(<b>TRANSPOSE</b>(w),mu) + <b>NORMSINV</b>(alpha)*<b>SQRT</b>(<b>MMULT</b>(<b>MMULT</b>(<b>TRANSPOSE</b>(w),Om),w))</span></div>
+      <div class="note"><span class="eyebrow">Why this matters</span>Steps 1–4 are <strong>identical in every workbook</strong>. Steps 7–8 are identical too. <strong>Only steps 5 and 6 change between lectures.</strong> When an exam question hands you a new instrument, the only thing you have to think about is how to fill the w column.</div>
+    </section>
+
+    <section class="block">
+      <h3>Legacy names, modern names, and the one real difference</h3>
+      <div class="sheet">
+        <table>
+          <thead><tr><th class="l">Used in class</th><th class="l">Modern equivalent</th><th class="l">Difference</th></tr></thead>
+          <tbody>
+            <tr class="pick"><td class="f">NORMSINV(p)</td><td class="f">NORM.S.INV(p)</td><td class="l">none — identical</td></tr>
+            <tr><td class="f">NORMSDIST(z)</td><td class="f">NORM.S.DIST(z, TRUE)</td><td class="l"><b>the modern one needs the TRUE</b>; with FALSE it returns the density instead</td></tr>
+            <tr><td class="f">NORMINV(p,μ,σ)</td><td class="f">NORM.INV(p,μ,σ)</td><td class="l">none</td></tr>
+            <tr><td class="f">NORMDIST(x,μ,σ,c)</td><td class="f">NORM.DIST(x,μ,σ,c)</td><td class="l">none</td></tr>
+            <tr><td class="f">STDEV(range)</td><td class="f">STDEV.S(range)</td><td class="l">none — both divide by n−1</td></tr>
+            <tr><td class="f">STDEVP(range)</td><td class="f">STDEV.P(range)</td><td class="l">none — both divide by n</td></tr>
+            <tr class="pick"><td class="f">COVAR(x,y)</td><td class="f">COVARIANCE.<b>P</b>(x,y)</td><td class="l"><b>the legacy COVAR is the POPULATION version</b> — it divides by n, not n−1</td></tr>
+            <tr><td class="f">TINV(p,df)</td><td class="f">T.INV.2T(p,df)</td><td class="l">both two-tailed; <code>T.INV</code> (no 2T) is one-tailed and signed</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="warn"><span class="eyebrow">Workbook check</span>Two of those rows collide. The class sheets build Ω with <span class="fx">=STDEV(...)^2</span> on the diagonal — which divides by <strong>n−1</strong> — and <span class="fx">=COVAR(...)</span> off it, which divides by <strong>n</strong>. That makes the off-diagonals <strong>0.4% too small at n = 250</strong>. On the option example, Cov(dy, r<sub>S</sub>) = 6.682909×10<sup>−8</sup> where the consistent sample value is <strong>6.709748×10<sup>−8</sup></strong>. The effect on VaR is in the fifth decimal place, so <strong>do not "fix" the class answers</strong> — but if you build your own sheet, pair <code>VAR.S</code> with <code>COVARIANCE.S</code>. A mismatched matrix can in principle stop being positive semi-definite, which makes <code>SQRT</code> of the portfolio variance return <code>#NUM!</code>.</div>
+      <div class="fxlist">
+        <div class="fxrow trap"><code>=_xlfn.NORM.S.INV</code><div>If you see this prefix in a formula bar, the file was written in a newer Excel and opened in an older one that does not know the function. <b>The additional-questions workbook has exactly this</b> in cell B14. It still calculates in current Excel; the prefix is cosmetic.</div></div>
+        <div class="fxrow trap"><code>NORMSDIST has no second argument</code><div>So there is no legacy way to get the <b>density</b>. That is why the class calculators compute it by hand as <code>=EXP(-(d^2)/2)/SQRT(2*PI())</code>. Modern: <code>=NORM.S.DIST(d,FALSE)</code>.</div></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h3>The custom function the workbooks depend on</h3>
+      <div class="fxbar"><span class="fxn">Not standard Excel</span><span class="fxv">{=<b>varcovar</b>(F5:H255)}  →  builds the whole variance-covariance matrix from a block of factor columns</span></div>
+      <div class="prose">
+        <p>This is a <span class="term">VBA user-defined function</span> supplied with the course files, which is why they are saved as <code>.xlsm</code> and why macros must be enabled. It is not available in a blank workbook. Three ways to reproduce it:</p>
+      </div>
+      <div class="fxlist">
+        <div class="fxrow"><code>Data → Data Analysis → Covariance</code><div>The Analysis ToolPak. Fast, but it writes a <b>lower-triangular block of static values</b> using the <b>population</b> divisor, and it does not update when the data change.</div></div>
+        <div class="fxrow"><code>=COVARIANCE.S(INDEX($F:$H,,ROW()),INDEX($F:$H,,COLUMN()))</code><div>A live grid you can fill across and down. Verbose, but it recalculates and it uses the sample divisor consistently on and off the diagonal.</div></div>
+        <div class="fxrow"><code>=MMULT(TRANSPOSE(dev),dev)/(n-1)</code><div>The matrix way, where <code>dev</code> is the block of <b>deviations from each column mean</b>. One array formula, gives the entire matrix, and is the actual definition of a covariance matrix.</div></div>
+      </div>
+      <div class="note"><span class="eyebrow">Fine print</span>The third form is worth knowing for an exam: if a question gives you a small block of returns and asks for Ω, subtracting the column means and forming <strong>Xᵀ X / (n−1)</strong> is quicker by hand than nine separate covariances, and it makes the symmetry obvious.</div>
+    </section>
+
+    <section class="block">
+      <h3>Array formulas: the keystrokes that decide whether you get a number or a matrix</h3>
+      <div class="fxlist">
+        <div class="fxrow"><code>Ctrl+Shift+Enter</code><div><b>The deck says this explicitly</b> for <code>MMULT</code>. In Excel 2019 and earlier, an array formula entered with plain Enter returns only the <b>top-left element</b>. No error, just a wrong number.</div></div>
+        <div class="fxrow"><code>Select the output range first</code><div>To see a 3×3 <code>MMULT</code> result you must select 9 cells, type the formula, then press <span class="keys">Ctrl</span>+<span class="keys">Shift</span>+<span class="keys">Enter</span>. Selecting one cell gives you one number.</div></div>
+        <div class="fxrow"><code>{braces} in the formula bar</code><div>Excel adds them itself to show a formula is an array. <b>Typing braces yourself does not work</b> — they become text.</div></div>
+        <div class="fxrow"><code>Microsoft 365 dynamic arrays</code><div>Results <b>spill</b> automatically and CSE is unnecessary. A spill blocked by existing content gives <code>#SPILL!</code>. This is why the class files, written in an older Excel, still carry CSE instructions that you may not need.</div></div>
+        <div class="fxrow trap"><code>σ<sub>P</sub> far too small?</code><div><b>Check CSE first.</b> A missing Ctrl+Shift+Enter on the nested <code>MMULT</code> silently returns w₁²Ω₁₁ instead of wᵀΩw, which for a diversified book is a small fraction of the truth.</div></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h3>Every function used in the course, by job</h3>
+      <div class="fxlist">
+        <div class="fxrow"><code>NORMSINV · NORMSDIST</code><div>The quantile and the CDF. z<sub>α</sub> for VaR, N(d₁) and N(d₂) for Black-Scholes, and the probability of a loss.</div></div>
+        <div class="fxrow"><code>AVERAGE · STDEV · COVAR · CORREL</code><div>μ, σ, and Ω. <code>CORREL</code> does not appear in the class sheets but is how you sanity-check a covariance: ρ = Cov/(σ₁σ₂) must sit in [−1, 1].</div></div>
+        <div class="fxrow"><code>LN · EXP</code><div>Log returns, continuous discounting, and d₁. Continuous compounding is used throughout the option and futures lectures.</div></div>
+        <div class="fxrow"><code>SQRT</code><div>σ from a variance, √T scaling, and σ√T inside d₁.</div></div>
+        <div class="fxrow"><code>MMULT · TRANSPOSE</code><div>μ<sub>P</sub> = wᵀμ and σ<sub>P</sub>² = wᵀΩw. Nest two <code>MMULT</code>s for the quadratic form.</div></div>
+        <div class="fxrow"><code>SUMPRODUCT</code><div>Macaulay duration from periods and PV weights, in one cell. Also a <code>TRANSPOSE</code>-free alternative: <code>=SUMPRODUCT(w,MMULT(Om,w))</code>.</div></div>
+        <div class="fxrow"><code>SUM · INDEX</code><div>Bond price from a PV column; pulling element i out of an <code>MMULT</code> result for component VaR.</div></div>
+        <div class="fxrow"><code>MAX</code><div>Option payoffs at the binomial nodes: <code>=MAX(0,$H$24-H25)</code>.</div></div>
+        <div class="fxrow"><code>PI()</code><div>The normal density. Use it — <b>not 22/7</b>.</div></div>
+        <div class="fxrow"><code>Goal Seek · Solver</code><div>Not used in the class files, but the way to invert Black-Scholes for implied volatility, or to find the futures position that minimises a hedged portfolio's σ<sub>P</sub>. Solver is the right tool for the practice problem's "minimise the risk" instruction.</div></div>
+      </div>
+      <div class="note"><span class="eyebrow">Concept check</span>Notice what is <strong>absent</strong>. No <code>PRICE</code>, <code>YIELD</code>, <code>DURATION</code> or <code>MDURATION</code> anywhere in this course — because those functions take a single yield to maturity and real settlement dates, and this course discounts <strong>every cash flow at its own spot rate</strong> over integer periods. <code>=D3/(1+C3/100)^B3</code> filled down is doing something Excel's bond functions cannot do. Do not reach for <code>MDURATION</code> in an exam here; build the column.</div>
+    </section>
+
+    <section class="block">
+      <h3>The trap list</h3>
+      <div class="fxlist">
+        <div class="fxrow trap"><code>−1.96 for a 95% VaR</code><div>−1.96 belongs to <b>α = 2.5%</b>. A 95% VaR wants <b>−1.644854</b>. Using −1.96 overstates it by 19.2%. The lecture-3 portfolio slide prints this error.</div></div>
+        <div class="fxrow trap"><code>Forgetting the /100 on dy</code><div>Spot rates are quoted in percent. <code>=(B5-B4)/100</code>. Omit it and every bond VaR is 100× too large.</div></div>
+        <div class="fxrow trap"><code>σ where the label says σ²</code><div>The lecture-3 T-bill slide labels two standard deviations as variances. If a "variance" is around 0.0009 on daily yield changes, it is a standard deviation.</div></div>
+        <div class="fxrow trap"><code>w order ≠ Ω order</code><div>The option workbook puts <b>dy first, r<sub>S</sub> second</b>. <code>MMULT</code> will not complain if you reverse w — it will pair the stock weight with the yield variance and return a plausible number.</div></div>
+        <div class="fxrow trap"><code>Missing Ctrl+Shift+Enter</code><div>Returns the top-left element of the matrix product. The classic symptom is a portfolio σ that is far too small.</div></div>
+        <div class="fxrow trap"><code>Mixing continuous and discrete</code><div>Continuous PV goes with duration <b>−t</b>; discrete PV goes with <b>−t/(1+y<sub>t</sub>)</b>. The coupon-bond sheet mixes them and overstates VaR by 2.3%.</div></div>
+        <div class="fxrow trap"><code>22/7 for π</code><div>Makes the density, and therefore Vega and Gamma, 0.02012% too small. <code>=SQRT(2*PI())</code>.</div></div>
+        <div class="fxrow trap"><code>Scaling the whole VaR by √T</code><div>The mean scales with <b>T</b>, the volatility with <b>√T</b>. <code>=mu*T+NORMSINV(a)*sd*SQRT(T)</code>.</div></div>
+        <div class="fxrow trap"><code>Percentage return on a futures contract</code><div>Its initial value is zero. Work in <b>money</b>: w = [S₀ ; T·S₀].</div></div>
+        <div class="fxrow trap"><code>STDEV^2 beside COVAR</code><div>n−1 on the diagonal, n off it. Pair <code>VAR.S</code> with <code>COVARIANCE.S</code>.</div></div>
+        <div class="fxrow trap"><code>Annual σ with T in months</code><div>σ, y and T must share one period. The deck's own example uses 5% per month with T = 12 months.</div></div>
+        <div class="fxrow trap"><code>LOG instead of LN</code><div><code>LOG</code> is base 10 in Excel and scales d₁ by 2.3026.</div></div>
+        <div class="fxrow trap"><code>Coupons before delivery in a futures price</code><div>Only <b>post-delivery</b> cash flows belong in <sub>0</sub>F<sub>T</sub>. And the price must sit between their PV and their undiscounted sum.</div></div>
+        <div class="fxrow trap"><code>Forgetting T in the financing row</code><div>A coupon-bond-futures weight vector's last element is <b>+T</b>×Σ(X·B), not Σ(X·B). The lecture-5 slide drops the T.</div></div>
+      </div>
+      <div class="note"><span class="eyebrow">Your A4 sheet</span>Only four things from this panel are worth the space: <strong>NORMSINV(0.01) = −2.326348</strong> and <strong>NORMSINV(0.05) = −1.644854</strong>; <strong>VaR = wᵀμ + z·√(wᵀΩw)</strong>; <strong>mean scales with T, volatility with √T</strong>; and <strong>the two weights of an option or forward differ by exactly 1</strong>. The rest you can rebuild.</div>
+    </section>
+
+    <section class="block">
+      <h3>Which function?</h3>
+      <div data-sorter="whichfn"></div>
+    </section>
+
+    <section class="block">
+      <h3>Will this formula break?</h3>
+      <div data-sorter="breaks"></div>
+    </section>
+
+    <section class="block">
+      <h3>Check yourself</h3>
+      <div class="quiz" data-quiz="xl"></div>
+    </section>
+  </article>
+
+  <!-- ==================== PANEL: pset ==================== -->
+  <article class="panel" id="p-pset" hidden>
+    <div class="panel-head">
+      <span class="eyebrow">Tail AS · Assignments</span>
+      <h2>The additional questions</h2>
+      <p class="lede">All three questions from <em>Additional question_ans_Market risk.xlsm</em>, plus the two practice problems the lecture decks set, each worked from the data with every intermediate number shown.</p>
+    </div>
+
+    <section class="block">
+      <h3>Additional questions</h3>
+      <div data-pset="add"></div>
+    </section>
+
+    <section class="block">
+      <h3>Practice problems from the decks</h3>
+      <div data-pset="prac"></div>
+    </section>
+  </article>
+
+  <!-- ==================== PANEL: exam ==================== -->
+  <article class="panel" id="p-exam" hidden>
+    <div class="panel-head">
+      <span class="eyebrow">Tail EX · Exam prep</span>
+      <h2>Mock exam and the A4 sheet</h2>
+      <p class="lede">A timed self-marking paper drawn from every quiz on the page, and the one-page formula sheet that covers all five lectures.</p>
+    </div>
+
+    <section class="block">
+      <h3>Before you start</h3>
+      <div class="grid3">
+        <div class="ro"><div class="k">Tier mix</div><div class="v">50 / 25 / 25</div></div>
+        <div class="ro hi"><div class="k">Pace</div><div class="v">1.75 min/Q</div></div>
+        <div class="ro"><div class="k">Paper sizes</div><div class="v">12 · 20 · 40</div></div>
+      </div>
+      <div class="warn"><span class="eyebrow">Check with your lecturer</span>No exam guidelines were supplied with the course files, so the mix, timing and coverage above are the study kit's <strong>defaults, not your paper's</strong>. Ask for the real tier weighting, the time allowed, whether a formula sheet is permitted, and whether lecture 5 is examinable — then reset these.</div>
+      <div class="note"><span class="eyebrow">How to use it</span>Take a <strong>12-question</strong> paper after finishing each lecture, and a <strong>40-question</strong> one once all six tails are measured. Coverage can be narrowed to the instrument lectures (03–05), to the foundations (01–02), or to a single tail.</div>
+    </section>
+
+    <section class="block">
+      <h3>Sit a paper</h3>
+      <div data-mock></div>
+    </section>
+
+    <section class="block">
+      <h3>The lecturer's worked examples, as exam questions</h3>
+      <div data-pset="exam"></div>
+    </section>
+
+    <section class="block">
+      <h3>The A4 sheet</h3>
+      <div class="prose">
+        <p>Everything on this page reduces to these lines. If you can write them from memory you can rebuild any calculation in the course.</p>
+      </div>
+      <div class="eq"><b>VaR<sub>α</sub> = μ<sub>P</sub> + z<sub>α</sub> σ<sub>P</sub></b>&nbsp;&nbsp;&nbsp;μ<sub>P</sub> = <b>w</b><sup>T</sup><b>μ</b>&nbsp;&nbsp;&nbsp;σ<sub>P</sub><sup>2</sup> = <b>w</b><sup>T</sup><b>Ω</b><b>w</b>
+        <span class="lbl">The master formula. Negative output. Everything below is just a way of filling in w.</span></div>
+      <div class="eq">z<sub>0.01</sub> = −2.326348&nbsp;&nbsp;z<sub>0.025</sub> = −1.959964&nbsp;&nbsp;z<sub>0.05</sub> = −1.644854&nbsp;&nbsp;z<sub>0.10</sub> = −1.281552
+        <span class="lbl">One-sided. −1.96 is the 2.5% value, never the 5% one.</span></div>
+      <div class="eq">ES = μ + σ <span class="fr"><span>e<sup>−z<sub>α</sub><sup>2</sup>/2</sup></span><span>√(2π) α</span></span>&nbsp;&nbsp;&nbsp;multiplier = 2.665214 (1%) · 2.337803 (2.5%) · 2.062713 (5%)
+        <span class="lbl">The term is always positive; when μ < 0 write ES = μ − σ(...) so the sign matches VaR.</span></div>
+      <div class="eq">μ<sub>T</sub> = μ<sub>1</sub> × T&nbsp;&nbsp;&nbsp;σ<sub>T</sub> = σ<sub>1</sub> × √T&nbsp;&nbsp;&nbsp;σ<sub>annual</sub> = σ<sub>daily</sub> √252
+        <span class="lbl">Scale the pieces, not the VaR. Requires iid returns.</span></div>
+      <div class="eq">D<sub>mac</sub> = Σ t w<sub>t</sub>&nbsp;&nbsp;&nbsp;D<sub>mod</sub> = <span class="fr"><span>D<sub>mac</sub></span><span>1 + y</span></span>&nbsp;&nbsp;&nbsp;r<sub>B</sub> = −D<sub>mod</sub> dy&nbsp;&nbsp;&nbsp;w<sub>t</sub> = <span class="fr"><span>PV<sub>t</sub></span><span>W<sub>0</sub></span></span> × (−t)
+        <span class="lbl">Continuous discounting: multiplier −t. Discrete: −t/(1+y_t). Coupon bond = portfolio of zeros, one per cash flow.</span></div>
+      <div class="eq">C = S N(d<sub>1</sub>) − Ke<sup>−yT</sup>N(d<sub>2</sub>)&nbsp;&nbsp;&nbsp;d<sub>1</sub> = <span class="fr"><span>ln(S/K) + (y + σ<sup>2</sup>/2)T</span><span>σ√T</span></span>&nbsp;&nbsp;&nbsp;d<sub>2</sub> = d<sub>1</sub> − σ√T
+        <span class="lbl">Δ_call = N(d₁); Δ_put = −N(−d₁); ρ_call = TKe^(−yT)N(d₂); ρ_put = −TKe^(−yT)N(−d₂).</span></div>
+      <div class="eq"><b>w</b><sub>Op</sub> = [ Δ <span class="fr"><span>S</span><span>Op</span></span> , ρ <span class="fr"><span>1</span><span>Op</span></span> ]&nbsp;&nbsp;&nbsp;check: w<sub>rS</sub> − w<sub>dy</sub> = <b>1</b> exactly
+        <span class="lbl">Binomial alternative: Δ = (C₁u − C₁d)/(S(u−d)), B = (C₁d(1+u) − C₁u(1+d))/((1+y)(u−d)), u = e^σ − 1.</span></div>
+      <div class="eq">forward: V<sub>F</sub> = C − P,&nbsp; w = [ <span class="fr"><span>S</span><span>V<sub>F</sub></span></span> , <span class="fr"><span>TKe<sup>−yT</sup></span><span>V<sub>F</sub></span></span> ]&nbsp;&nbsp;&nbsp;futures: <sub>0</sub>F<sub>T</sub> = S<sub>0</sub>e<sup>y<sub>T</sub>T</sup>,&nbsp; w = [ S<sub>0</sub> , T S<sub>0</sub> ]
+        <span class="lbl">Futures weights are in MONEY, so the VaR is in money. No percentage return exists.</span></div>
+      <div class="eq">ZCB futures: w = [−(T+N), +T] × B<sub>0</sub>&nbsp;&nbsp;&nbsp;coupon: w = [ −(T+k)X<sub>k</sub>B<sub>k</sub> … , +T Σ X<sub>k</sub>B<sub>k</sub> ]
+        <span class="lbl">(T)f(N) = [y_(T+N)(T+N) − y_T·T]/N. One financing row shared by all the underlying cash flows — and it carries a factor of T.</span></div>
+      <div class="eq">marginal VaR<sub>i</sub> = <span class="fr"><span>z<sub>α</sub></span><span>σ<sub>P</sub></span></span> (<b>Ω</b><b>w</b>)<sub>i</sub>&nbsp;&nbsp;&nbsp;component VaR<sub>i</sub> = w<sub>i</sub> × marginal<sub>i</sub>&nbsp;&nbsp;&nbsp;Σ components = VaR
+        <span class="lbl">Euler's theorem. Incremental VaR is a different number: portfolio VaR minus the VaR of the book without that position.</span></div>
+      <div class="note"><span class="eyebrow">Your A4 sheet</span>Add three non-formulas: <strong>VaR is negative in this course</strong>; <strong>the mean stays in</strong>; and <strong>σ, y and T must share one time unit</strong>. Those three sentences prevent more lost marks than any extra formula would win.</div>
+    </section>
+  </article>

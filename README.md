@@ -1,1 +1,177 @@
-# fn411
+# fn411 — The Left Tail
+
+A study platform for a market risk and Value at Risk course, built from five lecture
+decks and nine class workbooks.
+
+**Live page:** https://claude.ai/artifact/GixShzjtRbZb9PDDdbBg89
+
+One self-contained HTML file. No dependencies, no build step beyond concatenation, no
+network access except Google Fonts. Open `the-left-tail.html` in a browser and it works.
+
+---
+
+## The idea
+
+The course measures the risk of every instrument — stocks, bonds, options, forwards,
+futures — with the same three objects. Each instrument becomes a **weight vector** `w`
+over a set of risk factors with mean vector `μ` and variance-covariance matrix `Ω`:
+
+```
+μ_P = wᵀμ        σ_P² = wᵀΩw        VaR_α = μ_P + z_α·σ_P
+```
+
+The only thing that changes between lectures is how you build `w`. The platform is
+organised around that.
+
+| Instrument | Risk factors | Weight |
+|---|---|---|
+| Stock | `r_S` | portfolio share |
+| Zero-coupon bond | `dy_T` | `−D_mod × share` |
+| Coupon bond | `dy_1 … dy_T` | `w_t = (PV_t/B) × (−t)` |
+| Option | `r_S`, `dy` | `[Δ·S/Op ; ρ/Op]` |
+| Forward | `r_S`, `dy` | long call + short put, combined |
+| Futures | `r_S`, `dy_T` | `[S₀ ; T·S₀]` in **money** |
+
+Two conventions this course uses that differ from most textbooks, and which the platform
+follows throughout:
+
+- **VaR is reported negative.** `VaR = μ + z·σ` with z negative.
+- **The mean stays in.** `μ` is estimated from the data and carried through, not set to zero.
+
+---
+
+## What's on the page
+
+Nine panels, reachable from the rail:
+
+| | Panel | Contents |
+|---|---|---|
+| 00 | Orientation | The framework, the weight table, the two conventions |
+| 01 | Financial institutions | Risk taxonomy, bankruptcy as a left-tail event, PD by rating and implied capital |
+| 02 | Market risk | VaR, expected shortfall, coherence, the subadditivity counterexample, √T scaling, EWMA |
+| 03 | Fixed income | Taylor → duration, the T-bill example, the 5-year coupon bond, bond+stock portfolio, marginal and component VaR |
+| 04 | Options | Black-Scholes, Delta and Rho, both the Greeks and building-block approaches, numerical Greeks, three risk-management levers |
+| 05 | Forwards & futures | Forward = call − put, cost of carry, money weights, ZCB and coupon-bond futures |
+| XL | Spreadsheet layer | The eight-step workbook skeleton, legacy↔modern function map, array formulas, a 14-item trap list |
+| AS | Assignments | Three additional questions and two deck practice problems, worked in full |
+| EX | Exam prep | Timed self-marking mock and a one-page formula sheet |
+
+Plus **7 interactive benches**, **4 sorter games**, **56 flashcards** and **90 tiered
+questions** (42 easy / 30 medium / 18 difficult).
+
+### Excel throughout
+
+The course is taught in Excel, so every method carries the functions that produce it —
+`NORMSINV` and `NORMSDIST`, `MMULT`/`TRANSPOSE` with Ctrl+Shift+Enter, `SUMPRODUCT` for
+duration, `STDEV` vs `COVAR` divisors, the custom `varcovar` VBA function and how to
+replace it in a plain workbook.
+
+Note the course uses the **legacy** function names throughout. The XL panel maps them to
+the modern equivalents and flags the one case where they genuinely differ: legacy `COVAR`
+is `COVARIANCE.P` (divides by *n*), not `COVARIANCE.S`.
+
+---
+
+## Verification
+
+Every figure on the page was recomputed from the formulas before being written down —
+the normal quantiles, the T-bill and coupon-bond VaRs, the Black-Scholes prices and
+Greeks, the binomial decomposition, the forward and futures weight vectors, and all three
+additional questions.
+
+Each bench's default inputs reproduce the corresponding class workbook exactly:
+
+| Bench | Default output | Class workbook |
+|---|---|---|
+| Zero-coupon VaR | `−3,623.18` | `−3,623.18` |
+| Option VaR · price | `83.413431` | `83.4134316` |
+| Option VaR · VaR | `−18.88864%` | `−18.888641%` |
+| Option VaR · weights | `8.4714078` / `9.4714078` | identical |
+| Futures · cost of carry | `101.511306` | `101.51` |
+
+**Thirteen figures in the course materials disagree with a recomputation.** They are
+documented in [ERRATA.md](ERRATA.md) and flagged in context on the page. The four largest:
+
+- L5 forward slide: `Rho(call) = 25.29` should be **52.293678** — corrupts the `dy` weight
+  (238.47 → **312.70**)
+- L5 coupon-bond futures: `119.61` → `121.42` should be **97.531938** → **99.0059**
+  (impossible as printed — undiscounted cash flows total only 108)
+- L5 weight vector: financing row `75.68` should be **151.3767** (coefficient `T` dropped)
+- L3 portfolio slide: prints `(−1.96)` for α = 5% where the answer requires **−1.644854**
+
+The page shows the slide's figure *and* the correct one, since you may be marked against
+the slide.
+
+---
+
+## Building
+
+```bash
+python build.py
+```
+
+Concatenates `src/` into `the-left-tail.html`. Edit the sources, not the built file.
+
+```
+src/
+├── 01-head.html      <head>, CSS tokens, masthead, rail
+├── 02a-panels.html   Tail 00 orientation + Tail 01
+├── 02b-panels.html   Tail 02 market risk
+├── 02c-panels.html   Tail 03 fixed income
+├── 02d-panels.html   Tail 04 options
+├── 02e-panels.html   Tail 05 forwards & futures
+├── 02f-panels.html   Tail XL + AS + EX
+├── 03-mid.html       footer, toasts, companion chat drawer
+├── 04a-data.js       COURSE, COMPANION, TOPICS, FLASH, SORTERS
+├── 04b-data.js       QUIZ, PSET, SEEDS, TEXTBOOK_CTX, LINES
+├── 05-engine.html    study-platform-kit engine — do not edit
+├── 06-tools.js       the seven benches + TOOL_TALK reactions
+└── 07-boot.html      boot()
+```
+
+Part order matters: panels → `course-data` → engine → `course-tools` → `boot()`.
+
+### Adding questions
+
+`QUIZ` and `PSET` arrays are **append-only** once published. Saved answers are keyed by
+position, so reordering, inserting or deleting an item corrupts stored progress. To retire
+a question, reword it in place; to add one, push it to the end of its array.
+
+Every quiz item needs a `tier` of `"e"`, `"m"` or `"d"`. The engine warns in the console if
+one is missing.
+
+### Adding a bench
+
+Give the tool a unique `<h4>` title, prefix its element ids, and register a
+`TOOL_TALK["<exact h4 title>"]` entry that reads the tool's own outputs with `tv()`/`tn()`
+and branches on what they mean. Guard the zero, negative and non-numeric cases — a thrown
+reaction falls back to a generic line.
+
+Charts read their colours with `cssVar()` at draw time and register with
+`CHARTS.push(fn)` so they redraw on theme change.
+
+---
+
+## Attribution
+
+Built on the [study-platform-kit](https://github.com/), which supplies the engine, the
+design tokens and the content rules. The engine in `src/05-engine.html` is the kit's,
+unmodified.
+
+Course material is the lecturer's. Only restated explanations and independently
+recomputed figures appear here — no slides, PDFs or workbooks are redistributed in this
+repository.
+
+## Not included
+
+Deliberately absent, and covered by `.gitignore`:
+
+- The five lecture PDFs and nine class workbooks (the lecturer's material)
+- Anything containing the `varcovar` VBA source
+
+## Outstanding
+
+No exam guidelines were supplied with the course files, so the mock exam uses the study
+kit's default 50/25/25 tier mix at 1.75 minutes a question. Replace
+`COURSE.exam` in `src/04a-data.js` once the real guidelines are known — the tier weighting,
+the time allowed, whether a formula sheet is permitted, and whether lecture 5 is examinable.

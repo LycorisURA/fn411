@@ -1,0 +1,297 @@
+
+  <!-- ==================== PANEL: mr ==================== -->
+  <article class="panel" id="p-mr" hidden>
+    <div class="panel-head">
+      <span class="eyebrow">Tail 02 · Market Risk</span>
+      <h2>VaR and expected shortfall</h2>
+      <p class="lede">Standard deviation tells you how much things move. It does not tell you how much you can lose. VaR answers the second question, badly but usefully — and expected shortfall fixes the one thing about it that is actually broken.</p>
+    </div>
+
+    <section class="block">
+      <h3>Returns first, because everything downstream is a return</h3>
+      <div class="eq">discrete:&nbsp; r̃ = <span class="fr"><span>P̃<sub>1</sub> + D − P<sub>0</sub></span><span>P<sub>0</sub></span></span>&nbsp;&nbsp;&nbsp;continuous:&nbsp; r̃ = ln <span class="fr"><span>P̃<sub>1</sub> + D</span><span>P<sub>0</sub></span></span>
+        <span class="lbl">=(P1+D-P0)/P0 versus =LN((P1+D)/P0). Over one day these agree to about four decimal places; over a year they do not.</span></div>
+      <div class="prose">
+        <p>The deck makes a point that looks trivial and is not: <strong>price and return are linearly related</strong>. Rearranged, r̃ = −1 + D/P<sub>0</sub> + (1/P<sub>0</sub>)P̃<sub>1</sub>, which is of the form a + b·P̃<sub>1</sub>. That matters because of the linear-transformation rule for normals:</p>
+      </div>
+      <div class="eq">if ỹ = a + b r̃ and r̃ ~ N(μ, σ) then μ<sub>y</sub> = a + bμ&nbsp;&nbsp;and&nbsp;&nbsp;σ<sub>y</sub><sup>2</sup> = b<sup>2</sup>σ<sup>2</sup>
+        <span class="lbl">This single rule is what licenses every weight vector in the course. Note σ<sub>y</sub><sup>2</sup> = b²σ² — the constant a drops out of the variance.</span></div>
+      <div class="note"><span class="eyebrow">Why this matters</span>Every later lecture builds a return as a <strong>linear function of risk factors</strong> and then applies this rule. Bond return = −D<sub>mod</sub>·dy. Option return = Δ(S/Op)r<sub>S</sub> + ρ(1/Op)dy. Both are just ỹ = a + b r̃ in disguise. <strong>If you can see the linearity you can write the VaR.</strong></div>
+      <div class="fxlist">
+        <div class="fxrow"><code>=LN(C4/C3)</code><div>The class workbooks' standard return column, filled down. Log returns, which is why they can be scaled by √T later.</div></div>
+        <div class="fxrow"><code>=(D29-D28)/D28</code><div>But the <i>additional questions</i> workbook uses <b>simple</b> returns for stocks. Both appear in the course. State which you used — and never mix them in one covariance matrix.</div></div>
+        <div class="fxrow"><code>=(B4-B3)/100</code><div>The yield-change column. The <b>/100</b> converts a rate quoted in percent into a decimal change, so dy is in decimal. Forgetting it inflates every bond VaR a hundredfold.</div></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h3>What VaR actually claims</h3>
+      <div class="prose">
+        <p><span class="term">Value at Risk</span> is the possible maximum loss over a given horizon at a given confidence level. The deck's own reading is the one to memorise, because it names the horizon and the frequency in the same breath:</p>
+        <p><em>"At 99% confidence, the loss is 8% for a one-year investment"</em> means that for a one-year horizon, <strong>the chance of losing more than 8% is one time in a hundred</strong> such investments.</p>
+      </div>
+      <div class="eq">z̃ = <span class="fr"><span>x − μ</span><span>σ</span></span> ~ N(0,1)&nbsp;&nbsp;&nbsp;r<sub>α</sub> = μ + z<sub>α</sub>σ&nbsp;&nbsp;&nbsp;VaR = (μ + z<sub>α</sub>σ) · W<sub>0</sub>
+        <span class="lbl">z<sub>α</sub> = NORMSINV(α). W₀ is the money invested. The output is negative — that is this course's sign convention.</span></div>
+      <div class="sheet">
+        <table>
+          <caption>The deck's z table, and the values Excel actually returns</caption>
+          <thead><tr><th class="l">Threshold α</th><th class="l">Confidence 1−α</th><th>Deck's z(α)</th><th>=NORMSINV(α)</th></tr></thead>
+          <tbody>
+            <tr class="pick"><td class="l">1.0%</td><td class="l">99.0%</td><td>−2.33</td><td>−2.326348</td></tr>
+            <tr><td class="l">2.5%</td><td class="l">97.5%</td><td>−1.96</td><td>−1.959964</td></tr>
+            <tr><td class="l">5.0%</td><td class="l">95.0%</td><td>−1.64</td><td>−1.644854</td></tr>
+            <tr><td class="l">10.0%</td><td class="l">90.0%</td><td>−1.28</td><td>−1.281552</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note"><span class="eyebrow">The rule</span>The deck prints rounded values but <strong>every class workbook uses <code>NORMSINV</code> at full precision</strong>. On a −1.45% VaR that is the difference between the third and fourth decimal place, which is exactly where a marker looks. <strong>Use the function, not the table.</strong> And note which row 1.96 is on: it belongs to <strong>2.5%</strong>, not 5%.</div>
+    </section>
+
+    <section class="block">
+      <h3>The deck's worked example, every number shown</h3>
+      <div class="prose">
+        <p>Stock A's return is normal with <strong>μ = 0.02</strong> and <strong>σ = 0.05</strong>.</p>
+      </div>
+      <div class="eq">r<sub>0.01</sub> = 0.02 + (−2.33 × 0.05) = 0.02 − 0.1165 = <b>−0.0965</b>
+        <span class="lbl">The deck's figure. With =NORMSINV(0.01) at full precision: 0.02 − 2.326348 × 0.05 = −0.096317, so −9.63%.</span></div>
+      <div class="eq">r<sub>0.05</sub> = 0.02 + (−1.644854 × 0.05) = 0.02 − 0.082243 = <b>−0.062243</b>
+        <span class="lbl">−6.22%. The deck leaves this one for you.</span></div>
+      <div class="prose">
+        <p>The third part asks for the probability of <em>any</em> loss — that is, the probability the return is below zero. Same equation, run in the other direction:</p>
+      </div>
+      <div class="eq">z = <span class="fr"><span>0 − 0.02</span><span>0.05</span></span> = −0.4&nbsp;&nbsp;⟹&nbsp;&nbsp;α = NORMSDIST(−0.4) = <b>0.3446</b>
+        <span class="lbl">A 34.46% chance of losing money, on a stock with a positive expected return. Losing money is ordinary; losing 9.65% is not.</span></div>
+      <div class="note"><span class="eyebrow">Concept check</span>Read the −9.65% the way the deck does: it is the <strong>possible future minimum return</strong> at that confidence. The risk manager is 99% confident the return will not be worse than −9.65%. It is <em>not</em> the expected loss, and it is <em>not</em> the worst case — there is no worst case under a normal distribution.</div>
+
+      <div class="tool">
+        <div class="tool-h"><div><span class="eyebrow">Tool</span><h4>VaR and ES bench</h4></div><span class="chip">NORMSINV · NORMSDIST · √T scaling</span></div>
+        <div class="tool-b">
+          <div class="ctrls">
+            <label class="f">Amount invested W₀<input id="zbW" type="number" step="100000" value="1000000"></label>
+            <label class="f">μ per period (%)<input id="zbM" type="number" step="0.1" value="2"></label>
+            <label class="f">σ per period (%)<input id="zbS" type="number" step="0.5" value="5"></label>
+            <label class="f">Confidence (%)<input id="zbC" type="number" step="0.5" value="99" min="50" max="99.99"></label>
+            <label class="f">Horizon T (periods)<input id="zbT" type="number" step="1" value="1" min="1"></label>
+            <label class="f">Mean treatment<select id="zbZero"><option value="0">keep μ (course default)</option><option value="1">zero mean</option></select></label>
+          </div>
+          <div class="out">
+            <div class="readout">
+              <div class="ro"><div class="k">NORMSINV(α)</div><div class="v" id="zbZ">—</div></div>
+              <div class="ro hi"><div class="k">VaR (%)</div><div class="v" id="zbV">—</div></div>
+              <div class="ro"><div class="k">VaR (money)</div><div class="v" id="zbVm">—</div></div>
+              <div class="ro"><div class="k">ES (%)</div><div class="v" id="zbE">—</div></div>
+              <div class="ro"><div class="k">ES (money)</div><div class="v" id="zbEm">—</div></div>
+              <div class="ro"><div class="k">P(any loss)</div><div class="v" id="zbP">—</div></div>
+            </div>
+            <div class="fxbar"><span class="fxn">Excel</span><span class="fxv" id="zbFx">—</span></div>
+            <div class="chartwrap"><svg class="chart" id="zbChart" viewBox="0 0 560 220" role="img" aria-label="Return density with the VaR quantile and the expected shortfall marked"></svg></div>
+            <div class="legend"><span><i style="background:var(--accent)"></i>density of r</span><span><i style="background:var(--bad)"></i>VaR</span><span><i style="background:var(--gold)"></i>ES</span></div>
+            <div class="verdict" id="zbNote">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="note"><span class="eyebrow">Your A4 sheet</span><strong>−2.326348</strong>, <strong>−1.959964</strong>, <strong>−1.644854</strong>, <strong>−1.281552</strong>. The ES multiplier <strong>e<sup>−z²/2</sup>/(√(2π)·α)</strong>, which is <strong>2.665214</strong> at 1%, <strong>2.337803</strong> at 2.5% and <strong>2.062713</strong> at 5%.</div>
+    </section>
+
+    <section class="block">
+      <h3>Estimating μ and σ, and how many days you need</h3>
+      <div class="eq">μ̂ = <span class="fr"><span>1</span><span>T</span></span> Σ r<sub>t</sub>&nbsp;&nbsp;&nbsp;σ̂<sup>2</sup> = <span class="fr"><span>1</span><span>T − 1</span></span> Σ (r<sub>t</sub> − μ̂)<sup>2</sup>
+        <span class="lbl">=AVERAGE(range) and =STDEV(range)^2. The T−1 divisor is what legacy STDEV (modern STDEV.S) uses.</span></div>
+      <div class="warn"><span class="eyebrow">Slide check</span>The deck gives <strong>two different variance formulas</strong>. The VaR slide divides by <strong>T − 1</strong>; the later volatility slide writes s² = (1/<strong>T</strong>)Σ(r<sub>t</sub> − r̄)². Those are <code>STDEV.S</code> and <code>STDEV.P</code>, and they are not the same number. <strong>Every class workbook uses <code>STDEV</code>, which is the T − 1 version</strong>, so follow the T − 1 formula and say so. At T = 250 the gap is only 0.2%, but on a 10-observation question it is 5.4%.</div>
+      <div class="fxlist">
+        <div class="fxrow"><code>=AVERAGE(D4:D253)</code><div>μ̂ for one factor. In the workbooks these sit in a small block beside the data, one row per risk factor.</div></div>
+        <div class="fxrow"><code>=STDEV(E4:E253)^2</code><div>σ̂². Squaring the standard deviation rather than using <code>VAR</code> is the course's habit — identical result, and it keeps the SD visible.</div></div>
+        <div class="fxrow"><code>=K7*SQRT(252)</code><div>Annualising a daily σ. The course uses <b>252</b> trading days for equities.</div></div>
+        <div class="fxrow trap"><code>=COVAR(...) beside =STDEV(...)^2</code><div><b>A real inconsistency in the class workbooks.</b> <code>STDEV^2</code> divides by n−1 but legacy <code>COVAR</code> divides by <b>n</b>. Putting them in the same Ω makes the off-diagonals <b>0.4% too small</b> at n = 250. The modern pair is <code>VAR.S</code> with <code>COVARIANCE.S</code>. It barely moves the answer, but if you rebuild a sheet, be consistent.</div></div>
+      </div>
+      <div class="grid3">
+        <div class="ro"><div class="k">BIS minimum</div><div class="v">250 days</div></div>
+        <div class="ro hi"><div class="k">McNeil &amp; Frey (2000)</div><div class="v">1,000 days</div></div>
+        <div class="ro"><div class="k">Class workbooks</div><div class="v">250 rows</div></div>
+      </div>
+      <div class="note"><span class="eyebrow">Fine print</span>The law of large numbers says μ̂ → μ and σ̂ → σ as T grows. The deck immediately warns why that is not the end of the story: <strong>return behaviour may differ from expected behaviour</strong> — the process itself changes. A longer window buys statistical precision and pays for it with staleness. That tension is the entire motivation for EWMA further down this panel.</div>
+    </section>
+
+    <section class="block">
+      <h3>Is μ worth keeping? The t-test</h3>
+      <div class="prose">
+        <p>Because the mean is so small relative to the volatility over one day, it is worth asking whether it belongs in the VaR at all. The deck tests H<sub>0</sub>: μ = 0.</p>
+      </div>
+      <div class="eq">t = <span class="fr"><span>μ̂ √T</span><span>σ̂</span></span>
+        <span class="lbl">Note σ̂ here is the standard deviation, not the variance — the deck's own example makes that unambiguous.</span></div>
+      <div class="eq">t = <span class="fr"><span>√10 × 0.0289</span><span>√0.002106</span></span> = <span class="fr"><span>0.091383</span><span>0.045891</span></span> = <b>1.9914</b>
+        <span class="lbl">10 observations, average return 0.0289, variance 0.002106. The deck's figure reproduces exactly.</span></div>
+      <div class="warn"><span class="eyebrow">Slide check</span>Two problems on this slide. <strong>The degrees of freedom should be T − 1 = 9, not 8.</strong> The deck compares against 2.31, which is the two-tailed 5% value for 8 df; for 9 df it is <strong>2.2622</strong> (<code>=T.INV.2T(0.05,9)</code>). The conclusion is unchanged, because 1.9914 is below both. <strong>And the deck's concluding sentence is garbled</strong> — it reads "we cannot reject the null hypothesis that the expected return is significantly different from zero". The null <em>is</em> that the mean is zero, so the correct statement is: <strong>we cannot reject the null that μ = 0, so the mean is not significantly different from zero.</strong></div>
+      <div class="note"><span class="eyebrow">Concept check</span>So can you set the one-day mean to zero? Statistically, usually yes. But this course <strong>keeps μ anyway</strong>, and you should follow it. Watch what μ does to the sign: in the coupon-bond example μ̂<sub>B</sub> comes out <em>positive</em>, so including it makes VaR <em>less</em> negative — the zero-mean version is the more conservative one there. In the option example μ̂ is negative and including it makes VaR worse. <strong>The mean does not reliably cut one way.</strong></div>
+    </section>
+
+    <section class="block">
+      <h3>Expected shortfall, and why VaR is technically broken</h3>
+      <div class="prose">
+        <p><span class="term">Expected shortfall</span> is the expected loss <em>given</em> that the loss exceeds VaR. Also called conditional VaR, C-VaR, or tail loss. The deck's key claim: <strong>two portfolios with the same VaR can have very different expected shortfalls</strong>, because VaR looks at one point on the tail and ignores its shape.</p>
+      </div>
+      <div class="eq">VaR = μ + σ z<sub>α</sub>&nbsp;&nbsp;&nbsp;ES = μ + σ <span class="fr"><span>e<sup>−z<sub>α</sub><sup>2</sup>/2</sup></span><span>√(2π) α</span></span>
+        <span class="lbl">=B5*EXP(-1*(NORMSINV(1-alpha))^2/2)/(SQRT(2*PI())*alpha) — the class workbook's own form. Use SQRT(2*PI()), not 22/7.</span></div>
+      <div class="warn"><span class="eyebrow">Fine print from the deck</span>The multiplier term is <strong>always positive</strong>, so with μ = 0 the ES formula returns a positive number even though it represents a loss. The deck's instruction is explicit: <strong>when μ &lt; 0, write ES = μ − σ·e<sup>−z²/2</sup>/(√(2π)α)</strong> so that the sign matches the VaR convention. Mind the sign on this one every single time — it is the most commonly botched formula in the deck.</div>
+      <div class="prose">
+        <p>A <span class="term">coherent risk measure</span> is the amount of cash you must add to a portfolio to make its risk acceptable. Four properties:</p>
+      </div>
+      <div class="sheet">
+        <table>
+          <thead><tr><th class="l">Property</th><th class="l">Meaning</th><th>VaR</th><th>ES</th></tr></thead>
+          <tbody>
+            <tr><td class="l">Monotonicity</td><td class="l">a always-worse portfolio must measure riskier</td><td>✓</td><td>✓</td></tr>
+            <tr><td class="l">Translation invariance</td><td class="l">adding cash K cuts the measure by K</td><td>✓</td><td>✓</td></tr>
+            <tr><td class="l">Homogeneity</td><td class="l">scaling the book by λ scales the measure by λ</td><td>✓</td><td>✓</td></tr>
+            <tr class="pick"><td class="l">Subadditivity</td><td class="l">merging two books cannot raise total risk</td><td>✗</td><td>✓</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note"><span class="eyebrow">Why this matters</span>VaR satisfies three of the four. Failing <strong>subadditivity</strong> means a bank could cut its measured risk by splitting one desk into two — which is exactly backwards, and is why regulators have moved toward ES for market risk capital.</div>
+    </section>
+
+    <section class="block">
+      <h3>The counterexample, worked in full</h3>
+      <div class="prose">
+        <p>The deck's Example 11.5 and 11.7. Two <strong>independent</strong> projects. Each loses <strong>$1m with probability 0.98</strong> and <strong>$10m with probability 0.02</strong>. Find the 97.5% VaR and ES of one project, then of the pair.</p>
+      </div>
+      <div class="sheet">
+        <table>
+          <caption>One project — losses sorted, cumulative probability</caption>
+          <thead><tr><th class="l">Loss</th><th>Probability</th><th>Cumulative</th><th class="l">Reading</th></tr></thead>
+          <tbody>
+            <tr class="pick"><td class="l">$1m</td><td>0.98</td><td>0.98</td><td class="l">0.98 ≥ 0.975, so this is the 97.5% quantile</td></tr>
+            <tr><td class="l">$10m</td><td>0.02</td><td>1.00</td><td class="l">the 2% tail</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="eq">VaR<sub>97.5%</sub> = <b>$1m</b>&nbsp;&nbsp;&nbsp;ES<sub>97.5%</sub> = <span class="fr"><span>0.02 × 10 + 0.005 × 1</span><span>0.025</span></span> = <span class="fr"><span>0.205</span><span>0.025</span></span> = <b>$8.2m</b>
+        <span class="lbl">The worst 2.5% is made of the whole 2% at $10m plus the remaining 0.5% at $1m. Do not average 1 and 10 — weight them by how much of the tail each occupies.</span></div>
+      <div class="prose">
+        <p>Now the portfolio. Independence gives three outcomes:</p>
+      </div>
+      <div class="sheet">
+        <table>
+          <thead><tr><th class="l">Outcome</th><th class="l">Loss</th><th>Probability</th><th>Cumulative</th></tr></thead>
+          <tbody>
+            <tr><td class="l">both small</td><td class="l">$2m</td><td>0.98² = 0.9604</td><td>0.9604</td></tr>
+            <tr class="pick"><td class="l">one big</td><td class="l">$11m</td><td>2 × 0.98 × 0.02 = 0.0392</td><td>0.9996</td></tr>
+            <tr><td class="l">both big</td><td class="l">$20m</td><td>0.02² = 0.0004</td><td>1.0000</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="eq">0.9604 &lt; 0.975 ≤ 0.9996&nbsp;&nbsp;⟹&nbsp;&nbsp;VaR<sub>97.5%</sub> = <b>$11m</b>
+        <span class="lbl">The 97.5% quantile jumps past $2m to $11m, because the $2m outcome does not reach 97.5% cumulative probability on its own.</span></div>
+      <div class="eq">ES<sub>97.5%</sub> = <span class="fr"><span>0.0004 × 20 + 0.0246 × 11</span><span>0.025</span></span> = <span class="fr"><span>0.2786</span><span>0.025</span></span> = <b>$11.144m</b>
+        <span class="lbl">0.04% of the tail at $20m and the remaining 2.46% at $11m.</span></div>
+      <div class="sheet">
+        <table>
+          <caption>The punchline</caption>
+          <thead><tr><th class="l">Measure</th><th>Sum of the parts</th><th>Merged portfolio</th><th class="l">Subadditive?</th></tr></thead>
+          <tbody>
+            <tr><td class="l">VaR 97.5%</td><td>1 + 1 = $2m</td><td>$11m</td><td class="l"><b>No</b> — merging raised it by $9m</td></tr>
+            <tr class="pick"><td class="l">ES 97.5%</td><td>8.2 + 8.2 = $16.4m</td><td>$11.144m</td><td class="l">Yes — merging lowered it</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note"><span class="eyebrow">Concept check</span>Nothing went wrong with the arithmetic. VaR genuinely says that two independent projects are <strong>five and a half times riskier together than apart</strong>, which is nonsense as a risk measure and would let a bank game its capital by reorganising its desks. The distributions here are discrete and lumpy, which is what exposes the flaw — for jointly normal returns VaR <em>is</em> subadditive, which is why the problem stays hidden in most of this course's examples.</div>
+
+      <div class="tool">
+        <div class="tool-h"><div><span class="eyebrow">Tool</span><h4>Subadditivity bench</h4></div><span class="chip">discrete VaR vs ES · two independent projects</span></div>
+        <div class="tool-b">
+          <div class="ctrls">
+            <label class="f">Small loss ($m)<input id="sbL" type="number" step="0.5" value="1"></label>
+            <label class="f">Big loss ($m)<input id="sbH" type="number" step="1" value="10"></label>
+            <label class="f">P(big loss)<input id="sbP" type="number" step="0.005" value="0.02" min="0.001" max="0.5"></label>
+            <label class="f">Confidence (%)<input id="sbC" type="number" step="0.5" value="97.5" min="50" max="99.9"></label>
+          </div>
+          <div class="out">
+            <div class="readout">
+              <div class="ro"><div class="k">VaR · one project</div><div class="v" id="sbV1">—</div></div>
+              <div class="ro"><div class="k">ES · one project</div><div class="v" id="sbE1">—</div></div>
+              <div class="ro hi"><div class="k">VaR · portfolio</div><div class="v" id="sbV2">—</div></div>
+              <div class="ro"><div class="k">ES · portfolio</div><div class="v" id="sbE2">—</div></div>
+              <div class="ro"><div class="k">VaR sum − merged</div><div class="v" id="sbGv">—</div></div>
+              <div class="ro"><div class="k">ES sum − merged</div><div class="v" id="sbGe">—</div></div>
+            </div>
+            <div class="fxbar"><span class="fxn">Tail split</span><span class="fxv" id="sbFx">—</span></div>
+            <div class="verdict" id="sbNote">—</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h3>Changing the horizon</h3>
+      <div class="eq">VaR<sub>T-day</sub> = VaR<sub>1-day</sub> √T&nbsp;&nbsp;&nbsp;ES<sub>T-day</sub> = ES<sub>1-day</sub> √T
+        <span class="lbl">The deck's condition, stated exactly: losses in successive days are independent, normally distributed, and have a mean of zero.</span></div>
+      <div class="warn"><span class="eyebrow">Common slip</span>Read that third condition again — <strong>mean of zero</strong>. This course does <em>not</em> set μ = 0, so the whole VaR cannot simply be multiplied by √T. The class workbooks get this right, and the formula they use is the one to copy: <span class="fx">=mu*T + NORMSINV(alpha)*sigma*SQRT(T)</span>. <strong>The mean scales with T and the volatility with √T.</strong> The portfolio sheet's three-day figure is built exactly that way: <code>=K22*3+NORMSINV(0.01)*K23*SQRT(3)</code>.</div>
+      <div class="sheet">
+        <table>
+          <caption>Class data: the SET index, 250 days. μ = −0.0459693% and σ = 0.8359212% per day</caption>
+          <thead><tr><th class="l">Horizon</th><th class="l">Formula</th><th>95% VaR</th><th>99% VaR</th></tr></thead>
+          <tbody>
+            <tr><td class="l">1 day</td><td class="f">=mu + NORMSINV(a)*sd</td><td>−1.420937%</td><td>−1.990613%</td></tr>
+            <tr><td class="l">10 days</td><td class="f">=mu*10 + NORMSINV(a)*sd*SQRT(10)</td><td>−4.807723%</td><td>−6.609195%</td></tr>
+            <tr class="pick"><td class="l">1 year = 252 days</td><td class="f">=mu*252 + NORMSINV(a)*sd*SQRT(252)</td><td>−33.411201%</td><td>−42.454519%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note"><span class="eyebrow">Fine print</span>σ annualised is <span class="fx">=0.00835921*SQRT(252)</span> = <strong>13.269837%</strong>, which is the figure the option lecture then feeds into Black-Scholes. The deck quotes it as 13.33%; the workbook computes 13.27% from the 250-day window. Use the workbook's.</div>
+    </section>
+
+    <section class="block">
+      <h3>Is standard deviation the right volatility measure?</h3>
+      <div class="prose">
+        <p>The deck plots four measures of daily S&amp;P 500 volatility — absolute return, GARCH, EWMA and a rolling SD — and the point of the chart is that the rolling SD reacts slowest and stays elevated longest after a shock. A plain standard deviation weights a return from 250 days ago exactly as heavily as yesterday's.</p>
+      </div>
+      <div class="eq">σ<sub>n</sub><sup>2</sup> = λ σ<sub>n−1</sub><sup>2</sup> + (1 − λ) u<sub>n−1</sub><sup>2</sup>&nbsp;&nbsp;&nbsp;0 &lt; λ ≤ 1
+        <span class="lbl">The EWMA recursion. =lambda*prev_variance + (1-lambda)*prev_return^2, filled down a column with a seed.</span></div>
+      <div class="prose">
+        <p>Substituting the recursion into itself repeatedly shows where the weights go:</p>
+      </div>
+      <div class="eq">σ<sub>n</sub><sup>2</sup> = (1−λ)u<sub>n−1</sub><sup>2</sup> + λ(1−λ)u<sub>n−2</sub><sup>2</sup> + λ<sup>2</sup>(1−λ)u<sub>n−3</sub><sup>2</sup> + … + λ<sup>m−1</sup>(1−λ)u<sub>n−m</sub><sup>2</sup> + λ<sup>m</sup>σ<sub>n−m</sub><sup>2</sup>
+        <span class="lbl">Weights start at 1 − λ and decline at rate λ. In one cell: =SUMPRODUCT(weights, returns^2).</span></div>
+      <div class="grid3">
+        <div class="ro"><div class="k">Deck's λ</div><div class="v">0.94</div></div>
+        <div class="ro hi"><div class="k">Effective window 1/(1−λ)</div><div class="v">16.67 days</div></div>
+        <div class="ro"><div class="k">First weight 1−λ</div><div class="v">6.00%</div></div>
+      </div>
+      <div class="note"><span class="eyebrow">Why this matters</span>The deck's stated attraction of EWMA is <strong>storage</strong>: you only need the current variance estimate and the most recent return, not 250 rows of history. The second attraction is that it <strong>tracks volatility changes</strong>. The cost is that λ is a judgement, not an estimate — so name your λ and justify it in one sentence. λ = 0.94 gives an effective window of about 17 days; λ = 0.97 gives about 33.</div>
+
+      <div class="tool">
+        <div class="tool-h"><div><span class="eyebrow">Tool</span><h4>EWMA bench</h4></div><span class="chip">λ decay · SUMPRODUCT · effective window</span></div>
+        <div class="tool-b">
+          <div class="ctrls">
+            <label class="f">λ (decay factor)<input id="ewL" type="number" step="0.01" value="0.94" min="0.5" max="0.999"></label>
+            <label class="f">Quiet-period σ (%/day)<input id="ewQ" type="number" step="0.1" value="0.8"></label>
+            <label class="f">Shock return (%)<input id="ewK" type="number" step="0.5" value="-5"></label>
+            <label class="f">Days since shock<input id="ewD" type="number" step="1" value="5" min="0" max="120"></label>
+          </div>
+          <div class="out">
+            <div class="readout">
+              <div class="ro"><div class="k">Weight on yesterday</div><div class="v" id="ewW">—</div></div>
+              <div class="ro hi"><div class="k">Effective window</div><div class="v" id="ewN">—</div></div>
+              <div class="ro"><div class="k">σ right after shock</div><div class="v" id="ewS0">—</div></div>
+              <div class="ro"><div class="k">σ today</div><div class="v" id="ewSt">—</div></div>
+              <div class="ro"><div class="k">Half-life of the shock</div><div class="v" id="ewH">—</div></div>
+            </div>
+            <div class="fxbar"><span class="fxn">Excel</span><span class="fxv" id="ewFx">—</span></div>
+            <div class="chartwrap"><svg class="chart" id="ewChart" viewBox="0 0 560 220" role="img" aria-label="EWMA volatility decaying back to the quiet level after a shock, against a rolling standard deviation"></svg></div>
+            <div class="legend"><span><i style="background:var(--accent)"></i>EWMA σ</span><span><i style="background:var(--gold)"></i>quiet-period σ</span><span><i style="background:var(--bad)"></i>today</span></div>
+            <div class="verdict" id="ewNote">—</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h3>Concepts without a calculator</h3>
+      <div class="cards" data-flash="mr"></div>
+    </section>
+
+    <section class="block">
+      <h3>Check yourself</h3>
+      <div class="quiz" data-quiz="mr"></div>
+    </section>
+  </article>

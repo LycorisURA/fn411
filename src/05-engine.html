@@ -1,0 +1,823 @@
+<script id="engine">
+/* ============================================================
+   ENGINE — course-agnostic. Reads the globals defined in course-data.
+   Helpers available to course tools: $ $$ el fmt num tv tn esc fill pick
+   frame series svgEl cssVar CHARTS TOOL_TALK react toast awardXp xpTotal state save
+   ============================================================ */
+var $ = function(s,r){ return (r||document).querySelector(s); };
+var $$ = function(s,r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); };
+var el = function(tag,cls,html){ var e = document.createElement(tag); if(cls) e.className = cls; if(html != null) e.innerHTML = html; return e; };
+var fmt = function(x,d){ if(!isFinite(x)) return "—"; return Number(x).toLocaleString("en-US",{minimumFractionDigits:d==null?2:d, maximumFractionDigits:d==null?2:d}); };
+var num = function(sel,dflt){ var e = $(sel), v = e ? parseFloat(e.value) : NaN; return isFinite(v) ? v : (dflt||0); };
+function tv(sel){ var e = $(sel); return e ? e.textContent.trim() : ""; }
+function tn(sel){ return parseFloat(tv(sel).replace(/[^0-9.\-]/g, "")); }   /* strips signs other than "-": check a leading "+" yourself */
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function fill(html, vars){ return String(html).replace(/\{(\w+)\}/g, function(m, k){ return vars[k] != null ? vars[k] : m; }); }
+function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+function stripTags(s){ var d = el("div",null,s); return d.textContent || ""; }
+
+var TIER_LABEL = {e:"Easy", m:"Medium", d:"Difficult"};
+var TIER_XP = {e:15, m:20, d:30};
+var LEVELS = [0,120,300,560,900,1350,1900,2600,3500,4600,6000];
+var KEYS = ["A","B","C","D","E","F"];
+var TOOL_TALK = {};
+var CHARTS = [];
+window.redrawCharts = function(){ CHARTS.forEach(function(f){ try{ f(); }catch(e){} }); };
+
+function lectureCount(){ return TOPICS.filter(function(t){ return QUIZ[t.id]; }).length; }
+function words(s){ return fill(s, {lectures: lectureCount(), unit: COURSE.unit, done_word: COURSE.doneWord, name: COMPANION.name}); }
+function isNumbered(t){ return /^\d+$/.test(t.n); }
+
+/* ---------------- state ---------------- */
+var state = {topic: TOPICS[0].id, answers:{}, clipped:{}, streak:0, best:0, tools:{}, wins:{}, mocks:[]};
+var remoteDb = null, saveTimer = null;
+function payload(){ return {topic:state.topic, answers:state.answers, clipped:state.clipped, streak:state.streak, best:state.best, tools:state.tools, wins:state.wins, mocks:state.mocks}; }
+function loadLocal(){ try{ var raw = localStorage.getItem(COURSE.storageKey); if(raw) Object.assign(state, JSON.parse(raw)); }catch(e){} }
+function save(){
+  var p = payload();
+  try{ localStorage.setItem(COURSE.storageKey, JSON.stringify(p)); }catch(e){}
+  if(remoteDb){
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function(){ remoteDb.doc("progress/main").set(p).catch(function(){}); }, 900);
+  }
+}
+
+/* ---------------- shell ---------------- */
+function renderShell(){
+  $("#mastEyebrow").textContent = COURSE.eyebrow;
+  var h = $("#mastTitle"); h.textContent = COURSE.title[0];
+  if(COURSE.title[1]){ var em = el("em"); em.textContent = COURSE.title[1]; h.appendChild(em); }
+  $("#mastSub").innerHTML = words(COURSE.subtitle);
+  $("#foot").innerHTML = words(COURSE.footer);
+  $("#railHead").textContent = COURSE.railHead;
+  $("#xpChip").title = "15 / 20 / 30 XP per correct easy / medium / difficult answer, 10 per tool you try, 50 per " + COURSE.unit.toLowerCase() + " " + COURSE.doneWord + ", 5 per game win";
+  $("#cpToggle").innerHTML = COMPANION.avatar;
+  $("#cpToggle").setAttribute("aria-label", "Talk to " + COMPANION.name);
+  $("#cpToggle").title = "Talk to " + COMPANION.name;
+  $("#cpCard").setAttribute("aria-label", COMPANION.name + ", your study partner");
+  $("#cpPanel").setAttribute("aria-label", "Chat with " + COMPANION.name);
+  $("#cpAskSel").textContent = "Ask " + COMPANION.name + " about this";
+  $$("[data-cp-name]").forEach(function(x){ x.textContent = COMPANION.name; });
+  var f = pick(COMPANION.faces.happy); $("#cpCardFace").textContent = f; $("#cpFace").textContent = f;
+}
+
+function initTheme(){
+  var key = COURSE.storageKey + ".theme", saved = null;
+  try{ saved = localStorage.getItem(key); }catch(e){}
+  if(saved) document.documentElement.setAttribute("data-theme", saved);
+  $("#themeBtn").addEventListener("click", function(){
+    var cur = document.documentElement.getAttribute("data-theme");
+    var isDark = cur ? cur === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var next = isDark ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    try{ localStorage.setItem(key, next); }catch(e){}
+    window.redrawCharts();
+    react(next === "dark" ? "themeDark" : "themeLight");
+  });
+}
+
+function buildRail(){
+  var frag = document.createDocumentFragment();
+  TOPICS.forEach(function(t){
+    var b = el("button","unit");
+    b.type = "button";
+    b.dataset.topic = t.id;
+    b.dataset.mark = COURSE.doneMark;
+    b.innerHTML = '<span class="cn">' + (isNumbered(t) ? esc(COURSE.unit) + " " : "") + esc(t.n) + '</span><span class="ct">' + esc(t.t) + '</span>';
+    b.addEventListener("click", function(){ go(t.id); });
+    frag.appendChild(b);
+  });
+  $("#rail").insertBefore(frag, $(".rail-meter"));
+}
+
+function currentTopic(){ return TOPICS.filter(function(x){ return x.id === state.topic; })[0] || TOPICS[0]; }
+function go(id){
+  var t = TOPICS.filter(function(x){ return x.id === id; })[0];
+  if(!t) return;
+  state.topic = id;
+  TOPICS.forEach(function(x){ var p = $("#" + x.panel); if(p) p.hidden = (x.id !== id); });
+  $$(".unit").forEach(function(b){ b.setAttribute("aria-current", String(b.dataset.topic === id)); });
+  $("#cpCtx").textContent = "reading: " + t.t.toLowerCase();
+  react("topic_" + id, false);
+  renderSeeds();
+  window.scrollTo({top:0, behavior:"smooth"});
+  save();
+  window.redrawCharts();
+}
+
+function refreshProgress(){
+  var ids = Object.keys(QUIZ), total = 0, right = 0;
+  ids.forEach(function(k){
+    var n = QUIZ[k].length, c = 0;
+    QUIZ[k].forEach(function(q,i){ if(state.answers[k+":"+i] === q.a) c++; });
+    total += n; right += c;
+    state.clipped[k] = n > 0 && (c / n) >= COURSE.mastery;
+  });
+  $$(".unit").forEach(function(b){ b.classList.toggle("done", !!state.clipped[b.dataset.topic]); });
+  var nDone = ids.filter(function(k){ return state.clipped[k]; }).length;
+  $("#chipProgress").innerHTML = "<b>" + nDone + "</b>/" + ids.length + " " + esc(COURSE.doneWord);
+  paintHud();
+  $("#meterFill").style.width = (total ? 100*right/total : 0).toFixed(1) + "%";
+  $("#meterTxt").textContent = right + " of " + total + " correct";
+}
+
+/* ---------------- flashcards ---------------- */
+function buildFlash(){
+  $$("[data-flash]").forEach(function(wrap){
+    (FLASH[wrap.dataset.flash] || []).forEach(function(r,i){
+      var b = el("button","fc");
+      b.type = "button";
+      b.dataset.open = "0";
+      b.innerHTML = '<span class="fch">' + String(i+1).padStart(2,"0") + '</span><span class="fct">' + r.t + '</span><span class="fcb">' + r.h + '</span>';
+      b.addEventListener("click", function(){
+        var open = b.dataset.open === "1";
+        b.dataset.open = open ? "0" : "1";
+        b.querySelector(".fcb").innerHTML = open ? r.h : r.b;
+        react(open ? "cardClose" : "cardOpen", false, {vars:{card: stripTags(r.t)}});
+      });
+      wrap.appendChild(b);
+    });
+  });
+}
+
+/* ---------------- sorter games ---------------- */
+function buildSorters(){
+  $$("[data-sorter]").forEach(function(host){
+    var id = host.dataset.sorter, S = SORTERS[id];
+    if(!S || !S.items || !S.items.length) return;
+    host.classList.add("tool");
+    host.innerHTML = '<div class="tool-h"><div><span class="eyebrow">Game</span><h4>' + S.title + '</h4></div><span class="num" style="font-size:12px;color:var(--mute)" data-role="score"></span></div>' +
+      '<div class="tool-b">' + (S.prompt ? '<p class="prose" style="margin-bottom:10px">' + S.prompt + '</p>' : '') +
+      '<div class="sorter-card" data-role="card"></div><div class="sorter-btns" data-role="btns"></div><div class="verdict" data-role="verdict" hidden></div>' +
+      '<button class="btn sm ghost sorter-next" type="button" data-role="next" hidden>Next one</button></div>';
+    var body = $(".tool-b", host), card = $('[data-role="card"]', host), btns = $('[data-role="btns"]', host),
+        verdict = $('[data-role="verdict"]', host), next = $('[data-role="next"]', host), score = $('[data-role="score"]', host), cur = -1, done = false;
+    function paintScore(){ var w = state.wins[id] || {won:0, played:0}; score.textContent = w.won + " won / " + w.played + " played"; }
+    function round(){
+      var n = S.items.length, i = Math.floor(Math.random()*n);
+      if(n > 1 && i === cur) i = (i + 1) % n;
+      cur = i; done = false;
+      card.innerHTML = S.items[i].t;
+      verdict.hidden = true; next.hidden = true;
+      $$("button", btns).forEach(function(b){ b.disabled = false; });
+      var inl = $(".cp-inline", body); if(inl) inl.remove();
+    }
+    S.sides.forEach(function(label, j){
+      var b = el("button", "btn", label);
+      b.type = "button";
+      b.addEventListener("click", function(){
+        if(done) return;
+        done = true;
+        var it = S.items[cur], ok = it.side === j, before = xpTotal();
+        var w = state.wins[id] = state.wins[id] || {won:0, played:0};
+        w.played++; if(ok) w.won++;
+        $$("button", btns).forEach(function(x){ x.disabled = true; });
+        verdict.hidden = false;
+        verdict.className = "verdict " + (ok ? "good" : "bad");
+        verdict.innerHTML = "<strong>" + (ok ? "Right" : "Not quite") + " — " + S.sides[it.side] + ".</strong> " + it.why;
+        next.hidden = false;
+        paintScore();
+        var leveled = awardXp(before, ok ? "win" : null);
+        if(!leveled) react(ok ? "sortWin" : "sortLose", false, {inline: body, vars:{side: S.sides[it.side]}});
+      });
+      btns.appendChild(b);
+    });
+    next.addEventListener("click", function(){ round(); react("sortNew", true); });
+    paintScore(); round();
+  });
+}
+
+/* ---------------- quizzes ---------------- */
+function bookOf(src){ return (COURSE.books || []).filter(function(b){ return src && src.indexOf(b.name) === 0; })[0]; }
+function citeSrc(src){
+  if(!src) return "the lecture slides";
+  var m = /^(.+?)\s+(\d+)$/.exec(src);
+  return m && bookOf(m[1]) ? m[1] + " ch. " + m[2] : src;
+}
+function checkTiers(){
+  Object.keys(QUIZ).forEach(function(k){
+    QUIZ[k].forEach(function(q,i){ if(!TIER_LABEL[q.tier]){ console.warn("QUIZ." + k + "[" + i + "] has no tier; using m"); q.tier = "m"; } });
+  });
+}
+function buildQuizzes(){
+  $$("[data-quiz]").forEach(function(host){
+    var key = host.dataset.quiz, bank = QUIZ[key];
+    if(!bank){ console.warn("No QUIZ bank for data-quiz=" + key); return; }
+    var head = el("div","quiz-h");
+    head.innerHTML = '<h3>' + bank.length + ' questions</h3><span class="score" data-score="' + key + '"></span>';
+    host.appendChild(head);
+    var bar = el("div","tierbar"), counts = {e:0, m:0, d:0};
+    bank.forEach(function(q){ counts[q.tier]++; });
+    [["all","All · " + bank.length],["e","Easy · " + counts.e],["m","Medium · " + counts.m],["d","Difficult · " + counts.d]].forEach(function(pr){
+      var b = el("button", null, pr[1]);
+      b.type = "button";
+      b.setAttribute("aria-pressed", String(pr[0] === "all"));
+      b.addEventListener("click", function(){
+        $$("button", bar).forEach(function(x){ x.setAttribute("aria-pressed", String(x === b)); });
+        $$(".qitem", host).forEach(function(it){ it.hidden = pr[0] !== "all" && it.dataset.tier !== pr[0]; });
+        react("tier_" + pr[0], false, {vars:{n: pr[0] === "all" ? bank.length : counts[pr[0]]}});
+      });
+      bar.appendChild(b);
+    });
+    var note = el("span", "tb-note", "");
+    note.dataset.tierscore = key;
+    bar.appendChild(note);
+    host.appendChild(bar);
+    bank.forEach(function(q,i){
+      var item = el("div","qitem"), src = q.src || "Slides", book = bookOf(src);
+      item.innerHTML = '<div class="qq"><span class="n">' + String(i+1).padStart(2,"0") + '</span>' + q.q + '<span class="qsrc' + (book ? " " + book.badge : "") + '">' + esc(src) + '</span><span class="tier t-' + q.tier + '">' + TIER_LABEL[q.tier] + '</span></div>';
+      item.dataset.tier = q.tier;
+      var opts = el("div","opts");
+      q.o.forEach(function(text,j){
+        var o = el("button","opt");
+        o.type = "button";
+        o.innerHTML = '<span class="k">' + KEYS[j] + '</span><span>' + text + '</span>';
+        o.addEventListener("click", function(){ answer(key,i,j,item); });
+        opts.appendChild(o);
+      });
+      item.appendChild(opts);
+      host.appendChild(item);
+      var prev = state.answers[key+":"+i];
+      if(prev != null) reveal(key,i,prev,item);
+    });
+    updateScore(key);
+  });
+}
+
+function answer(key,i,choice,item){
+  if(state.answers[key+":"+i] != null) return;
+  var xp0 = xpTotal(), wasDone = !!state.clipped[key];
+  var q = QUIZ[key][i], right = choice === q.a;
+  state.answers[key+":"+i] = choice;
+  state.streak = right ? (state.streak||0) + 1 : 0;
+  state.best = Math.max(state.best||0, state.streak);
+  reveal(key,i,choice,item);
+  updateScore(key);
+  refreshProgress();
+  var xp1 = xpTotal(), leveled = levelOf(xp1) > levelOf(xp0);
+  if(xp1 > xp0) toast("+" + (xp1-xp0) + " XP");
+  if(leveled) toast("Level " + levelOf(xp1) + "!", true);
+  var talk = {inline: $(".why", item), vars:{pick: KEYS[choice], ans: KEYS[q.a], src: citeSrc(q.src), streak: state.streak, tier: TIER_LABEL[q.tier].toLowerCase()}};
+  if(!wasDone && state.clipped[key]){ toast(COURSE.unit + " " + COURSE.doneWord + " " + COURSE.doneMark, true); react("clip", false, talk); }
+  else if(leveled) react("levelup", false, talk);
+  else react(right ? (state.streak % 4 === 0 ? "streak" : (q.tier === "d" ? "correctHard" : (q.tier === "e" ? "correctEasy" : "correct")))
+                   : (q.tier === "d" ? "wrongHard" : "wrong"), false, talk);
+  save();
+}
+
+function reveal(key,i,choice,item){
+  var q = QUIZ[key][i];
+  $$(".opt", item).forEach(function(o,j){
+    o.disabled = true;
+    if(j === q.a) o.classList.add("right");
+    else if(j === choice) o.classList.add("wrong");
+  });
+  if($(".why", item)) return;
+  var why = el("div","why"), correct = choice === q.a;
+  why.innerHTML = '<span>' + (correct ? "" : "<strong>" + KEYS[q.a] + " is right.</strong> ") + q.e + '</span>';
+  var ask = el("button","btn sm ghost", correct ? "Push me further" : "Why was I wrong?");
+  ask.type = "button";
+  ask.addEventListener("click", function(){
+    openChat(correct
+      ? 'I answered this correctly and want to go deeper:\n\nQ: ' + stripTags(q.q) + '\nAnswer: ' + stripTags(q.o[q.a]) + '\n\nAsk me one harder follow-up that tests whether I really understand it, and wait for my reply.'
+      : 'I got this wrong.\n\nQ: ' + stripTags(q.q) + '\nI picked: ' + stripTags(q.o[choice]) + '\nCorrect: ' + stripTags(q.o[q.a]) + '\n\nDiagnose the likely misunderstanding behind my choice, then show the right reasoning in a few lines.');
+  });
+  why.appendChild(ask);
+  item.appendChild(why);
+}
+
+function updateScore(key){
+  var bank = QUIZ[key], done = 0, right = 0, by = {e:[0,0], m:[0,0], d:[0,0]};
+  bank.forEach(function(q,i){
+    var a = state.answers[key+":"+i];
+    by[q.tier][1]++;
+    if(a != null){ done++; if(a === q.a){ right++; by[q.tier][0]++; } }
+  });
+  var span = $('[data-score="' + key + '"]');
+  if(span) span.textContent = done ? (right + " / " + done + " correct") : "not started";
+  var ts = $('[data-tierscore="' + key + '"]');
+  if(ts) ts.textContent = "right: E " + by.e[0] + "/" + by.e[1] + " · M " + by.m[0] + "/" + by.m[1] + " · D " + by.d[0] + "/" + by.d[1];
+}
+
+/* ---------------- xp, levels, toasts (xp is derived from saved progress, so it never double counts) ---------------- */
+function xpTotal(){
+  var right = 0, done = 0, wins = 0;
+  Object.keys(QUIZ).forEach(function(k){
+    QUIZ[k].forEach(function(q,i){ if(state.answers[k+":"+i] === q.a) right += TIER_XP[q.tier] || 20; });
+    if(state.clipped[k]) done++;
+  });
+  Object.keys(state.wins || {}).forEach(function(k){ wins += (state.wins[k] && state.wins[k].won) || 0; });
+  return right + 10*Object.keys(state.tools || {}).length + 50*done + 5*Math.min(wins, 40);
+}
+function levelOf(xp){ var l = 1; for(var i = 1; i < LEVELS.length; i++) if(xp >= LEVELS[i]) l = i + 1; return l; }
+function paintHud(){
+  var xp = xpTotal(), l = levelOf(xp), lo = LEVELS[l-1], hi = LEVELS[l] != null ? LEVELS[l] : lo + 1500;
+  $("#hudLvl").textContent = "Lv " + l;
+  $("#hudXp").textContent = xp + " XP";
+  $("#hudBar").style.width = Math.min(100, 100*(xp-lo)/(hi-lo)).toFixed(1) + "%";
+  $("#hudStreak").textContent = state.streak || 0;
+}
+function toast(text, gold){
+  var t = el("div", "toast" + (gold ? " gold" : ""), text);
+  $("#toasts").appendChild(t);
+  setTimeout(function(){ t.style.transition = "opacity .3s"; t.style.opacity = "0"; }, 1700);
+  setTimeout(function(){ t.remove(); }, 2100);
+}
+function quizProgress(id){
+  var bank = QUIZ[id] || [], done = 0;
+  bank.forEach(function(q,i){ if(state.answers[id+":"+i] != null) done++; });
+  return {done: done, total: bank.length};
+}
+/* call with the xp from before a change; returns true if it levelled up (and already reacted) */
+function awardXp(before, label){
+  var after = xpTotal();
+  if(after > before) toast("+" + (after - before) + " XP" + (label ? " · " + label : ""));
+  paintHud();
+  save();
+  if(levelOf(after) > levelOf(before)){ toast("Level " + levelOf(after) + "!", true); react("levelup"); return true; }
+  return false;
+}
+function touchTool(target){
+  var tool = target && target.closest && target.closest(".tool");
+  if(!tool || !tool.querySelector("input,select,button")) return;
+  var pane = tool.closest(".panel"), h = tool.querySelector(".tool-h h4");
+  var name = h ? h.textContent.trim() : "tool", id = (pane ? pane.id : "page") + "|" + name;
+  state.tools = state.tools || {};
+  if(state.tools[id]) return;
+  var before = xpTotal();
+  state.tools[id] = 1;
+  awardXp(before, name);
+}
+
+/* ---------------- worked problems ---------------- */
+function buildPset(){
+  $$("[data-pset]").forEach(function(host){
+    (PSET[host.dataset.pset] || []).forEach(function(p){
+      var card = el("div","pset");
+      var q = el("div","pset-q", '<span class="src">' + p.src + (p.tier ? ' <span class="tier t-' + p.tier + '">' + TIER_LABEL[p.tier] + '</span>' : '') + '</span>' + p.q);
+      var btn = el("button","btn sm ghost","Show working");
+      btn.type = "button";
+      btn.style.marginTop = "9px";
+      var ans = el("div","pset-a", p.a);
+      ans.hidden = true;
+      btn.addEventListener("click", function(){
+        ans.hidden = !ans.hidden;
+        btn.textContent = ans.hidden ? "Show working" : "Hide working";
+        react(ans.hidden ? "psetClose" : "psetOpen", false, {vars:{src: stripTags(p.src)}, inline: ans.hidden ? null : ans});
+      });
+      q.appendChild(btn);
+      card.appendChild(q); card.appendChild(ans);
+      host.appendChild(card);
+    });
+  });
+}
+
+/* ---------------- mock exam: tier mix from COURSE.exam, grouped simple -> difficult, marked only on submit ---------------- */
+var mock = null, mockTimer = null;
+function mockShuffle(a){ for(var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random()*(i+1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function quizTopics(){ return TOPICS.filter(function(t){ return QUIZ[t.id] && QUIZ[t.id].length; }); }
+function mockBestText(){
+  var m = state.mocks || [];
+  if(!m.length) return "no attempts yet";
+  var best = m.reduce(function(b, x){ return x.pct > b.pct ? x : b; }, m[0]);
+  return m.length + " attempt" + (m.length > 1 ? "s" : "") + " · best " + best.pct + "%";
+}
+function mockClockText(){
+  if(!mock) return "";
+  var s = Math.floor(((mock.ended || Date.now()) - mock.started)/1000);
+  return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0") + " · " + Object.keys(mock.picks).length + "/" + mock.items.length + " answered";
+}
+function mockKeys(cover){
+  if(cover === "all") return quizTopics().map(function(t){ return t.id; });
+  if(cover.indexOf("set:") === 0){
+    var s = (COURSE.exam.subsets || []).filter(function(x){ return "set:" + x.id === cover; })[0];
+    return s ? s.topics.filter(function(k){ return QUIZ[k]; }) : [];
+  }
+  return [cover];
+}
+function mockCoverLabel(cover){
+  if(cover === "all") return "every topic";
+  var o = $('#mockTopic option[value="' + cover + '"]');
+  return o ? o.textContent : "one topic";
+}
+function buildMock(){
+  var host = $("[data-mock]");
+  if(!host) return;
+  var X = COURSE.exam, topics = quizTopics();
+  var sizes = X.sizes.map(function(n){ return '<option value="' + n + '"' + (n === X.defaultSize ? " selected" : "") + '>' + n + ' · about ' + Math.round(n*X.minsPerQ) + ' min</option>'; }).join("");
+  var cover = '<option value="all">Everything</option>' +
+    (X.subsets || []).map(function(s){ return '<option value="set:' + esc(s.id) + '">' + esc(s.label) + '</option>'; }).join("") +
+    topics.map(function(t){ return '<option value="' + esc(t.id) + '">' + esc(t.n) + ' · ' + esc(t.t) + '</option>'; }).join("");
+  host.innerHTML = '<div class="tool"><div class="tool-h"><div><span class="eyebrow">Practice</span><h4>Mock exam</h4></div><span class="num" id="mockBest" style="font-size:12px;color:var(--mute)"></span></div>' +
+    '<div class="tool-b"><div class="ctrls"><label class="f">Questions<select id="mockN">' + sizes + '</select></label><label class="f">Coverage<select id="mockTopic">' + cover + '</select></label></div>' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px"><button class="btn" type="button" id="mockStart">Start mock</button>' +
+    '<button class="btn ghost" type="button" id="mockSubmit" hidden>Submit and mark</button><span class="num" id="mockClock" style="font-size:13px;color:var(--mute)"></span></div>' +
+    '<div id="mockBody"></div><div id="mockResult" style="margin-top:12px"></div></div></div>';
+  $("#mockBest").textContent = mockBestText();
+  $("#mockStart").addEventListener("click", mockStart);
+  $("#mockSubmit").addEventListener("click", mockSubmit);
+  TOOL_TALK["Mock exam"] = function(){
+    var line = pick(LINES.mockTool || LINES.toolDefault);
+    return [line[0], fill(line[1], {n: $("#mockN").value, cover: mockCoverLabel($("#mockTopic").value)})];
+  };
+}
+function mockStart(){
+  var X = COURSE.exam, N = +$("#mockN").value, cover = $("#mockTopic").value, keys = mockKeys(cover);
+  var pools = {e:[], m:[], d:[]}, picked = {e:[], m:[], d:[]}, spare = [];
+  keys.forEach(function(k){ QUIZ[k].forEach(function(q, i){ pools[q.tier].push({k:k, i:i}); }); });
+  var want = {e:Math.round(N*X.mix.e), m:Math.round(N*X.mix.m)}; want.d = N - want.e - want.m;
+  ["e","m","d"].forEach(function(t){ mockShuffle(pools[t]); picked[t] = pools[t].slice(0, want[t]); spare = spare.concat(pools[t].slice(want[t])); });
+  var shortBy = N - picked.e.length - picked.m.length - picked.d.length;
+  mockShuffle(spare).slice(0, Math.max(0, shortBy)).forEach(function(x){ picked[QUIZ[x.k][x.i].tier].push(x); });
+  mock = {items:[], picks:{}, started:Date.now(), ended:0, done:false, warned:false, multi: keys.length > 1};
+  var body = $("#mockBody"), n = 0;
+  body.innerHTML = ""; $("#mockResult").innerHTML = "";
+  ["e","m","d"].forEach(function(t){
+    if(!picked[t].length) return;
+    var sec = el("div", "mock-sec");
+    sec.appendChild(el("h5", null, X.heads[t] + " · " + picked[t].length));
+    picked[t].forEach(function(x){
+      var q = QUIZ[x.k][x.i], idx = n++, item = el("div", "qitem"), opts = el("div", "opts");
+      item.innerHTML = '<div class="qq"><span class="n">' + String(idx+1).padStart(2,"0") + '</span>' + q.q + '<span class="tier t-' + t + '">' + TIER_LABEL[t] + '</span></div>';
+      q.o.forEach(function(text, j){
+        var o = el("button", "opt");
+        o.type = "button";
+        o.innerHTML = '<span class="k">' + KEYS[j] + '</span><span>' + text + '</span>';
+        o.addEventListener("click", function(){
+          if(mock.done) return;
+          mock.picks[idx] = j;
+          $$(".opt", opts).forEach(function(b, bj){ b.classList.toggle("picked", bj === j); });
+          $("#mockClock").textContent = mockClockText();
+          var left = mock.items.length - Object.keys(mock.picks).length;
+          react(left ? "mockPick" : "mockAllIn", false, {vars:{left:left}});
+        });
+        opts.appendChild(o);
+      });
+      item.appendChild(opts);
+      x.el = item;
+      mock.items.push(x);
+      sec.appendChild(item);
+    });
+    body.appendChild(sec);
+  });
+  if(!mock.items.length){ body.innerHTML = '<div class="verdict bad">No questions in that coverage yet.</div>'; mock = null; return; }
+  $("#mockSubmit").hidden = false;
+  $("#mockStart").textContent = "Restart with new questions";
+  clearInterval(mockTimer);
+  mockTimer = setInterval(function(){ $("#mockClock").textContent = mockClockText(); }, 1000);
+  $("#mockClock").textContent = mockClockText();
+  react("mockStart", false, {vars:{n: mock.items.length, mins: Math.round(mock.items.length*X.minsPerQ)}});
+}
+function mockSubmit(){
+  if(!mock || mock.done) return;
+  var left = mock.items.length - Object.keys(mock.picks).length;
+  if(left && !mock.warned){ mock.warned = true; react("mockUnanswered", false, {vars:{left:left}}); return; }
+  mock.done = true; mock.ended = Date.now(); clearInterval(mockTimer);
+  var by = {e:[0,0], m:[0,0], d:[0,0]}, right = 0, byTopic = {};
+  mock.items.forEach(function(x, idx){
+    var q = QUIZ[x.k][x.i], pk = mock.picks[idx], ok = pk === q.a;
+    by[q.tier][1]++; if(ok){ by[q.tier][0]++; right++; }
+    byTopic[x.k] = byTopic[x.k] || [0,0]; byTopic[x.k][1]++; if(ok) byTopic[x.k][0]++;
+    $$(".opt", x.el).forEach(function(b, j){ b.disabled = true; b.classList.remove("picked"); if(j === q.a) b.classList.add("right"); else if(j === pk) b.classList.add("wrong"); });
+    x.el.appendChild(el("div", "why", '<span>' + (pk == null ? "<strong>Unanswered.</strong> " : (ok ? "" : "<strong>" + KEYS[q.a] + " is right.</strong> ")) + q.e + '</span>'));
+  });
+  var pct = Math.round(100*right/mock.items.length);
+  state.mocks = (state.mocks || []).concat([{t:Date.now(), n:mock.items.length, pct:pct, e:by.e, m:by.m, d:by.d}]).slice(-20);
+  save();
+  var weakest = Object.keys(byTopic).map(function(k){ return [k, byTopic[k][0]/byTopic[k][1], byTopic[k]]; }).sort(function(a, b){ return a[1] - b[1]; })[0];
+  var wt = TOPICS.filter(function(t){ return t.id === weakest[0]; })[0], H = COURSE.exam.heads;
+  var res = $("#mockResult");
+  res.innerHTML = '<div class="verdict ' + (pct >= 70 ? "good" : (pct >= 50 ? "" : "bad")) + '"><strong>' + right + ' / ' + mock.items.length + ' · ' + pct + '%</strong> in ' + mockClockText().split(" · ")[0] +
+    '<br>' + H.e + ' ' + by.e[0] + '/' + by.e[1] + ' · ' + H.m + ' ' + by.m[0] + '/' + by.m[1] + ' · ' + H.d + ' ' + by.d[0] + '/' + by.d[1] +
+    (mock.multi && wt ? '<br>Weakest area: <strong>' + esc(wt.n) + ' · ' + esc(wt.t) + '</strong> (' + weakest[2][0] + '/' + weakest[2][1] + ')' : '') + '</div>';
+  $("#mockSubmit").hidden = true;
+  $("#mockClock").textContent = mockClockText();
+  $("#mockBest").textContent = mockBestText();
+  react(pct >= 80 ? "mockGreat" : (pct >= 60 ? "mockOk" : "mockLow"), false, {inline:res, vars:{pct:pct, weak: wt ? wt.t.toLowerCase() : "this set", easy: by.e[0] + "/" + by.e[1]}});
+}
+
+/* ---------------- chart helpers ---------------- */
+var SVGNS = "http://www.w3.org/2000/svg";
+function svgEl(name, attrs){ var e = document.createElementNS(SVGNS, name); for(var k in attrs) e.setAttribute(k, attrs[k]); return e; }
+function cssVar(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim() || "#888"; }
+/* frame(svg, {W,H,m:{l,r,t,b},x0,x1,y0,y1,xticks,yticks,xfmt,yfmt,xlab,ylab}) -> {x,y} scales */
+function frame(svg, opt){
+  while(svg.firstChild) svg.removeChild(svg.firstChild);
+  var W = opt.W, H = opt.H, m = opt.m;
+  var x = function(v){ return m.l + (v-opt.x0)/(opt.x1-opt.x0)*(W-m.l-m.r); };
+  var y = function(v){ return H-m.b - (v-opt.y0)/(opt.y1-opt.y0)*(H-m.t-m.b); };
+  opt.yticks.forEach(function(v){
+    svg.appendChild(svgEl("line",{x1:m.l,x2:W-m.r,y1:y(v),y2:y(v),"class":"grid"}));
+    var t = svgEl("text",{x:m.l-7,y:y(v)+3,"text-anchor":"end"}); t.textContent = opt.yfmt(v); svg.appendChild(t);
+  });
+  opt.xticks.forEach(function(v){
+    var t = svgEl("text",{x:x(v),y:H-m.b+15,"text-anchor":"middle"}); t.textContent = opt.xfmt(v); svg.appendChild(t);
+  });
+  svg.appendChild(svgEl("line",{x1:m.l,x2:W-m.r,y1:H-m.b,y2:H-m.b,"class":"axis"}));
+  svg.appendChild(svgEl("line",{x1:m.l,x2:m.l,y1:m.t,y2:H-m.b,"class":"axis"}));
+  if(opt.xlab){ var xl = svgEl("text",{x:W-m.r,y:H-m.b+27,"text-anchor":"end","class":"ttl"}); xl.textContent = opt.xlab; svg.appendChild(xl); }
+  if(opt.ylab){ var yl = svgEl("text",{x:m.l-7,y:m.t-6,"text-anchor":"end","class":"ttl"}); yl.textContent = opt.ylab; svg.appendChild(yl); }
+  return {x:x, y:y};
+}
+function series(svg, pts, sc, color, opts){
+  opts = opts || {};
+  var d = pts.map(function(p,i){ return (i ? "L" : "M") + sc.x(p[0]).toFixed(2) + " " + sc.y(p[1]).toFixed(2); }).join(" ");
+  var path = svgEl("path",{d:d, fill:"none", stroke:color, "stroke-width":opts.w||2, "stroke-linejoin":"round", "stroke-linecap":"round"});
+  if(opts.dash) path.setAttribute("stroke-dasharray", opts.dash);
+  svg.appendChild(path);
+  if(opts.dots) pts.forEach(function(p){ svg.appendChild(svgEl("circle",{cx:sc.x(p[0]),cy:sc.y(p[1]),r:3,fill:color})); });
+}
+
+/* ============================================================
+   companion
+   ============================================================ */
+var chatTurns = [], sampleFn = null, sampleReady = false, chatBusy = false, chatCtl = null, lastSay = 0, idleTimer = null;
+function react(kind, soft, opts){
+  opts = opts || {};
+  var set = LINES[kind] || (kind.indexOf("topic_") === 0 ? LINES.topic : null) || LINES.greet;
+  var line = pick(set), t = currentTopic(), p = quizProgress(t.id);
+  var vars = Object.assign({here: isNumbered(t) ? COURSE.unit + " " + t.n : t.t, title: t.t, unit: COURSE.unit, unit_lower: COURSE.unit.toLowerCase(),
+    done_word: COURSE.doneWord, mark: COURSE.doneMark, name: COMPANION.name, done: p.done, total: p.total}, opts.vars || {});
+  sayRaw(line[0], fill(line[1], vars), {soft: soft, inline: opts.inline});
+}
+/* one voice: the rail card always speaks; an inline note appears where the action happened */
+function sayRaw(mood, html, opts){
+  opts = opts || {};
+  var now = Date.now();
+  if(opts.soft && now - lastSay < 7000) return;
+  lastSay = now;
+  var face = pick(COMPANION.faces[mood] || COMPANION.faces.happy);
+  $("#cpCardFace").textContent = face;
+  if(!chatBusy) $("#cpFace").textContent = face;
+  var s = $("#cpSay");
+  s.classList.add("swap");
+  clearTimeout(s._t);
+  s._t = setTimeout(function(){ s.innerHTML = html; s.classList.remove("swap"); }, 120);
+  var card = $("#cpCard");
+  card.classList.remove("pulse"); void card.offsetWidth; card.classList.add("pulse");
+  if(opts.inline) inlineNote(opts.inline, face, html);
+}
+function inlineNote(host, face, html){
+  var n = null;
+  for(var k = 0; k < host.children.length; k++) if(host.children[k].classList.contains("cp-inline")) n = host.children[k];
+  if(!n){ n = el("div", "cp-inline"); host.appendChild(n); }
+  else { n.style.animation = "none"; void n.offsetWidth; n.style.animation = ""; }
+  n.innerHTML = '<span class="face">' + face + '</span><span><span class="who">' + esc(COMPANION.name) + '</span>' + html + '</span>';
+}
+function resetIdle(){
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(function(){ react("idle", true); resetIdle(); }, 150000);
+}
+
+function persona(){
+  var t = currentTopic(), C = COURSE.chat, out = [
+    "You are " + COMPANION.name + ", the study companion built into '" + COURSE.title.join("") + "', a revision page for " + C.course + ". You are talking to the student who owns it.",
+    "", "Voice:"
+  ];
+  COMPANION.voice.forEach(function(v){ out.push("- " + v); });
+  out.push("", "Substance comes first; the personality is seasoning, never a substitute:",
+    "- Be accurate. Show the formula and the arithmetic when there is maths, and the reasoning step by step when there isn't.",
+    "- When they are wrong, say so plainly and show which step broke. Teasing is fine; praising a wrong answer is not.",
+    "- When they are working a problem, give the setup and one worked line, then ask for their answer instead of finishing it for them.",
+    "- If you are not sure, say so. Do not invent figures from the lecture slides; say what you would need.");
+  (C.conventions || []).forEach(function(v){ out.push("- " + v); });
+  out.push("", "Course context: " + C.context);
+  if(C.scope) out.push("The page carries 'Deeper: from the textbooks' notes drawn from " + C.scope + " You may point the student to a chapter, but explain in your own words and never quote the books at length. If asked about material beyond those chapters, say it is outside what this course has covered so far.");
+  if(C.exam) out.push("Exam guidelines: " + C.exam + " Every question on the page is tiered easy/medium/difficult, and there is a mock exam in the exam's mix.");
+  if(C.errata && C.errata.length) out.push("Slips in the course materials that the page corrects: " + C.errata.join(" "));
+  out.push("", "The student is currently reading " + (isNumbered(t) ? "lecture " + t.n + ", " : "") + "'" + t.t + "'. It covers:",
+    t.ctx + (TEXTBOOK_CTX[t.id] ? " Textbook depth on this page: " + TEXTBOOK_CTX[t.id] : ""),
+    "", "Never claim to see their files, grades or anything beyond this conversation and the context above.");
+  return out.join("\n");
+}
+
+function addMsg(cls, text){
+  var m = el("div", "msg " + cls);
+  m.textContent = text;
+  $("#cpLog").appendChild(m);
+  $("#cpLog").scrollTop = $("#cpLog").scrollHeight;
+  return m;
+}
+function renderSeeds(){
+  var wrap = $("#cpSeeds");
+  wrap.innerHTML = "";
+  (SEEDS[state.topic] || []).forEach(function(s){
+    var b = el("button", "seed", esc(s));
+    b.type = "button";
+    b.addEventListener("click", function(){ sendChat(s); });
+    wrap.appendChild(b);
+  });
+}
+function openChat(prefill){
+  $("#cpPanel").hidden = false;
+  if(prefill) sendChat(prefill);
+  else $("#cpInput").focus();
+}
+function closeChat(){ $("#cpPanel").hidden = true; }
+
+function sendChat(text){
+  if(!text || chatBusy) return;
+  if($("#cpPanel").hidden) openChat();
+  var E = COMPANION.errors;
+  addMsg("u", text);
+  chatTurns.push({role:"user", content:text});
+  while(chatTurns.length > 10) chatTurns.shift();
+  while(chatTurns.length && chatTurns[0].role !== "user") chatTurns.shift();
+  if(!sampleFn){ addMsg("sys", sampleReady ? E.cantTalk : E.waking); return; }
+  react("chatThinking");
+  chatBusy = true;
+  $("#cpSend").textContent = "Stop";
+  $("#cpFace").textContent = COMPANION.thinkingFace;
+  var bubble = addMsg("t", "Thinking");
+  bubble.classList.add("blink");
+  chatCtl = new AbortController();
+  var msgs = [{role:"user", content:persona()}, {role:"assistant", content:COMPANION.ack}].concat(chatTurns);
+  sampleFn(msgs, {
+    modelTier:"quick", cache:false, signal: chatCtl.signal,
+    onText: function(u){ bubble.classList.remove("blink"); bubble.textContent = u.text; $("#cpLog").scrollTop = $("#cpLog").scrollHeight; }
+  }).then(function(res){
+    bubble.classList.remove("blink");
+    bubble.textContent = res.text;
+    chatTurns.push({role:"assistant", content:res.text});
+    $("#cpFace").textContent = pick(COMPANION.faces.happy);
+    react("chatDone");
+    if(res.truncated) addMsg("sys", E.cutOff);
+  }).catch(function(e){
+    bubble.classList.remove("blink");
+    if(e && e.text){ bubble.textContent = e.text; } else { bubble.remove(); }
+    var copy = E[e && e.code];
+    if(copy === undefined) copy = E.other;
+    if(copy) addMsg("sys", copy);
+    $("#cpFace").textContent = pick(COMPANION.faces.sad);
+    if(e && (e.code === "not_granted" || e.code === "sampling_disabled" || e.code === "not_declared")) sampleFn = null;
+  }).then(function(){
+    chatBusy = false; chatCtl = null;
+    $("#cpSend").textContent = "Send";
+  });
+}
+
+/* every tool talks back about its own numbers: TOOL_TALK["<h4 title>"] = function(target){ return [mood, html]; } */
+function toolTalk(tool, name, target){
+  var fn = TOOL_TALK[name], line = null;
+  try{ line = fn ? fn(target) : null; }catch(e){ console.warn("TOOL_TALK[" + name + "] threw", e); line = null; }
+  if(!line) line = pick(LINES.toolDefault);
+  sayRaw(line[0], line[1], {inline: tool.querySelector(".tool-b") || tool});
+}
+function onToolAction(ev, delay){
+  var t = ev.target, tool = t && t.closest && t.closest(".tool");
+  if(!tool || tool.hasAttribute("data-sorter")) return;
+  var h = tool.querySelector(".tool-h h4"), name = h ? h.textContent.trim() : "";
+  if(name === "Mock exam" && t.closest("button")) return;
+  clearTimeout(tool._cpT);
+  tool._cpT = setTimeout(function(){ toolTalk(tool, name, t); }, delay);
+}
+
+function passiveLine(x){
+  if(x.matches(".deep")){
+    var tag = x.querySelector(".deep-tag"), b = tag && tag.querySelector("b");
+    var who = tag ? (tag.childNodes[0].textContent.trim() + (b ? " " + b.textContent.trim() : "")) : "the textbook";
+    return ["deep", {book: esc(who)}];
+  }
+  if(x.matches("[data-quiz]")) return ["quizAhead"];
+  if(x.matches(".warn")) return ["warnAhead"];
+  if(x.matches(".foot")) return ["foot"];
+  return null;
+}
+var yzMq = window.matchMedia("(max-width:900px)");
+function placeCard(){
+  var card = $("#cpCard");
+  if(yzMq.matches) $("#cpMobile").appendChild(card);
+  else $("#rail").insertBefore(card, $("#rail").firstChild);
+}
+
+function wireCompanion(){
+  document.addEventListener("input", function(ev){ touchTool(ev.target); onToolAction(ev, 650); }, true);
+  document.addEventListener("click", function(ev){
+    if(ev.target.closest && ev.target.closest(".tool button")){ touchTool(ev.target); onToolAction(ev, 250); }
+  }, true);
+
+  var userScrolled = false;
+  window.addEventListener("scroll", function(){ userScrolled = true; }, {passive:true, once:true});
+  if("IntersectionObserver" in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(!en.isIntersecting || !userScrolled) return;
+        io.unobserve(en.target);
+        var l = passiveLine(en.target);
+        if(l) react(l[0], true, {vars: l[1]});
+      });
+    }, {rootMargin:"0px 0px -40% 0px"});
+    $$(".deep, [data-quiz], .warn, .foot").forEach(function(x){ io.observe(x); });
+  }
+
+  var askSel = $("#cpAskSel"), selText = "";
+  function hideAsk(){ askSel.hidden = true; }
+  function checkSel(ev){
+    if(ev.target === askSel) return;
+    var sel = window.getSelection(), txt = sel ? sel.toString().trim() : "";
+    if(txt.length < 3 || txt.length > 400 || !sel.rangeCount){ hideAsk(); return; }
+    var node = sel.anchorNode && (sel.anchorNode.nodeType === 1 ? sel.anchorNode : sel.anchorNode.parentNode);
+    if(!node || !node.closest || !node.closest("#panels")){ hideAsk(); return; }
+    var r = sel.getRangeAt(0).getBoundingClientRect();
+    selText = txt;
+    askSel.style.top = (window.scrollY + r.bottom + 6) + "px";
+    askSel.style.left = Math.max(8, Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - 190)) + "px";
+    askSel.hidden = false;
+    react("select", true);
+  }
+  document.addEventListener("mouseup", function(ev){ setTimeout(function(){ checkSel(ev); }, 10); });
+  document.addEventListener("touchend", function(ev){ setTimeout(function(){ checkSel(ev); }, 300); });
+  askSel.addEventListener("mousedown", function(ev){ ev.preventDefault(); });
+  askSel.addEventListener("click", function(){
+    hideAsk();
+    openChat("Explain this part of the page to me, in the context of " + currentTopic().t + ":\n\n\"" + selText + "\"");
+  });
+  window.addEventListener("scroll", hideAsk, {passive:true});
+
+  var hiddenAt = 0;
+  document.addEventListener("visibilitychange", function(){
+    if(document.hidden){ hiddenAt = Date.now(); return; }
+    if(hiddenAt && Date.now() - hiddenAt > 30000) react("back");
+  });
+  document.addEventListener("copy", function(){ react("copy", true); });
+  $("#cpToggle").addEventListener("click", function(){ $("#cpPanel").hidden ? openChat() : closeChat(); });
+  $("#cpClose").addEventListener("click", function(){ closeChat(); react("chatClosed"); });
+  $("#cpTalk").addEventListener("click", function(){ openChat(); });
+  $("#cpQuiz").addEventListener("click", function(){ openChat("Quiz me on " + currentTopic().t + " — one question at a time, and wait for my answer."); });
+  $("#cpForm").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    if(chatBusy){ if(chatCtl) chatCtl.abort(); return; }
+    var v = $("#cpInput").value.trim();
+    if(!v) return;
+    $("#cpInput").value = "";
+    sendChat(v);
+  });
+  if(yzMq.addEventListener) yzMq.addEventListener("change", placeCard); else if(yzMq.addListener) yzMq.addListener(placeCard);
+  ["click","keydown","input"].forEach(function(ev){ document.addEventListener(ev, resetIdle, {passive:true}); });
+}
+
+/* ---------------- remote progress (artifact db) ---------------- */
+function mergeRemote(data){
+  if(data.tools && typeof data.tools === "object"){ Object.keys(data.tools).forEach(function(k){ state.tools[k] = 1; }); }
+  if(typeof data.best === "number") state.best = Math.max(state.best||0, data.best);
+  if(data.wins && typeof data.wins === "object"){
+    Object.keys(data.wins).forEach(function(k){
+      var a = state.wins[k] || {won:0, played:0}, b = data.wins[k] || {};
+      state.wins[k] = {won: Math.max(a.won||0, b.won||0), played: Math.max(a.played||0, b.played||0)};
+    });
+  }
+  if(Array.isArray(data.mocks) && data.mocks.length > (state.mocks || []).length){ state.mocks = data.mocks; if($("#mockBest")) $("#mockBest").textContent = mockBestText(); }
+  if(data.answers && typeof data.answers === "object"){
+    Object.keys(data.answers).forEach(function(k){ if(state.answers[k] == null) state.answers[k] = data.answers[k]; });
+    $$("[data-quiz]").forEach(function(host){
+      var key = host.dataset.quiz;
+      if(!QUIZ[key]) return;
+      $$(".qitem", host).forEach(function(item,i){
+        var a = state.answers[key+":"+i];
+        if(a != null && !$(".why", item)) reveal(key,i,a,item);
+      });
+      updateScore(key);
+    });
+  }
+  refreshProgress();
+}
+
+/* ---------------- boot (called at the very end of the page) ---------------- */
+function boot(){
+  checkTiers();
+  loadLocal();
+  state.wins = state.wins || {}; state.tools = state.tools || {}; state.mocks = state.mocks || [];
+  renderShell();
+  initTheme();
+  buildRail();
+  buildFlash();
+  buildSorters();
+  buildQuizzes();
+  buildPset();
+  buildMock();
+  refreshProgress();
+  placeCard();
+  wireCompanion();
+  addMsg("t", words(COMPANION.intro));
+  var ids = {}; TOPICS.forEach(function(t){ ids[t.id] = 1; });
+  go(ids[state.topic] ? state.topic : TOPICS[0].id);
+  resetIdle();
+  setTimeout(function(){ react("greet"); }, 900);
+
+  if(window.claude && window.claude.use){
+    window.claude.use("db").then(function(d){
+      if(!d) return;
+      remoteDb = d;
+      return d.doc("progress/main").get().then(function(snap){ if(snap && snap.exists) mergeRemote(snap.data() || {}); });
+    }).catch(function(){});
+    window.claude.use("sample").then(function(s){
+      sampleReady = true; sampleFn = s;
+      if(!s) addMsg("sys", COMPANION.errors.cantTalk);
+    }).catch(function(){ sampleReady = true; });
+  } else {
+    sampleReady = true;
+    addMsg("sys", COMPANION.errors.noSample);
+  }
+}
+</script>
+

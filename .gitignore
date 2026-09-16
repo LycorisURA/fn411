@@ -1,0 +1,32 @@
+# Course material — the lecturer's, not redistributed here
+*.pdf
+*.xls
+*.xlsx
+*.xlsm
+*.xltx
+*.ppt
+*.pptx
+*.doc
+*.docx
+
+# Extracted / intermediate build artefacts
+txt/
+scratch/
+*.bas
+*.cls
+*.frm
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Editors and OS
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+desktop.ini

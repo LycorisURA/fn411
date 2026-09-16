@@ -1,0 +1,203 @@
+  <main id="panels">
+
+  <!-- ==================== PANEL: start ==================== -->
+  <article class="panel" id="p-start">
+    <div class="panel-head">
+      <span class="eyebrow">Tail 00 · Orientation</span>
+      <h2>One framework, five lectures</h2>
+      <p class="lede">This course does something unusual: it measures the risk of <em>every</em> instrument — stocks, bonds, options, forwards, futures — with the same three objects. Learn those three and the rest is bookkeeping.</p>
+    </div>
+
+    <section class="block">
+      <h3>The whole course in three symbols</h3>
+      <div class="prose">
+        <p>Every instrument gets decomposed into a <span class="term">weight vector</span> <b>w</b> over a set of <span class="term">risk factors</span>. The factors have a mean vector <b>μ</b> and a variance-covariance matrix <b>Ω</b>. Then:</p>
+      </div>
+      <div class="eq">μ<sub>P</sub> = <b>w</b><sup>T</sup><b>μ</b>&nbsp;&nbsp;&nbsp;σ<sub>P</sub><sup>2</sup> = <b>w</b><sup>T</sup><b>Ω</b><b>w</b>&nbsp;&nbsp;&nbsp;VaR<sub>α</sub> = μ<sub>P</sub> + z<sub>α</sub> σ<sub>P</sub>
+        <span class="lbl">The only thing that changes between lectures is how you build <b>w</b>. Everything after that is identical.</span></div>
+      <div class="fxbar"><span class="fxn">Excel</span><span class="fxv">=<b>MMULT</b>(<b>TRANSPOSE</b>(w),mu) + <b>NORMSINV</b>(alpha)*<b>SQRT</b>(<b>MMULT</b>(<b>MMULT</b>(<b>TRANSPOSE</b>(w),Omega),w))</span></div>
+      <div class="sheet">
+        <table>
+          <caption>How each lecture builds <b>w</b></caption>
+          <thead><tr><th class="l">Instrument</th><th class="l">Risk factors</th><th class="l">Weight</th></tr></thead>
+          <tbody>
+            <tr><td class="l">Stock</td><td class="l">r<sub>S</sub></td><td class="l">w = portfolio share</td></tr>
+            <tr><td class="l">Zero-coupon bond</td><td class="l">dy<sub>T</sub></td><td class="l">w = −D<sub>mod</sub> × share</td></tr>
+            <tr><td class="l">Coupon bond</td><td class="l">dy<sub>1</sub> … dy<sub>T</sub></td><td class="l">w<sub>t</sub> = (PV<sub>t</sub>/B) × (−t)</td></tr>
+            <tr class="pick"><td class="l">Option</td><td class="l">r<sub>S</sub>, dy</td><td class="l">w = [Δ·S/Op ; ρ·1/Op]</td></tr>
+            <tr><td class="l">Forward</td><td class="l">r<sub>S</sub>, dy</td><td class="l">long call + short put, combined</td></tr>
+            <tr><td class="l">Futures</td><td class="l">r<sub>S</sub>, dy<sub>T</sub></td><td class="l">w = [S<sub>0</sub> ; T·S<sub>0</sub>] in <em>money</em></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note"><span class="eyebrow">Why this matters</span>Once you see that a coupon bond is a portfolio of zero-coupon bonds, an option is a portfolio of stock and a bond, and a forward is a long call plus a short put, you stop memorising formulas. <strong>There is only one formula.</strong> The exam questions are almost entirely about building <b>w</b> correctly.</div>
+    </section>
+
+    <section class="block">
+      <h3>Two conventions this course uses — and they are not the textbook's</h3>
+      <div class="fxlist">
+        <div class="fxrow trap"><code>VaR is NEGATIVE here</code><div>This course writes <b>VaR<sub>α</sub> = μ + z<sub>α</sub>σ</b> with z negative, so VaR comes out as a <b>negative return or a negative amount</b> — "VaR(1%, 1 day) = −1.4521%". Hull and most textbooks quote VaR as a positive loss. <b>Follow the lecturer's sign</b> and label the number, and never mix the two on one page. One class workbook (the equity portfolio sheet) does flip it with a leading minus, so check which sheet you are in.</div></div>
+        <div class="fxrow trap"><code>The mean μ stays in</code><div>Most VaR courses set μ = 0. This one does <b>not</b> — μ is estimated from the data and carried through. That is why the slides show a hypothesis test for whether μ is significantly different from zero, and why one class sheet reports both "VaR" and "VaR with Zero Mean".</div></div>
+        <div class="fxrow"><code>Legacy Excel names</code><div>Every class workbook uses <b>NORMSINV</b>, <b>NORMSDIST</b>, <b>STDEV</b> and <b>COVAR</b>, not the modern dotted names. They still work. The XL lab lists the modern equivalents and the one place where the old and new versions genuinely differ.</div></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h3>The shape of the page</h3>
+      <div class="prose">
+        <p>Pick a <span class="term">tail</span> from the rail. Tails <strong>01–05</strong> are the five lecture decks in teaching order, each with the worked examples recomputed number by number. <strong>XL</strong> collects every Excel function and every trap in one reference. <strong>AS</strong> works the three additional questions in full. <strong>EX</strong> is a timed mock and the A4 sheet.</p>
+        <p>Answering questions earns XP. Get <strong>80%</strong> of a panel's quiz right and the tail is <strong>measured ◣</strong>.</p>
+      </div>
+      <div class="grid3">
+        <div class="ro"><div class="k">Difficulty tiers</div><div class="v">e · m · d</div></div>
+        <div class="ro hi"><div class="k">To measure a tail</div><div class="v">80%</div></div>
+        <div class="ro"><div class="k">Errata flagged</div><div class="v">13</div></div>
+      </div>
+      <div class="warn"><span class="eyebrow">Slide check</span>Nine figures in the lecture decks and four conventions in the workbooks disagree with a recomputation. Each one is flagged in a box like this one, on the panel where it appears, with the slide's figure, the correct figure and the cause. <strong>You may be marked against the slide, so both numbers are shown.</strong> The biggest is the forward-contract Rho on lecture 5 (25.29 should be 52.2937) and a futures price of 121.42 that cannot be right because the undiscounted cash flows only total 108.</div>
+      <div class="note"><span class="eyebrow">The rule about tiers</span>A question is <strong>difficult</strong> because of how much thinking it needs, not because it has arithmetic in it. Some one-line calculations are easy; some of the hardest questions here have no numbers at all.</div>
+    </section>
+
+    <section class="block">
+      <h3>Kasumi</h3>
+      <div class="prose">
+        <p>She sits at the top of the rail and reacts to what you actually do — the number a bench is showing, the answer you picked, the mistake that answer comes from. Tap her card to chat; she gets the notes for whichever panel is open, including every erratum.</p>
+      </div>
+      <div class="note"><span class="eyebrow">Fine print</span>Progress saves in the page. The chat needs this page published as an artifact; everything else works anywhere.</div>
+    </section>
+  </article>
+
+  <!-- ==================== PANEL: fi ==================== -->
+  <article class="panel" id="p-fi" hidden>
+    <div class="panel-head">
+      <span class="eyebrow">Tail 01 · Financial Institutions</span>
+      <h2>Where the risk comes from</h2>
+      <p class="lede">Every activity a financial institution does generates its own kind of risk. Market risk is one of nine — and the reason it gets measured so precisely is that it is the one that can bankrupt you in a week.</p>
+    </div>
+
+    <section class="block">
+      <h3>Activity in, risk out</h3>
+      <div class="prose">
+        <p>The deck's logic is mechanical: pick a business line, and the risk follows from it. This mapping is worth knowing cold, because exam questions like to give you a scenario and ask which risk it is.</p>
+      </div>
+      <div class="sheet">
+        <table>
+          <thead><tr><th class="l">Activity</th><th class="l">Risk it generates</th></tr></thead>
+          <tbody>
+            <tr><td class="l">Business strategy</td><td class="l">strategic risk</td></tr>
+            <tr><td class="l">Business process</td><td class="l">operational risk</td></tr>
+            <tr><td class="l">Lending</td><td class="l">credit risk</td></tr>
+            <tr class="pick"><td class="l">Security trading</td><td class="l">market risk</td></tr>
+            <tr><td class="l">Selling insurance policies</td><td class="l">insurance risk</td></tr>
+            <tr><td class="l">Managing cash flows against obligations</td><td class="l">liquidity risk</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="prose">
+        <p>The deck's full list adds <span class="term">concentration risk</span>, <span class="term">enterprise-wide risk</span> and <span class="term">group risk</span> to those six, and notes that market risk also travels under the names <strong>price risk</strong> and <strong>interest rate risk</strong> — which matters, because the later lectures measure interest rate risk and call the result market risk.</p>
+      </div>
+      <div class="note"><span class="eyebrow">The rule</span>Risk here is defined as <strong>the possibility that the institution makes mistakes in its operations, and those mistakes lead to financial or non-financial loss</strong>. Note that non-financial loss counts — reputational damage is a risk even when no money moves.</div>
+    </section>
+
+    <section class="block">
+      <h3>Bankruptcy is a statement about the left tail</h3>
+      <div class="prose">
+        <p>This is the bridge from lecture 1 to everything that follows. The balance sheet gives A<sub>0</sub> = D<sub>0</sub> + E<sub>0</sub>. One period later the institution is bankrupt if assets fall below debt — equivalently, <strong>if the loss exceeds equity</strong>.</p>
+      </div>
+      <div class="eq">bankrupt ⟺ Ã<sub>1</sub> &lt; D<sub>0</sub> ⟺ r̃<sub>A</sub> &lt; − <span class="fr"><span>E<sub>0</sub></span><span>A<sub>0</sub></span></span>
+        <span class="lbl">So the probability of default is the left-tail probability of the asset return, cut at minus the equity ratio. That is a VaR statement read backwards.</span></div>
+      <div class="fxbar"><span class="fxn">Excel</span><span class="fxv">PD = <b>NORMSDIST</b>((-E0/A0 - mu_A) / sigma_A)  &nbsp;·&nbsp; required equity ratio = -(mu_A + <b>NORMSINV</b>(PD)*sigma_A)</span></div>
+      <div class="prose">
+        <p>Run it the other way and you get <span class="term">required capital</span>: pick the default probability you are willing to live with, and the equity ratio follows. The deck gives the target probabilities as one-year default rates by rating.</p>
+      </div>
+      <div class="sheet">
+        <table>
+          <caption>Deck's PD table, with the z it implies via =NORMSINV(PD)</caption>
+          <thead><tr><th class="l">Rating</th><th>PD (default events only)</th><th>z = NORMSINV(PD)</th><th>Capital at σ<sub>A</sub>=10%, μ=0</th></tr></thead>
+          <tbody>
+            <tr><td class="l">AAA</td><td>0.014038%</td><td>−3.632434</td><td>36.32%</td></tr>
+            <tr><td class="l">AA</td><td>0.020902%</td><td>−3.528425</td><td>35.28%</td></tr>
+            <tr><td class="l">A</td><td>0.123945%</td><td>−3.025905</td><td>30.26%</td></tr>
+            <tr class="pick"><td class="l">BBB</td><td>0.997917%</td><td>−2.327130</td><td>23.27%</td></tr>
+            <tr><td class="l">BB</td><td>2.488875%</td><td>−1.961871</td><td>19.62%</td></tr>
+            <tr><td class="l">B</td><td>4.611472%</td><td>−1.683753</td><td>16.84%</td></tr>
+            <tr><td class="l">CCC</td><td>30.848573%</td><td>−0.500147</td><td>5.00%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note"><span class="eyebrow">Concept check</span>Two things fall out of that table. First, <strong>BBB's PD of 0.997917% is almost exactly 1%</strong>, so its z is almost exactly the 99% VaR multiplier −2.3263 — an investment-grade floor is a 99%-confidence statement. Second, the capital requirement is <strong>not linear in the rating</strong>: going from BB to AAA costs you 16.7 percentage points of capital, while B to BB costs 2.8. Buying the last sliver of safety is enormously expensive, which is the whole economics of bank capital.</div>
+
+      <div class="tool">
+        <div class="tool-h"><div><span class="eyebrow">Tool</span><h4>Solvency bench</h4></div><span class="chip">NORMSDIST · NORMSINV · capital vs PD</span></div>
+        <div class="tool-b">
+          <div class="ctrls">
+            <label class="f">Assets A₀<input id="svA" type="number" step="1000000" value="100000000"></label>
+            <label class="f">Debt D₀<input id="svD" type="number" step="1000000" value="92000000"></label>
+            <label class="f">Asset return μ<sub>A</sub> (%)<input id="svM" type="number" step="0.5" value="2"></label>
+            <label class="f">Asset volatility σ<sub>A</sub> (%)<input id="svS" type="number" step="0.5" value="10"></label>
+            <label class="f">Target rating<select id="svR">
+              <option value="0.00014038">AAA · 0.014038%</option>
+              <option value="0.00020902">AA · 0.020902%</option>
+              <option value="0.00123945">A · 0.123945%</option>
+              <option value="0.00997917" selected>BBB · 0.997917%</option>
+              <option value="0.02488875">BB · 2.488875%</option>
+              <option value="0.04611472">B · 4.611472%</option>
+              <option value="0.30848573">CCC · 30.848573%</option>
+            </select></label>
+          </div>
+          <div class="out">
+            <div class="readout">
+              <div class="ro"><div class="k">Equity E₀ / A₀</div><div class="v" id="svEq">—</div></div>
+              <div class="ro hi"><div class="k">Probability of bankruptcy</div><div class="v" id="svPd">—</div></div>
+              <div class="ro"><div class="k">Implied rating</div><div class="v" id="svRat">—</div></div>
+              <div class="ro"><div class="k">Capital for target</div><div class="v" id="svReq">—</div></div>
+              <div class="ro"><div class="k">Capital shortfall</div><div class="v" id="svGap">—</div></div>
+            </div>
+            <div class="fxbar"><span class="fxn">Excel</span><span class="fxv" id="svFx">—</span></div>
+            <div class="chartwrap"><svg class="chart" id="svChart" viewBox="0 0 560 220" role="img" aria-label="Required equity ratio against target default probability"></svg></div>
+            <div class="legend"><span><i style="background:var(--accent)"></i>required capital vs PD</span><span><i style="background:var(--gold)"></i>your target</span><span><i style="background:var(--bad)"></i>your actual equity</span></div>
+            <div class="verdict" id="svNote">—</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h3>Regulation, supervision, and who writes the rules</h3>
+      <div class="grid2">
+        <div class="deep"><div class="deep-tag">Deck 01<b>Regulation</b></div><div class="deep-body">
+          <h4>The rules themselves</h4>
+          <p>The laws, standards and requirements institutions must follow. Regulation <strong>sets the framework</strong> for how banks, insurers, securities firms and finance companies are allowed to operate. It is written once and applies to everyone.</p>
+        </div></div>
+        <div class="deep b2"><div class="deep-tag">Deck 01<b>Supervision</b></div><div class="deep-body">
+          <h4>Checking they are followed</h4>
+          <p>The monitoring, inspection and enforcement of those rules. Supervisors assess whether a <strong>particular</strong> institution complies and whether it operates safely and soundly. It is continuous and institution-specific.</p>
+        </div></div>
+      </div>
+      <div class="sheet" style="margin-top:14px">
+        <table>
+          <thead><tr><th class="l">Body</th><th class="l">Sector it sets standards for</th></tr></thead>
+          <tbody>
+            <tr><td class="l">Bank for International Settlements · BIS</td><td class="l">banks (the Basel Committee sits here)</td></tr>
+            <tr><td class="l">International Organization of Securities Commissions · IOSCO</td><td class="l">securities markets</td></tr>
+            <tr><td class="l">International Association of Insurance Supervisors · IAIS</td><td class="l">insurance</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note"><span class="eyebrow">Why this matters</span>The deck ends on the <strong>three-pillar approach</strong> and <strong>risk-based supervision</strong>. The link to the rest of the course is direct: Pillar 1 minimum capital for market risk is computed from a VaR or expected-shortfall model, and the BIS requirement of <strong>at least 250 business days</strong> of data — which lecture 2 states explicitly — is where every class workbook's 250-row layout comes from.</div>
+    </section>
+
+    <section class="block">
+      <h3>Concepts without a calculator</h3>
+      <div class="cards" data-flash="fi"></div>
+    </section>
+
+    <section class="block">
+      <h3>Which risk is it?</h3>
+      <div data-sorter="risks"></div>
+    </section>
+
+    <section class="block">
+      <h3>Check yourself</h3>
+      <div class="quiz" data-quiz="fi"></div>
+    </section>
+  </article>
