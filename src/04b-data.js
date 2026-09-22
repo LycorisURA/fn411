@@ -64,7 +64,11 @@ mr: [
  {tier:"d", q:"The deck states three conditions for VaR<sub>T</sub> = VaR<sub>1</sub>√T. Which one does this course routinely violate?", o:["Independence across days","Normality","Zero mean","None — the course satisfies all three"], a:2,
   e:"<b>Zero mean.</b> This course keeps μ, so the whole VaR cannot be multiplied by √T: the mean scales with <b>T</b> and the volatility with <b>√T</b>. The class workbooks get this right — the three-day cell reads <span class='fx'>=K22*3+NORMSINV(0.01)*K23*SQRT(3)</span>. Independence and normality are also questionable in reality, but they are not what the course's own arithmetic breaks."},
  {tier:"d", q:"Lowering λ in an EWMA model from 0.97 to 0.94 does what?", o:["Makes the estimate react faster to a volatility spike, and noisier between spikes","Makes the estimate react slower and smoother","Reduces the amount of data that must be stored","Increases the weight on the oldest observations"], a:0,
-  e:"<b>Faster and noisier.</b> The first weight is 1 − λ, so it rises from 3% to 6%, and the effective window 1/(1−λ) falls from about 33 days to about 17. Storage is unaffected — the deck's point is that EWMA needs almost none at any λ. And lower λ puts <em>less</em> weight on old data, not more."}
+  e:"<b>Faster and noisier.</b> The first weight is 1 − λ, so it rises from 3% to 6%, and the effective window 1/(1−λ) falls from about 33 days to about 17. Storage is unaffected — the deck's point is that EWMA needs almost none at any λ. And lower λ puts <em>less</em> weight on old data, not more."},
+  {tier:"m", q:"Every VaR in these five decks is computed by assuming the risk factors are normal and reducing each instrument to a weight vector over them. In the wider literature that approach is called:", o:["Historical simulation","Model building — the variance-covariance or delta-normal approach","Monte Carlo simulation","Backtesting"], a:1,
+   e:"<b>Model building.</b> Historical simulation instead applies the last few hundred days of <em>actual</em> factor moves to today's book and reads a percentile off the result; Monte Carlo draws scenarios from a fitted distribution and reprices properly in each. Backtesting is not an approach at all — it is how you check any of the three afterwards. The course's choice is why an option enters only through Delta and Rho: model building is a <b>first-order</b> approximation."},
+  {tier:"d", q:"A bank's 99% one-day VaR produced <b>14 exceptions in 250 trading days</b>. The most defensible conclusion is:", o:["The model is acceptable — exceptions arrive at random","The model understates risk: about 2.5 exceptions were expected","The model overstates risk and is tying up capital needlessly","Nothing can be concluded without also computing expected shortfall"], a:1,
+   e:"<b>It understates risk.</b> At 99% confidence you expect 1% of 250 ≈ <b>2.5</b> exceptions a year; fourteen is nearly six times that. Two refinements worth a mark: exceptions should also be <em>independent</em> — four in one week is worse news than four spread across the year, because it means the model missed a regime — and backtesting a ten-day VaR on overlapping ten-day windows is not a fair test, because the windows share data."},
 ],
 
 fix: [
@@ -109,8 +113,8 @@ opt: [
   e:"<b>[Δ·S/Op ; ρ·1/Op].</b> It comes from dividing dOp = Δ·dS + ρ·dy through by Op and multiplying the first term by S/S, so that the factor becomes r<sub>S</sub> rather than dS."},
  {tier:"e", q:"If d₁ = 0.1801857 and σ√T = 0.1326984, then d₂ is:", o:["0.3128841","0.0474873","1.3578","−0.0474873"], a:1,
   e:"d₂ = d₁ − σ√T = 0.1801857 − 0.1326984 = <b>0.0474873</b>. Adding instead of subtracting gives 0.3128841 — always subtract."},
- {tier:"e", q:"For the class example the call's two weights are 8.4714078 and 9.4714078. The fact that they differ by exactly 1:", o:["Is a coincidence of these particular inputs","Always holds, because C = S·N(d₁) − Ke<sup>−yT</sup>N(d₂) so dividing by C gives C/C","Holds only for at-the-money options","Indicates a rounding error in the workbook"], a:1,
-  e:"<b>It always holds.</b> w<sub>rS</sub> − w<sub>dy</sub> = [S·N(d₁) − Ke<sup>−yT</sup>N(d₂)]/Op = Op/Op = 1, for calls, puts and forwards alike. Use it as a free check on every weight vector you build."},
+ {tier:"e", q:"For the class example the call's two weights are 8.4714078 and 9.4714078. Here T = 1. The fact that they differ by exactly 1:", o:["Is a coincidence of these particular inputs","Follows from w_rS − w_dy/T = 1, which always holds — so with T = 1 the weights differ by exactly 1","Holds only for at-the-money options","Indicates a rounding error in the workbook"], a:1,
+  e:"<b>It follows from an identity that always holds:</b> since ρ/T = Ke<sup>−yT</sup>N(d₂), w<sub>rS</sub> − w<sub>dy</sub>/T = [S·N(d₁) − Ke<sup>−yT</sup>N(d₂)]/Op = Op/Op = 1, for calls, puts and forwards alike. With T = 1 that is a plain difference of 1. <b>For T ≠ 1 divide the dy weight by T before checking</b> — the raw difference will not be 1."},
  {tier:"e", q:"With σ = 10% per period, the binomial up move u = e<sup>σ</sup> − 1 is:", o:["10.0000%","10.5171%","11.0517%","9.5163%"], a:1,
   e:"e<sup>0.10</sup> − 1 = 1.105171 − 1 = <b>10.5171%</b>. 11.0517% forgets to subtract the 1, and 9.5163% is |d|, the down move."},
  {tier:"e", q:"Which Greeks does this course actually use in an option's VaR?", o:["Delta and Gamma","Delta and Rho","Delta, Gamma and Vega","All five"], a:1,
@@ -144,8 +148,8 @@ fut: [
   e:"<b>Zero initial value.</b> A percentage return would be division by zero — Excel returns <code>#DIV/0!</code>. So futures VaR is computed entirely in <b>money</b>, with w = [S₀ ; T·S₀], and the answer comes out in Baht."},
  {tier:"e", q:"For a futures on an asset, the weight vector is:", o:["[1 ; T]","[S₀ ; T·S₀]","[S₀ ; S₀/T]","[1/S₀ ; T/S₀]"], a:1,
   e:"<b>[S₀ ; T·S₀]</b>, for factors r<sub>S</sub> and dy<sub>T</sub>, in money. It comes from dFu = S₀r<sub>S</sub> + T·S₀·dy<sub>T</sub>. On the deck's example that is [100 ; 50]."},
- {tier:"e", q:"For a ZCB futures with T = 1 and an underlying maturing at 1.5 years, with B₀ = 0.924963, the weights are:", o:["[−1.5 ; +1.0]","[−1.387445 ; +0.924963]","[+1.387445 ; −0.924963]","[−0.924963 ; +1.387445]"], a:1,
-  e:"w = [−(T+N) ; +T] × B₀ = [−1.5 ; +1.0] × 0.924963 = <b>[−1.387445 ; +0.924963]</b>. The signs matter: the long bond loses when <em>its</em> yield rises, while the short financing leg gains when the funding yield rises."},
+ {tier:"e", q:"For a ZCB futures with T = 1 and an underlying maturing at 1.5 years, with B₀ = 0.924964, the weights are:", o:["[−1.5 ; +1.0]","[−1.387447 ; +0.924964]","[+1.387447 ; −0.924964]","[−0.924964 ; +1.387447]"], a:1,
+  e:"w = [−(T+N) ; +T] × B₀ = [−1.5 ; +1.0] × 0.924964 = <b>[−1.387447 ; +0.924964]</b>. The signs matter: the long bond loses when <em>its</em> yield rises, while the short financing leg gains when the funding yield rises."},
  {tier:"e", q:"Which cash flows of the underlying bond enter a coupon-bond futures price?", o:["All of them","Only those paid before delivery","Only those paid after delivery","Only the final principal repayment"], a:2,
   e:"<b>Only post-delivery cash flows.</b> Coupons paid before delivery go to whoever holds the bond in the meantime, not to the futures buyer."},
  {tier:"m", q:"For a forward, ρ<sub>C</sub> − ρ<sub>P</sub> simplifies to:", o:["T·K·e<sup>−yT</sup>","S","0","T·K·e<sup>−yT</sup>·N(d₂)"], a:0,
@@ -162,8 +166,10 @@ fut: [
   e:"<b>Six factors, five instruments, mismatched loadings.</b> The futures reach a sixth point on the curve that the bond does not touch, and they all share one financing exposure to dy₁ that the bond's own dy₁ loading cannot offset. You can minimise the residual — that is what Solver is for — but not zero it. The residual is basis risk."},
  {tier:"d", q:"Why does the forward's weight vector collapse to w = [S/V<sub>F</sub> ; TKe<sup>−yT</sup>/V<sub>F</sub>], with all the C's and P's disappearing?", o:["Because C and P are approximately equal for an at-the-money forward","Because each leg's share of V<sub>F</sub> is multiplied by a sensitivity divided by that same leg's price, so the prices cancel, and the two deltas and two rhos then combine by put-call symmetry","Because the forward has no value at inception","Because V<sub>F</sub> is defined as C − P"], a:1,
   e:"<b>The prices cancel, then symmetry does the rest.</b> (C/V<sub>F</sub>)·Δ<sub>C</sub>·(S/C) = Δ<sub>C</sub>S/V<sub>F</sub> — the C is gone. Combining the legs gives (Δ<sub>C</sub> − Δ<sub>P</sub>)S/V<sub>F</sub>, and Δ<sub>C</sub> − Δ<sub>P</sub> = N(d₁) − (N(d₁) − 1) = 1. The same happens to the rhos via N(d₂) + N(−d₂) = 1. It has nothing to do with C ≈ P, and a forward entered at the market forward price would have V<sub>F</sub> = 0 exactly, which is a different case."},
- {tier:"d", q:"The lecture-5 slide gives Rho(call) as 25.29 where the correct value is 52.2937. Which check would have caught it fastest, without recomputing Rho?", o:["Comparing Rho(call) with Rho(put)","Checking that the two weights of the forward differ by exactly 1","Verifying that C − P equals the deck's 0.38","Confirming that Delta(call) − Delta(put) = 1"], a:1,
-  e:"<b>The differ-by-one check on the weights.</b> The deck's pair is 310.52 and 238.47, differing by 72.05 rather than 1 — an immediate red flag. Delta<sub>C</sub> − Delta<sub>P</sub> = 1 does hold on the deck's rounded deltas, so that check passes and tells you nothing; C − P = 0.38 is also correct; and comparing the two rhos is suggestive but not decisive, since they are genuinely different numbers."}
+ {tier:"d", q:"The lecture-5 slide gives Rho(call) as 25.29 where the correct value is 52.2937. Which check would have caught it fastest, without recomputing Rho?", o:["Comparing Rho(call) with Rho(put)","Checking that the forward's weights satisfy w_rS − w_dy/T = 1 (here T = 1, so they should differ by 1)","Verifying that C − P equals the deck's 0.38","Confirming that Delta(call) − Delta(put) = 1"], a:1,
+  e:"<b>The w<sub>rS</sub> − w<sub>dy</sub>/T = 1 check on the weights</b> — with T = 1 here, a plain difference of 1. The deck's pair is 310.52 and 238.47, differing by 72.05 rather than 1 — an immediate red flag. Delta<sub>C</sub> − Delta<sub>P</sub> = 1 does hold on the deck's rounded deltas, so that check passes and tells you nothing; C − P = 0.38 is also correct; and comparing the two rhos is suggestive but not decisive, since they are genuinely different numbers."},
+  {tier:"d", q:"A five-year coupon bond is exposed to dy₁ … dy₅. You hedge it with five zero-coupon-bond futures, each of which moves with its own dy<sub>(T+N)</sub> <em>and</em> with the financing rate dy<sub>T</sub>. Can the risk be eliminated completely?", o:["Yes — five contracts for five cash flows is an exact match","No — the position and the contracts together span six factors, so five contracts cannot zero every exposure","Yes, provided the contracts are held all the way to delivery","No, because a futures contract has no percentage return"], a:1,
+   e:"<b>No.</b> Each contract carries <em>two</em> exposures, not one: −(T+N)B₀ on its own underlying rate and +T·B₀ on the shared financing rate. Five contracts therefore give you five free numbers against six exposures, and the system is short one instrument. The minimum-variance hedge — choose n to minimise (w + Hn)ᵀΩ(w + Hn) — removes most of the variance and leaves a residual. Saying <em>why</em> the residual exists is the point of the practice problem; a hedge that eliminated everything would mean the futures spanned the whole curve."},
 ],
 
 xl: [
@@ -277,7 +283,7 @@ add: [
     +"<div class='eq'>μ<sub>P</sub> = 0.0302928&nbsp;&nbsp;σ<sub>P</sub> = 0.0592202&nbsp;&nbsp;VaR<sub>1%</sub> = 0.0302928 − 2.326348(0.0592202) = <b>−10.74739%</b></div>"
     +"<b>(b) Building block approach.</b> Replace Black-Scholes with a one-step binomial and read the stock and bond blocks directly."
     +"<div class='eq'>u = e<sup>0.0731397</sup> − 1 = 7.58809%&nbsp;&nbsp;&nbsp;d = e<sup>−0.0731397</sup> − 1 = −7.05290%<span class='lbl'>S₁u = 1,152.6665 so P₁u = 0; S₁d = 995.8073 so P₁d = 1,050 − 995.8073 = 54.1927.</span></div>"
-    +"<div class='eq'>Δ = <span class='fr'><span>0 − 54.1927</span><span>1071.37 × 0.1464099</span></span> = −0.3454864&nbsp;&nbsp;&nbsp;ΔS = −370.1437<br>B = <span class='fr'><span>54.1927(1.0758809) − 0</span><span>1.0736 × 0.1464099</span></span> = +370.9301<span class='lbl'>Put price = −370.1437 + 370.9301 = 0.7863658. Block weights within the put: −470.7017 stock and +471.7017 bond, differing by exactly 1.</span></div>"
+    +"<div class='eq'>Δ = <span class='fr'><span>0 − 54.1927</span><span>1071.37 × 0.1464099</span></span> = −0.3454864&nbsp;&nbsp;&nbsp;ΔS = −370.1437<br>B = <span class='fr'><span>54.1927(1.0758809) − 0</span><span>1.0736 × 0.1464099</span></span> = +370.9301<span class='lbl'>Put price = −370.1437 + 370.9301 = 0.7863658. Block weights within the put: −470.7017 stock and +471.7017 bond, summing to exactly 1.</span></div>"
     +"<div class='tablewrap'><table class='q'><thead><tr><th>Factor</th><th>Working</th><th class='r'>Adjusted weight</th></tr></thead><tbody>"
     +"<tr><td>dy₁</td><td>471.7017 × 0.0007413 × (−1/1.0736)</td><td class='r'>−0.3257029</td></tr>"
     +"<tr><td>r<sub>index</sub></td><td>−470.7017 × 0.0007413</td><td class='r'>−0.3489333</td></tr>"
@@ -375,7 +381,7 @@ exam: [
     +"<div class='note'><span class='eyebrow'>Why this is a good exam answer</span>It answers the question asked — <em>without recomputing</em> — by bounding the quantity. Examiners like bounding arguments because they show you understand what the formula <em>does</em>, not just how to evaluate it.</div>"},
 
  {src:"Difficult · 2", tier:"d",
-  q:"Explain why a forward contract's two weights must differ by exactly 1, and use that fact to identify the error in a slide that reports them as 310.52 and 238.47.",
+  q:"Explain why a one-year (T = 1) forward contract's two weights must differ by exactly 1, and use that fact to identify the error in a slide that reports them as 310.52 and 238.47.",
   a:"<b>The identity.</b> A forward is long one call and short one put at the same strike, so V<sub>F</sub> = C − P. Its two weights combine the legs:"
     +"<div class='eq'>w<sub>rS</sub> = <span class='fr'><span>(Δ<sub>C</sub> − Δ<sub>P</sub>) S</span><span>V<sub>F</sub></span></span>&nbsp;&nbsp;&nbsp;w<sub>dy</sub> = <span class='fr'><span>ρ<sub>C</sub> − ρ<sub>P</sub></span><span>V<sub>F</sub></span></span><span class='lbl'>Each leg's price cancels: (C/V_F)·Δ_C·(S/C) = Δ_C·S/V_F.</span></div>"
     +"<div class='eq'>Δ<sub>C</sub> − Δ<sub>P</sub> = N(d<sub>1</sub>) − [N(d<sub>1</sub>) − 1] = <b>1</b><br>ρ<sub>C</sub> − ρ<sub>P</sub> = TKe<sup>−yT</sup>[N(d<sub>2</sub>) + N(−d<sub>2</sub>)] = <b>TKe<sup>−yT</sup></b></div>"
@@ -389,10 +395,11 @@ exam: [
 /* ===================== chat seeds ===================== */
 var SEEDS = {
   start:["Explain the w, mu, Omega framework","Why is VaR negative here?","Quiz me on anything"],
+  cram:["I have 45 minutes — what should I do?","Ask me what the risk factors are for a question type","What do I most often get wrong?"],
   fi:["How does PD relate to VaR?","Why is bank capital so non-linear in rating?","Give me a bankruptcy-probability problem"],
   mr:["Walk me through the subadditivity counterexample","Why can't I just multiply VaR by root T?","When should I set mu to zero?"],
   fix:["Build the weight vector for a coupon bond","Continuous or discrete duration — which do I use?","Component VaR vs incremental VaR"],
-  opt:["Why do the two option weights differ by 1?","Greeks approach or building block?","Give me a binomial decomposition to work"],
+  opt:["Why is w_rS − w_dy/T always 1?","Greeks approach or building block?","Give me a binomial decomposition to work"],
   fut:["Why is futures VaR in money, not percent?","Where does the deck's Rho error lead?","Can a bond futures hedge ever be perfect?"],
   xl:["Rebuild Omega without the VBA function","What breaks without Ctrl+Shift+Enter?","Why no MDURATION in this course?"],
   pset:["Check my method on additional question 2","Walk me through Q3 without the answer","Why do both option approaches agree?"],
@@ -400,6 +407,8 @@ var SEEDS = {
 };
 
 var TEXTBOOK_CTX = {
+  opt: "Hull OFOD on the Greeks this course omits. Gamma = phi(d1)/(S*sigma*sqrt(T)) is the curvature Delta misses; dOp = Delta*dS + 0.5*Gamma*(dS)^2, so a long option's P&L is right-skewed (delta-normal OVERstates its risk) and a short option's is left-skewed (delta-normal UNDERstates it, the dangerous direction). Vega = S*sqrt(T)*phi(d1) = 542.62 for the class example, so a one-point rise in sigma is worth about 5.4 on an option priced at 83.41 - volatility risk is the same order as rate risk for an ATM option, and the course simply does not model it. Implied volatility inverts Black-Scholes for the sigma that reproduces a quoted price; the smile is evidence against the normality assumption. All of this is one-day-horizon-small, which is the course's defence.",
+  fut: "Hull OFOD on forwards and futures. The two decompositions (long call + short put; long asset + borrow) and why a futures contract's zero initial value forces money weights. Marking to market and daily settlement are the practical difference between a forward and a future; the course ignores the financing difference and treats the two as equivalent for risk purposes.",
   fi:"Hull RMFI ch. 11 background: the deck's PD table and the three-pillar framing come from the Basel material; the 250-day minimum is the BIS market-risk requirement.",
   mr:"Hull RMFI ch. 11-12: advantages of VaR, VaR vs expected shortfall, the four coherent-risk-measure properties, Examples 11.5 and 11.7 (the two-project subadditivity counterexample), and the normal-distribution ES formula. Hull OFOD ch. on volatility for the EWMA recursion and lambda = 0.94.",
   fix:"Hull RMFI ch. 12: marginal VaR, component VaR and the Euler-theorem additivity property that makes component VaR a sensible allocation."
@@ -429,7 +438,7 @@ var LINES = {
   topic_fi:[["intense","Tail 01: where the risk comes from. The bit that matters for later — <b>bankruptcy is a left-tail event</b>, so PD is just VaR read backwards. ({done} of {total} answered)"]],
   topic_mr:[["intense","Tail 02, the important one. VaR = μ + z σ, and z is <b>negative</b>. Also: the mean stays in. I'll keep reminding you~ ({done} of {total})"]],
   topic_fix:[["happy","Tail 03: bonds. You can't use the price history because the bond keeps becoming a different bond. Model the <b>yield</b> ♪ ({done} of {total})"]],
-  topic_opt:[["smug","Tail 04: options. Two Greeks, one weight vector, and a free check — the two weights differ by <b>exactly 1</b>. ({done} of {total})"]],
+  topic_opt:[["smug","Tail 04: options. Two Greeks, one weight vector, and a free check — <b>w<sub>rS</sub> − w<sub>dy</sub>/T = 1</b>. ({done} of {total})"]],
   topic_fut:[["intense","Tail 05: forwards and futures. A contract worth <b>nothing</b>, so no percentage return exists. Everything here is money. And the deck has two real errors — I'll point them out. ({done} of {total})"]],
   topic_xl:[["happy","The spreadsheet layer ♪ Every function, every legacy name, and fourteen ways to get a plausible wrong number. ({done} of {total})"]],
   topic_pset:[["intense","Assignments. Paper first, working second. I'll know if you peek — I always know."]],
@@ -505,6 +514,14 @@ var LINES = {
   mockLow:[["sad","<b>{pct}%</b>. That's exactly what mocks are for (｡•́ - •̀｡) Start with <b>{weak}</b>, read the explanations above, then take a fresh one."]],
   mockTool:[["happy","<b>{n}</b> questions from {cover}, in a 50/25/25 mix. Start when you're ready — not a word from me until you submit~"]],
   deep:[["happy","Textbook depth — <b>{book}</b>. This is where exam questions like to dig."]],
+  jump:[["happy","Taking you to <b>{what}</b> ♪"],["smug","<b>{what}</b>. I knew you'd want that one."],["happy","There — <b>{what}</b>. Anything else, just hit <b>Ctrl+K</b> again~"]],
+  palette:[["happy","Type anything — a formula, a trap, a number from a slide. It's all indexed (｡•ᴗ•｡)"],["smug","Faster than scrolling, isn't it."]],
+  sheetOpen:[["intense","The whole course on one page. If you can rebuild these cards from memory you are ready."],["happy","Print it, fold it, carry it. Then try to write it out from memory — that's the part that actually works ♪"],["smug","Sixteen cards. That's the entire syllabus. I did warn you it was small."]],
+  planPick:[["intense","<b>{mins} minutes</b>, <b>{n} steps</b>. I'll keep time — you keep moving (๑•̀ᗜ•́)ง"],["happy","{mins} minutes it is. Work top to bottom; the order isn't decorative."]],
+  planTick:[["happy","{mins} minutes down ♪"],["smug","One less thing between you and the exam."],["happy","Ticked. Next one."]],
+  planDone:[["intense","Plan finished ( ˶^ᵕ^˵ ) Sit one more paper, then only reread what you got wrong."],["happy","That's the whole plan done. I'm a little proud of you, which is embarrassing for both of us~"]],
+  planTool:[["happy","The <b>{mins}-minute</b> plan: <b>{done} of {total}</b> steps ticked. Each line jumps to the exact section it names."],["smug","{done}/{total}. The clock doesn't care how you feel about it (¬‿¬)"]],
+  weakRetry:[["intense","Cleared — <b>{tail}</b>, one more time. Getting it wrong twice is how it sticks."],["happy","Blank again. Try it without scrolling up first ♪"]],
   quizAhead:[["intense","Quiz ahead. Answer from memory first — no scrolling back up. I'll know~"]],
   warnAhead:[["sad","Careful with this box — it's where the slide slips, or where you will."]],
   foot:[["smug","You read all the way to the bottom? ...I noticed. I notice everything."]],

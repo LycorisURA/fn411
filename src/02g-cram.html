@@ -1,0 +1,102 @@
+
+  <!-- ==================== PANEL: cram ==================== -->
+  <article class="panel" id="p-cram" hidden>
+    <div class="panel-head">
+      <span class="eyebrow">Tail GO · Exam day</span>
+      <h2>When the clock is running</h2>
+      <p class="lede">Everything on this page, sorted by how much time you have left. Pick a clock, work the list, and use the router below whenever a question looks unfamiliar — it almost never is.</p>
+    </div>
+
+    <section class="block">
+      <h3>Pick your clock</h3>
+      <div class="tool" id="planTool">
+        <div class="tool-h"><div><span class="eyebrow">Plan</span><h4>Revision planner</h4></div><span class="num" id="planScore" style="font-size:12px;color:var(--mute)"></span></div>
+        <div class="tool-b">
+          <div class="clock-btns" id="clockBtns"></div>
+          <ol class="plan" id="planList"></ol>
+          <div class="plan-sum" id="planSum"></div>
+          <div class="verdict" id="planNote">—</div>
+        </div>
+      </div>
+      <div class="note"><span class="eyebrow">How to use it</span>Each line jumps to the exact section it names. Ticks are saved with the rest of your progress, so you can put the page down and come back to the same place.</div>
+    </section>
+
+    <section class="block">
+      <h3>What kind of question is this?</h3>
+      <div class="prose">
+        <p>Read the question once and answer one thing: <strong>what are the risk factors?</strong> Everything else — the weights, the matrix, the VaR line — follows mechanically. This table is the whole course in one page.</p>
+      </div>
+      <div class="sheet">
+        <table>
+          <caption>From the words in the question to the weight vector</caption>
+          <thead><tr><th class="l">The question gives you</th><th class="l">Risk factors</th><th class="l">Weight vector w</th><th class="l">Go to</th></tr></thead>
+          <tbody>
+            <tr><td class="l">μ and σ of one return</td><td class="l">r</td><td class="l">w = 1 — use VaR = μ + z σ directly</td><td class="l">Tail 02</td></tr>
+            <tr><td class="l">Money in several assets, their σ's and correlations</td><td class="l">one return per asset</td><td class="l">w<sub>i</sub> = value<sub>i</sub> / W₀; Ω<sub>ij</sub> = ρ<sub>ij</sub>σ<sub>i</sub>σ<sub>j</sub></td><td class="l">Tail 02</td></tr>
+            <tr><td class="l">A T-bill or zero-coupon bond and a rate history</td><td class="l">dy at its maturity</td><td class="l">w = −D<sub>mod</sub> (× portfolio share)</td><td class="l">Tail 03</td></tr>
+            <tr class="pick"><td class="l">A coupon bond and a spot curve</td><td class="l">dy₁ … dy<sub>T</sub>, one per cash flow</td><td class="l">w<sub>t</sub> = (PV<sub>t</sub>/B) × (−t)</td><td class="l">Tail 03</td></tr>
+            <tr><td class="l">A call or put with S, K, σ, y, T</td><td class="l">r<sub>S</sub>, dy</td><td class="l">w = [Δ·S/Op ; ρ/Op]</td><td class="l">Tail 04</td></tr>
+            <tr><td class="l">"Construct the equivalent asset", or an up/down tree</td><td class="l">r<sub>S</sub>, dy</td><td class="l">w = [ΔS/Op ; −(B/Op)·T/(1+y)]</td><td class="l">Tail 04</td></tr>
+            <tr><td class="l">A forward with a delivery price</td><td class="l">r<sub>S</sub>, dy</td><td class="l">w = [S/V<sub>F</sub> ; T·K·e<sup>−yT</sup>/V<sub>F</sub>]</td><td class="l">Tail 05</td></tr>
+            <tr><td class="l">Futures on an asset</td><td class="l">r<sub>S</sub>, dy<sub>T</sub></td><td class="l">w = [S₀ ; T·S₀] — <strong>money</strong></td><td class="l">Tail 05</td></tr>
+            <tr><td class="l">Futures on a zero-coupon bond</td><td class="l">dy<sub>(T+N)</sub>, dy<sub>T</sub></td><td class="l">w = [−(T+N)B₀ ; +T·B₀] — money</td><td class="l">Tail 05</td></tr>
+            <tr><td class="l">Futures on a coupon bond</td><td class="l">one dy<sub>(T+k)</sub> per post-delivery flow, plus dy<sub>T</sub></td><td class="l">w = [… −(T+k)X<sub>k</sub>B<sub>k</sub> … ; +T ΣX<sub>k</sub>B<sub>k</sub>]</td><td class="l">Tail 05</td></tr>
+            <tr><td class="l">A mix of positions</td><td class="l">the union of all of the above</td><td class="l">add the adjusted weights factor by factor</td><td class="l">Tail AS</td></tr>
+            <tr><td class="l">Loss outcomes with probabilities</td><td class="l">none — the distribution is discrete</td><td class="l">sort losses, cumulate probability, read the quantile</td><td class="l">Tail 02</td></tr>
+            <tr><td class="l">Assets, debt, μ<sub>A</sub>, σ<sub>A</sub></td><td class="l">r<sub>A</sub></td><td class="l">no w — PD = N((−E₀/A₀ − μ<sub>A</sub>)/σ<sub>A</sub>)</td><td class="l">Tail 01</td></tr>
+            <tr><td class="l">"Minimise the risk with futures"</td><td class="l">the position's factors plus each contract's</td><td class="l">choose n to minimise (w + Hn)ᵀΩ(w + Hn)</td><td class="l">Tail 05</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note"><span class="eyebrow">The one habit worth building</span>Write the factor list down <strong>before</strong> you write any numbers. Nearly every lost mark in this course comes from a weight vector that is in the wrong order, missing a row, or missing its minus sign — not from arithmetic.</div>
+    </section>
+
+    <section class="block">
+      <h3>The five checks that catch almost every lost mark</h3>
+      <div class="fxlist">
+        <div class="fxrow"><code>Is VaR negative?</code><div>This course writes VaR = μ + z σ with z negative. A positive answer means you dropped the sign or used the wrong z. <b>Label it</b>: "VaR(1%, 1 day) = −1.4521%".</div></div>
+        <div class="fxrow"><code>Do σ, y and T share one time unit?</code><div>Daily σ with an annual y is the single most expensive slip on the option questions. The deck's own example uses 5% per <b>month</b> with T = 12 <b>months</b>.</div></div>
+        <div class="fxrow"><code>Is w in the same order as Ω?</code><div>The option workbook stores <b>dy first, r<sub>S</sub> second</b>. Nothing will error — you will just get a plausible wrong number.</div></div>
+        <div class="fxrow"><code>w<sub>rS</sub> − w<sub>dy</sub>/T = 1</code><div>Free and exact for any call, put or forward. With T = 1 — every class example — the two weights simply differ by 1.</div></div>
+        <div class="fxrow"><code>Σ component VaR = portfolio VaR</code><div>Euler's theorem. If the components do not add up to the total, the Ωw column is wrong. And a futures price must sit between the PV of its cash flows and their undiscounted sum.</div></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h3>Numbers worth carrying in your head</h3>
+      <div class="grid3">
+        <div class="ro hi"><div class="k">z at 1%</div><div class="v">−2.326348</div></div>
+        <div class="ro"><div class="k">z at 2.5%</div><div class="v">−1.959964</div></div>
+        <div class="ro"><div class="k">z at 5%</div><div class="v">−1.644854</div></div>
+        <div class="ro"><div class="k">z at 10%</div><div class="v">−1.281552</div></div>
+        <div class="ro"><div class="k">ES mult · 1%</div><div class="v">2.665214</div></div>
+        <div class="ro"><div class="k">ES mult · 2.5%</div><div class="v">2.337803</div></div>
+        <div class="ro"><div class="k">ES mult · 5%</div><div class="v">2.062713</div></div>
+        <div class="ro"><div class="k">√252</div><div class="v">15.8745</div></div>
+        <div class="ro"><div class="k">√10</div><div class="v">3.16228</div></div>
+      </div>
+      <div class="note"><span class="eyebrow">Why these</span>−1.96 is the <strong>2.5%</strong> number and belongs to a 97.5% VaR; the lecture-3 portfolio slide uses it for a 95% VaR and overstates the answer by 19.2%. The ES multiplier is φ(z<sub>α</sub>)/α, so ES = μ − σ × multiplier when you keep the course's sign convention.</div>
+    </section>
+
+    <section class="block">
+      <h3>Your weak spots</h3>
+      <div class="prose">
+        <p>Every question you have answered wrongly, newest first. Retrying clears your answer so the question comes back blank.</p>
+      </div>
+      <div class="weak" id="weakSpots"></div>
+    </section>
+
+    <section class="block">
+      <h3>Shortcuts</h3>
+      <div class="fxlist">
+        <div class="fxrow"><code><span class="keys">Ctrl</span>+<span class="keys">K</span> &nbsp;or&nbsp; <span class="keys">/</span></code><div>Jump to any panel, section, formula, worked problem, trap or flashcard by typing a few letters.</div></div>
+        <div class="fxrow"><code><span class="keys">S</span></code><div>Open the one-page sheet — the whole course on one A4, with a print button.</div></div>
+        <div class="fxrow"><code><span class="keys">1</span> … <span class="keys">9</span></code><div>Jump straight to a tail. <span class="keys">[</span> and <span class="keys">]</span> step through them in order.</div></div>
+        <div class="fxrow"><code><span class="keys">T</span> · <span class="keys">C</span> · <span class="keys">?</span></code><div>Theme · talk to Kasumi · this list.</div></div>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" type="button" id="openSheetBtn">Open the one-page sheet</button>
+        <button class="btn ghost" type="button" id="openPalBtn">Jump to anything</button>
+      </div>
+    </section>
+  </article>

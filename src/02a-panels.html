@@ -45,15 +45,16 @@
     <section class="block">
       <h3>The shape of the page</h3>
       <div class="prose">
-        <p>Pick a <span class="term">tail</span> from the rail. Tails <strong>01–05</strong> are the five lecture decks in teaching order, each with the worked examples recomputed number by number. <strong>XL</strong> collects every Excel function and every trap in one reference. <strong>AS</strong> works the three additional questions in full. <strong>EX</strong> is a timed mock and the A4 sheet.</p>
+        <p>Pick a <span class="term">tail</span> from the rail. <strong>GO</strong> is exam day: a revision planner for whatever time you have left, a router that turns the words in a question into a weight vector, and the five checks worth running before you hand anything in. Tails <strong>01–05</strong> are the five lecture decks in teaching order, each with the worked examples recomputed number by number. <strong>XL</strong> collects every Excel function and every trap in one reference. <strong>AS</strong> works the three additional questions in full. <strong>EX</strong> is a timed mock and the A4 sheet.</p>
+        <p>Three things are always one keystroke away. <span class="keys">Ctrl</span>+<span class="keys">K</span> jumps to any formula, trap, worked problem or flashcard on the page. <span class="keys">S</span> opens the whole course as one printable sheet. <span class="keys">1</span>–<span class="keys">9</span> switch tails. Anything you answer wrongly collects itself on the <strong>GO</strong> panel so you can retry it later.</p>
         <p>Answering questions earns XP. Get <strong>80%</strong> of a panel's quiz right and the tail is <strong>measured ◣</strong>.</p>
       </div>
       <div class="grid3">
         <div class="ro"><div class="k">Difficulty tiers</div><div class="v">e · m · d</div></div>
         <div class="ro hi"><div class="k">To measure a tail</div><div class="v">80%</div></div>
-        <div class="ro"><div class="k">Errata flagged</div><div class="v">13</div></div>
+        <div class="ro"><div class="k">Errata flagged</div><div class="v">15</div></div>
       </div>
-      <div class="warn"><span class="eyebrow">Slide check</span>Nine figures in the lecture decks and four conventions in the workbooks disagree with a recomputation. Each one is flagged in a box like this one, on the panel where it appears, with the slide's figure, the correct figure and the cause. <strong>You may be marked against the slide, so both numbers are shown.</strong> The biggest is the forward-contract Rho on lecture 5 (25.29 should be 52.2937) and a futures price of 121.42 that cannot be right because the undiscounted cash flows only total 108.</div>
+      <div class="warn"><span class="eyebrow">Slide check</span>Nine figures in the lecture decks and six in the workbooks disagree with a recomputation. Each one is flagged in a box like this one, on the panel where it appears, with the slide's figure, the correct figure and the cause. <strong>You may be marked against the slide, so both numbers are shown.</strong> The biggest is the forward-contract Rho on lecture 5 (25.29 should be 52.2937) and a futures price of 121.42 that cannot be right because the undiscounted cash flows only total 108.</div>
       <div class="note"><span class="eyebrow">The rule about tiers</span>A question is <strong>difficult</strong> because of how much thinking it needs, not because it has arithmetic in it. Some one-line calculations are easy; some of the hardest questions here have no numbers at all.</div>
     </section>
 
@@ -72,6 +73,17 @@
       <span class="eyebrow">Tail 01 · Financial Institutions</span>
       <h2>Where the risk comes from</h2>
       <p class="lede">Every activity a financial institution does generates its own kind of risk. Market risk is one of nine — and the reason it gets measured so precisely is that it is the one that can bankrupt you in a week.</p>
+    </div>
+
+    <div class="tldr">
+      <span class="eyebrow">The sixty-second version</span>
+      <ol>
+        <li>Pick a business line and the risk follows from it. <strong>Security trading &rarr; market risk</strong>; lending &rarr; credit; process &rarr; operational.</li>
+        <li>Bankruptcy is a statement about the left tail: the firm fails when the loss exceeds equity, <strong>r<sub>A</sub> &lt; &minus;E&#8320;/A&#8320;</strong>.</li>
+        <li>Read that forwards for a default probability, backwards for the capital a target rating needs. The price of safety is wildly non-linear in the rating.</li>
+        <li>Regulation writes the rules; supervision checks that a particular firm follows them. BIS for banks, IOSCO for securities, IAIS for insurance &mdash; and Basel wants <strong>at least 250 business days</strong> of data, which is why every class workbook has 250 rows.</li>
+      </ol>
+      <span class="one">PD = NORMSDIST((&minus;E&#8320;/A&#8320; &minus; &mu;_A) / &sigma;_A)</span>
     </div>
 
     <section class="block">

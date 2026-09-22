@@ -1,6 +1,6 @@
 # Errata in the course materials
 
-Thirteen figures or conventions in the five lecture decks and nine class workbooks
+Fifteen figures or conventions in the five lecture decks and nine class workbooks
 disagree with an independent recomputation. Every number below was recomputed from
 the formulas in the decks before being written down.
 
@@ -196,6 +196,53 @@ The companion futures workbook *is* internally consistent — it discounts with
 `EXP(-y*t)` and uses `−t`.
 
 **Rule:** continuous discounting → multiplier `−t`. Discrete discounting → `−t/(1+y_t)`.
+
+### 14. Digital-option Delta uses the CDF instead of the density
+
+In `Exercise_ans`, *digital option* tab, the analytical digital-call Delta is
+
+```excel
+=EXP(-F3*D3)*E14/(B3*E3*SQRT(D3))      ← E14 = NORMSDIST(d2), the CDF
+```
+
+The correct formula uses the density φ(d₂):  Δ = e^(−yT)·φ(d₂) / (S·σ·√T).
+
+| | |
+|---|---|
+| **Sheet gives** | `0.0322353` |
+| **Correct** | `0.0264945` |
+| **Sheet's own numerical Delta** | `0.0264753` — contradicts its analytical value |
+
+Tell-tale sign: with N(d₂) in the numerator, the stock weight Δ·S/Op collapses to
+exactly `1/(σ√T) = 8` for any inputs. The correct weight is **6.5753**. The digital Rho in
+the same sheet correctly uses φ(d₂) and is right.
+
+### 15. Futures practice key — broken `TRANSPOSE` in the 6×6 Ω
+
+In `Spot Curves_ans2.xlsx` (Sheet1), cell `V268` is `{=TRANSPOSE(U272)}` — a single-cell
+array — copied across `V268:Y268`. Row 2 of the 6×6 covariance matrix therefore repeats
+Cov(dy₂, dy₆) = 2.9757×10⁻⁸ four times instead of holding Cov(dy₂, dy₃), Cov(dy₂, dy₄),
+Cov(dy₂, dy₅), and the matrix is not symmetric.
+
+| | |
+|---|---|
+| **Key's futures VaR** | `−3.9135563` |
+| **With the correct matrix** (same population divisor) | `−3.9137954` |
+
+Small here because the covariances are similar in size, but the matrix is wrong. The
+earlier 5×5 block on the same sheet (rows 260–264) is built correctly.
+
+### A convention that changes between files: `VarCovar()`
+
+The lecturer's custom VBA function is not the same in every workbook:
+
+| Workbook | Diagonal | Off-diagonal |
+|---|---|---|
+| Lecture examples (250-day curve, option example) | `Var` (n−1) | `Covar` (n) — mixed |
+| Additional questions | `Var_S` (n−1) | `Covariance_S` (n−1) — consistent |
+
+Not an error in any one file, but it means two keys built on the same data can differ in
+the fifth decimal. The Excel solver's Data sheet has a switch for each.
 
 ---
 

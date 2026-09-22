@@ -7,6 +7,18 @@
       <p class="lede">Every function the class workbooks use, the modern name for each, the keystrokes that make array formulas work, and the traps that return a plausible wrong number instead of an error.</p>
     </div>
 
+    <div class="tldr">
+      <span class="eyebrow">The sixty-second version</span>
+      <ol>
+        <li>All nine workbooks share <strong>one eight-step skeleton</strong>. Steps 1&ndash;4 and 7&ndash;8 never change; only the instrument and its weights do.</li>
+        <li>The class files use the <strong>legacy function names</strong> &mdash; NORMSINV, NORMSDIST, STDEV, COVAR. They still work, but <code>COVAR</code> is the <strong>population</strong> version while <code>STDEV</code> is the sample one, which is why the two disagree in the fifth decimal.</li>
+        <li><code>MMULT</code> and <code>TRANSPOSE</code> need <strong>Ctrl+Shift+Enter</strong> in Excel 2019 and earlier, or you silently get the top-left element and a portfolio &sigma; that is far too small.</li>
+        <li><code>varcovar()</code> is a <strong>VBA function shipped with the course files</strong>, not real Excel. Three ways to rebuild it are below.</li>
+        <li>No <code>PRICE</code>, <code>YIELD</code> or <code>MDURATION</code> anywhere &mdash; this course discounts every cash flow at its own spot rate, so you build the column.</li>
+      </ol>
+      <span class="one">=MMULT(TRANSPOSE(w),mu) + NORMSINV(a)*SQRT(MMULT(MMULT(TRANSPOSE(w),Om),w))</span>
+    </div>
+
     <section class="block">
       <h3>The build order of every class workbook</h3>
       <div class="prose">
@@ -115,7 +127,12 @@
         <div class="fxrow trap"><code>Coupons before delivery in a futures price</code><div>Only <b>post-delivery</b> cash flows belong in <sub>0</sub>F<sub>T</sub>. And the price must sit between their PV and their undiscounted sum.</div></div>
         <div class="fxrow trap"><code>Forgetting T in the financing row</code><div>A coupon-bond-futures weight vector's last element is <b>+T</b>×Σ(X·B), not Σ(X·B). The lecture-5 slide drops the T.</div></div>
       </div>
-      <div class="note"><span class="eyebrow">Your A4 sheet</span>Only four things from this panel are worth the space: <strong>NORMSINV(0.01) = −2.326348</strong> and <strong>NORMSINV(0.05) = −1.644854</strong>; <strong>VaR = wᵀμ + z·√(wᵀΩw)</strong>; <strong>mean scales with T, volatility with √T</strong>; and <strong>the two weights of an option or forward differ by exactly 1</strong>. The rest you can rebuild.</div>
+      <div class="note"><span class="eyebrow">Your A4 sheet</span>Only four things from this panel are worth the space: <strong>NORMSINV(0.01) = −2.326348</strong> and <strong>NORMSINV(0.05) = −1.644854</strong>; <strong>VaR = wᵀμ + z·√(wᵀΩw)</strong>; <strong>mean scales with T, volatility with √T</strong>; and <strong>w<sub>rS</sub> − w<sub>dy</sub>/T = 1 for an option or forward</strong> (they differ by exactly 1 when T = 1). The rest you can rebuild.</div>
+    </section>
+
+    <section class="block">
+      <h3>Concepts without a calculator</h3>
+      <div class="cards" data-flash="xl"></div>
     </section>
 
     <section class="block">
@@ -199,7 +216,7 @@
         <span class="lbl">Continuous discounting: multiplier −t. Discrete: −t/(1+y_t). Coupon bond = portfolio of zeros, one per cash flow.</span></div>
       <div class="eq">C = S N(d<sub>1</sub>) − Ke<sup>−yT</sup>N(d<sub>2</sub>)&nbsp;&nbsp;&nbsp;d<sub>1</sub> = <span class="fr"><span>ln(S/K) + (y + σ<sup>2</sup>/2)T</span><span>σ√T</span></span>&nbsp;&nbsp;&nbsp;d<sub>2</sub> = d<sub>1</sub> − σ√T
         <span class="lbl">Δ_call = N(d₁); Δ_put = −N(−d₁); ρ_call = TKe^(−yT)N(d₂); ρ_put = −TKe^(−yT)N(−d₂).</span></div>
-      <div class="eq"><b>w</b><sub>Op</sub> = [ Δ <span class="fr"><span>S</span><span>Op</span></span> , ρ <span class="fr"><span>1</span><span>Op</span></span> ]&nbsp;&nbsp;&nbsp;check: w<sub>rS</sub> − w<sub>dy</sub> = <b>1</b> exactly
+      <div class="eq"><b>w</b><sub>Op</sub> = [ Δ <span class="fr"><span>S</span><span>Op</span></span> , ρ <span class="fr"><span>1</span><span>Op</span></span> ]&nbsp;&nbsp;&nbsp;check: w<sub>rS</sub> − w<sub>dy</sub>/T = <b>1</b>
         <span class="lbl">Binomial alternative: Δ = (C₁u − C₁d)/(S(u−d)), B = (C₁d(1+u) − C₁u(1+d))/((1+y)(u−d)), u = e^σ − 1.</span></div>
       <div class="eq">forward: V<sub>F</sub> = C − P,&nbsp; w = [ <span class="fr"><span>S</span><span>V<sub>F</sub></span></span> , <span class="fr"><span>TKe<sup>−yT</sup></span><span>V<sub>F</sub></span></span> ]&nbsp;&nbsp;&nbsp;futures: <sub>0</sub>F<sub>T</sub> = S<sub>0</sub>e<sup>y<sub>T</sub>T</sup>,&nbsp; w = [ S<sub>0</sub> , T S<sub>0</sub> ]
         <span class="lbl">Futures weights are in MONEY, so the VaR is in money. No percentage return exists.</span></div>

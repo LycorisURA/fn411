@@ -18,6 +18,7 @@ import sys
 PARTS = [
     "01-head.html",    # <head>, CSS tokens, masthead, rail
     "02a-panels.html", # Tail 00 orientation + Tail 01 financial institutions
+    "02g-cram.html",   # Tail GO exam day: planner, question router, checks, weak spots
     "02b-panels.html", # Tail 02 market risk, VaR & ES
     "02c-panels.html", # Tail 03 VaR for fixed income
     "02d-panels.html", # Tail 04 VaR for options
@@ -28,6 +29,7 @@ PARTS = [
     "04b-data.js",     # QUIZ, PSET, SEEDS, TEXTBOOK_CTX, LINES
     "05-engine.html",  # study-platform-kit engine (do not edit)
     "06-tools.js",     # the seven interactive benches + TOOL_TALK
+    "06b-ux.js",       # jump palette, shortcuts, planner, weak spots, printable sheet
     "07-boot.html",    # boot()
 ]
 

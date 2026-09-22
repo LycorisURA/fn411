@@ -7,6 +7,18 @@
       <p class="lede">A futures contract has no value when you enter it, so it has no percentage return. That breaks every formula so far — and the fix is to work the whole thing in <em>money</em> instead.</p>
     </div>
 
+    <div class="tldr">
+      <span class="eyebrow">The sixty-second version</span>
+      <ol>
+        <li>A forward is <strong>long one call + short one put</strong> struck at the delivery price, so V<sub>F</sub> = C &minus; P and the option machinery carries straight over.</li>
+        <li>A futures contract is worth <strong>nothing at inception</strong>. There is no percentage return to model, so the weights are in <strong>money</strong> and the VaR comes out in money.</li>
+        <li>Second decomposition: futures &asymp; long the asset, borrow its spot price. <strong>w = [S&#8320; ; T&middot;S&#8320;]</strong>.</li>
+        <li>On a zero-coupon bond, <strong>w = [&minus;(T+N)B&#8320; ; +T&middot;B&#8320;]</strong>. On a coupon bond, one row per post-delivery cash flow plus a single financing row &mdash; and that row <strong>carries a factor of T</strong>.</li>
+        <li>The deck&rsquo;s two largest errors are on this lecture. Both are flagged where they appear.</li>
+      </ol>
+      <span class="one">w = [S&#8320; ; T&middot;S&#8320;] &mdash; in money &nbsp;&middot;&nbsp; &#8320;F_T = S&#8320;&middot;e^(y_T&middot;T)</span>
+    </div>
+
     <section class="block">
       <h3>Two decompositions, and why each is used</h3>
       <div class="grid2">
@@ -68,7 +80,7 @@
           </tbody>
         </table>
       </div>
-      <div class="note"><span class="eyebrow">Concept check</span>Use the <strong>difference-of-one identity</strong> as your check, exactly as on the options panel. Here S/V<sub>F</sub> − TKe<sup>−yT</sup>/V<sub>F</sub> = (118 − 117.6238)/0.376159 = <strong>1.000000</strong>. The deck's pair differs by 72.05, which is the single fastest way to see that something is wrong. <strong>If a forward's two weights do not differ by exactly 1, recheck Rho.</strong></div>
+      <div class="note"><span class="eyebrow">Concept check</span>Use the identity <strong>w<sub>rS</sub> − w<sub>dy</sub>/T = 1</strong> as your check, exactly as on the options panel. With T = 1 here, S/V<sub>F</sub> − TKe<sup>−yT</sup>/V<sub>F</sub> = (118 − 117.6238)/0.376159 = <strong>1.000000</strong>. The deck's pair differs by 72.05, which is the single fastest way to see that something is wrong. <strong>If w<sub>rS</sub> − w<sub>dy</sub>/T is not 1, recheck Rho.</strong></div>
     </section>
 
     <section class="block">
@@ -103,13 +115,13 @@
           <thead><tr><th class="l">Quantity</th><th class="l">Working</th><th>Value</th></tr></thead>
           <tbody>
             <tr><td class="l"><sub>0</sub>F<sub>T</sub></td><td class="f">=EXP(-0.052*1.5+0.05*1)</td><td>0.972388</td></tr>
-            <tr><td class="l">B₀</td><td class="f">=EXP(-0.052*1.5)</td><td>0.924963</td></tr>
-            <tr class="pick"><td class="l">w for dy<sub>1.5Y</sub></td><td class="f">=-1.5*0.924963</td><td>−1.387445</td></tr>
-            <tr class="pick"><td class="l">w for dy<sub>1Y</sub></td><td class="f">=+1.0*0.924963</td><td>+0.924963</td></tr>
+            <tr><td class="l">B₀</td><td class="f">=EXP(-0.052*1.5)</td><td>0.924964</td></tr>
+            <tr class="pick"><td class="l">w for dy<sub>1.5Y</sub></td><td class="f">=-1.5*0.924964</td><td>−1.387447</td></tr>
+            <tr class="pick"><td class="l">w for dy<sub>1Y</sub></td><td class="f">=+1.0*0.924964</td><td>+0.924964</td></tr>
           </tbody>
         </table>
       </div>
-      <div class="note"><span class="eyebrow">Concept check</span>The two weights do <strong>not</strong> cancel: −1.3874 + 0.9250 = −0.4624. A long bond-futures position is <strong>net long duration</strong>, because the underlying bond is longer-dated than the financing. The gap is exactly <strong>N × B₀</strong> = 0.5 × 0.924963 — the extra six months of exposure you are buying. <strong>N is the source of the residual risk</strong>, which is why a futures hedge can never be perfect unless the contract's underlying matures exactly when the contract delivers.</div>
+      <div class="note"><span class="eyebrow">Concept check</span>The two weights do <strong>not</strong> cancel: −1.3874 + 0.9250 = −0.4624. A long bond-futures position is <strong>net long duration</strong>, because the underlying bond is longer-dated than the financing. The gap is exactly <strong>N × B₀</strong> = 0.5 × 0.924964 — the extra six months of exposure you are buying. <strong>N is the source of the residual risk</strong>, which is why a futures hedge can never be perfect unless the contract's underlying matures exactly when the contract delivers.</div>
     </section>
 
     <section class="block">
@@ -206,6 +218,7 @@
         <div class="ro"><div class="k">σ (money)</div><div class="v">1.7048701</div></div>
         <div class="ro hi"><div class="k">VaR 1% · futures</div><div class="v">−3.9136 Baht</div></div>
       </div>
+      <div class="warn"><span class="eyebrow">Workbook check</span>The answer key's −3.9136 is built on a covariance matrix with a <strong>broken TRANSPOSE</strong>. In <code>Spot Curves_ans2.xlsx</code>, cell <code>V268</code> holds <code>{=TRANSPOSE(U272)}</code> — a single cell — and it was copied across <code>V268:Y268</code>, so row 2 of the 6×6 Ω repeats Cov(dy₂, dy₆) = 2.9757×10<sup>−8</sup> four times instead of holding Cov(dy₂, dy₃), Cov(dy₂, dy₄), Cov(dy₂, dy₅). The matrix is therefore not even symmetric. With the correct matrix (same population divisor as the key) the futures VaR is <strong>−3.9138 Baht</strong>. The difference is small because those covariances are similar in size, but a wrong matrix is a wrong matrix — the Excel solver defaults to the corrected one.</div>
       <div class="note"><span class="eyebrow">Why this matters</span>Note the units: this VaR is <strong>−3.9136 Baht</strong>, not a percentage, because the futures weights are in money. Against the bond's −3.8389 Baht the two are strikingly close, which is what makes the hedge work. But the answer to the deck's question — <em>can the remaining net risk be completely eliminated?</em> — is <strong>no</strong>. The bond loads on dy₁…dy₅ while the futures book loads on dy₂…dy₆ <em>and</em> dy₁ through the financing leg. Six factors, five contracts, and a different loading pattern: you can minimise the residual but not zero it. <strong>That residual is basis risk.</strong></div>
 
       <div class="tool">

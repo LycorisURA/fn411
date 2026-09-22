@@ -7,6 +7,18 @@
       <p class="lede">Standard deviation tells you how much things move. It does not tell you how much you can lose. VaR answers the second question, badly but usefully — and expected shortfall fixes the one thing about it that is actually broken.</p>
     </div>
 
+    <div class="tldr">
+      <span class="eyebrow">The sixty-second version</span>
+      <ol>
+        <li>Everything downstream is a return. Price is <strong>linear</strong> in the return, so if y = a + b&middot;r then &mu;<sub>y</sub> = a + b&mu; and &sigma;<sub>y</sub>&sup2; = b&sup2;&sigma;&sup2; &mdash; that one rule carries the whole course.</li>
+        <li><strong>VaR<sub>&alpha;</sub> = &mu; + z<sub>&alpha;</sub>&sigma;</strong>: the worst return you keep with confidence 1 &minus; &alpha;. Negative here, and the mean stays in.</li>
+        <li>Estimate &mu; and &sigma; from at least 250 days, then test whether &mu; is worth keeping: <strong>t = &mu;&#770;&radic;T/&sigma;&#770;</strong>.</li>
+        <li>VaR can <strong>fail subadditivity</strong> &mdash; two books can be riskier apart than together. Expected shortfall never does: <strong>ES = &mu; &minus; &sigma;&middot;&phi;(z<sub>&alpha;</sub>)/&alpha;</strong>.</li>
+        <li>Changing horizon: the mean scales with <strong>T</strong>, the volatility with <strong>&radic;T</strong>. Never scale the VaR itself.</li>
+      </ol>
+      <span class="one">VaR = &mu; + z&middot;&sigma; &nbsp;&middot;&nbsp; ES = &mu; &minus; &sigma;&middot;&phi;(z)/&alpha; &nbsp;&middot;&nbsp; z&#8321;% = &minus;2.326348</span>
+    </div>
+
     <section class="block">
       <h3>Returns first, because everything downstream is a return</h3>
       <div class="eq">discrete:&nbsp; r̃ = <span class="fr"><span>P̃<sub>1</sub> + D − P<sub>0</sub></span><span>P<sub>0</sub></span></span>&nbsp;&nbsp;&nbsp;continuous:&nbsp; r̃ = ln <span class="fr"><span>P̃<sub>1</sub> + D</span><span>P<sub>0</sub></span></span>
@@ -283,6 +295,30 @@
           </div>
         </div>
       </div>
+    </section>
+
+    <section class="block">
+      <h3>Three ways to compute a VaR &mdash; and which one this course uses</h3>
+      <div class="prose">
+        <p>The decks teach exactly one of these and never name the other two. They are standard in Hull, they take one line each to describe, and a question that asks you to <em>compare approaches</em> is cheap for an examiner to write. Learn the three names and the one sentence that separates them.</p>
+      </div>
+      <div class="sheet">
+        <table>
+          <caption>The three standard approaches</caption>
+          <thead><tr><th class="l">Approach</th><th class="l">What it does</th><th class="l">What it assumes</th><th class="l">Where it breaks</th></tr></thead>
+          <tbody>
+            <tr><td class="l">Historical simulation</td><td class="l">Apply the last 250&ndash;500 days of <em>actual</em> factor moves to today&rsquo;s portfolio and read the percentile off the resulting distribution of P&amp;L.</td><td class="l">that the past is a fair sample of tomorrow</td><td class="l">it can never produce a move that has not happened; the tail rests on a handful of days</td></tr>
+            <tr class="pick"><td class="l">Model building<br><span class="num" style="font-size:11px;color:var(--faint)">= variance-covariance = delta-normal</span></td><td class="l"><strong>This course.</strong> Assume the factors are normal, reduce every instrument to a weight vector, and compute &mu;<sub>P</sub> = w<sup>T</sup>&mu; and &sigma;<sub>P</sub>&sup2; = w<sup>T</sup>&Omega;w.</td><td class="l">normal factors, and a <strong>linear</strong> instrument &mdash; options enter only through Delta and Rho</td><td class="l">fat tails, and convexity: a first-order approximation misprices a large move in an option book (that is what Gamma would fix)</td></tr>
+            <tr><td class="l">Monte Carlo</td><td class="l">Draw thousands of factor scenarios from the fitted distribution, reprice the portfolio properly in each, read the percentile.</td><td class="l">that you have the right distribution &mdash; nothing about linearity</td><td class="l">compute time, and the fact that a wrong distribution gives a confident wrong answer</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note"><span class="eyebrow">Not in the decks</span>This table is textbook context, not lecture material &mdash; no slide in the five decks names historical simulation or Monte Carlo. It is here because the sentence <strong>&ldquo;this course uses the model-building approach, which is a first-order approximation&rdquo;</strong> explains why options are handled with two Greeks and why the whole course is one weight vector away from a matrix multiplication.</div>
+      <div class="deep"><div class="deep-tag">Hull RMFI<b>Backtesting</b></div><div class="deep-body">
+        <h4>How you find out the model was wrong</h4>
+        <p>Count the days on which the actual loss exceeded the VaR. At 99&nbsp;% confidence you <em>expect</em> an exception one day in a hundred &mdash; about 2.5 days a year. Far more than that and the model is understating risk; far fewer and it is wasting capital. Regulators formalise this into zones that scale a bank&rsquo;s capital multiplier, which is the practical reason the number has to be right rather than merely conservative.</p>
+        <p>Two subtleties worth a sentence in an answer. First, exceptions should be <strong>independent</strong> &mdash; four in one week is a worse sign than four spread over a year, because it means the model missed a regime, not a bad day. Second, backtesting a <strong>one-day</strong> VaR is honest; backtesting a ten-day VaR against overlapping ten-day windows is not, because the windows share data.</p>
+      </div></div>
     </section>
 
     <section class="block">

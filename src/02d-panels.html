@@ -7,6 +7,18 @@
       <p class="lede">An option's price depends on the underlying and on the interest rate, so it has two risk factors and a two-element weight vector. Build it two ways — from the Greeks, or from an equivalent stock-and-bond portfolio — and they agree.</p>
     </div>
 
+    <div class="tldr">
+      <span class="eyebrow">The sixty-second version</span>
+      <ol>
+        <li><strong>Gearing is the whole problem.</strong> A call costs a fraction of the stock, so the same move in the stock is a far bigger move in the option &mdash; the option&rsquo;s VaR is a multiple of the stock&rsquo;s.</li>
+        <li>Price it with Black-Scholes, then take <strong>two Greeks only</strong>: Delta for the stock, Rho for the rate.</li>
+        <li>That is the weight vector: <strong>w = [&Delta;&middot;S/Op ; &rho;/Op]</strong> over the factors [r<sub>S</sub> ; dy].</li>
+        <li>Or build the <strong>equivalent asset</strong>: an option is &Delta;S of stock plus B of bond, so w = [&Delta;S/Op ; &minus;(B/Op)&middot;T/(1+y)]. Both routes agree to four decimals.</li>
+        <li>Free check: <strong>w<sub>rS</sub> &minus; w<sub>dy</sub>/T = 1</strong>, always.</li>
+      </ol>
+      <span class="one">w = [&Delta;&middot;S/Op ; &rho;/Op] &nbsp;&middot;&nbsp; &Delta;_C = N(d&#8321;), &rho;_C = TKe^(&minus;yT)N(d&#8322;)</span>
+    </div>
+
     <section class="block">
       <h3>Payoffs, and why leverage is the whole problem</h3>
       <div class="sheet">
@@ -111,7 +123,7 @@
           </tbody>
         </table>
       </div>
-      <div class="note"><span class="eyebrow">Concept check</span>Look at those two pairs: <strong>9.4714078 − 8.4714078 = 1</strong>, and <strong>−9.4494856 − (−10.4494856) = 1</strong>. That is not a coincidence, and it is a free check on your sheet. Because C = S·N(d₁) − Ke<sup>−yT</sup>N(d₂), dividing by C gives <strong>w<sub>rS</sub> − w<sub>dy</sub> = C/C = 1 exactly</strong>. The same identity holds for the put. <strong>If your two weights do not differ by exactly 1, you have made an arithmetic error.</strong></div>
+      <div class="note"><span class="eyebrow">Concept check</span>Look at those two pairs: <strong>9.4714078 − 8.4714078 = 1</strong>, and <strong>−9.4494856 − (−10.4494856) = 1</strong>. That is not a coincidence, and it is a free check on your sheet — here T = 1. Because C = S·N(d₁) − Ke<sup>−yT</sup>N(d₂), dividing by C gives <strong>w<sub>rS</sub> − w<sub>dy</sub>/T = C/C = 1</strong>, because ρ/T = K·e<sup>−yT</sup>·N(d₂). The same identity holds for the put. With <strong>T = 1</strong> — every class example — the two weights therefore differ by exactly 1. <strong>For any other T, check w<sub>rS</sub> − w<sub>dy</sub>/T = 1 instead</strong>; the plain difference will not be 1.</div>
       <div class="sheet">
         <table>
           <thead><tr><th class="l"></th><th class="l">Excel</th><th>μ</th><th>σ</th><th>VaR 1%, 1 day</th></tr></thead>
@@ -147,7 +159,7 @@
               <div class="ro"><div class="k">Rho</div><div class="v" id="ovRho">—</div></div>
               <div class="ro"><div class="k">w for dy</div><div class="v" id="ovWy">—</div></div>
               <div class="ro"><div class="k">w for r<sub>S</sub></div><div class="v" id="ovWs">—</div></div>
-              <div class="ro"><div class="k">w<sub>rS</sub> − w<sub>dy</sub></div><div class="v" id="ovChk">—</div></div>
+              <div class="ro"><div class="k">w<sub>rS</sub> − w<sub>dy</sub>/T</div><div class="v" id="ovChk">—</div></div>
               <div class="ro"><div class="k">σ of option return</div><div class="v" id="ovSig">—</div></div>
               <div class="ro hi"><div class="k">VaR (1 day)</div><div class="v" id="ovVar">—</div></div>
               <div class="ro"><div class="k">VaR of the stock</div><div class="v" id="ovVs">—</div></div>
@@ -196,7 +208,7 @@
         </table>
       </div>
       <div class="warn"><span class="eyebrow">Slide check</span>A small labelling slip on the analysis slide: it reads "<strong>C1u</strong> = Max(0, 904.84 − 1000) = 0.00" when that line is the <strong>down</strong> state and should read <strong>C1d</strong>. The value 0.00 is correct. Also note the bond block: recomputing with unrounded u and d gives <strong>B = −461.1853</strong> against the deck's −461.19, and C = <strong>63.7939</strong> against 63.79 — rounding only.</div>
-      <div class="note"><span class="eyebrow">Concept check</span>The two weights are <strong>+8.23 on the stock and −7.23 on the bond before discounting</strong>, and those differ by exactly <strong>1</strong> again, for the same reason as before: ΔS + B = C. The second element becomes 7.02 only after multiplying by T/(1+y) = 1/1.03. <strong>Check the raw blocks differ by 1 before you apply the duration factor.</strong></div>
+      <div class="note"><span class="eyebrow">Concept check</span>The two weights are <strong>+8.23 on the stock and −7.23 on the bond before discounting</strong>, and they <strong>sum to exactly 1</strong>, because ΔS + B = C — this one holds for any T. The second element becomes 7.02 only after multiplying by T/(1+y) = 1/1.03. <strong>Check the raw block weights sum to 1 before you apply the duration factor.</strong></div>
       <div class="note"><span class="eyebrow">Fine print</span>A one-step binomial is a crude pricer. On the additional-questions put (strike 1,050, T = 1) the binomial gives <strong>0.7864</strong> while Black-Scholes gives <strong>3.5367</strong> — a factor of four and a half. Yet the two VaRs come out at <strong>−10.7423%</strong> and <strong>−10.7474%</strong>, within 0.005 percentage points. <strong>The weight vector is far more robust than the price</strong>, because the gearing and the price errors largely cancel in the ratio.</div>
     </section>
 
@@ -219,6 +231,7 @@
       </div>
       <div class="note"><span class="eyebrow">Why this matters</span>The deck's sanity check is worth repeating because it makes the method obvious: for y = 2x + 1 with x = 10 and Δx = 0.1, the central difference gives (21.2 − 20.8)/0.2 = <strong>exactly 2</strong>, which is the true derivative. For a <strong>linear</strong> function the central difference is exact at any step size; for a curved one, a step that is too large picks up curvature and a step that is too small loses precision to rounding. <strong>ΔS = 1 on a spot of 1,382 is about 0.07% — a good default.</strong></div>
       <div class="note"><span class="eyebrow">Fine print</span>The deck also gives <span class="term">cash-or-nothing digital options</span>, which pay $1 in the money and have closed forms: <span class="fx">C = e<sup>−yT</sup>N(d₂)</span> and <span class="fx">P = e<sup>−yT</sup>N(−d₂)</span>. Their deltas and rhos come from the same machinery, and the class digital sheet confirms the numerical and analytical rho agree to seven digits — <strong>0.6739535</strong> for the call.</div>
+      <div class="warn"><span class="eyebrow">Workbook check</span>In the exercise answer sheet's <em>digital option</em> tab, the analytical digital-call Delta is computed as <code>EXP(-y*T)*N(d2)/(S*σ*SQRT(T))</code> — the <strong>CDF</strong> N(d₂) where the <strong>density</strong> φ(d₂) belongs. For S = K = 120, σ = 25%, T = 0.25, y = 1.25% it reports <strong>0.0322</strong>; the correct value is <strong>0.0265</strong>, and the same sheet's own numerical Delta (0.02648) says so. A giveaway: the resulting stock weight Δ·S/Op always comes out as exactly 1/(σ√T) = 8, whatever the inputs; the correct weight is <strong>6.5753</strong>. The digital Rho in that sheet is right.</div>
     </section>
 
     <section class="block">
@@ -254,6 +267,24 @@
       <div class="eq">σ<sub>Port</sub> = √(2 × 0.5<sup>2</sup> × 0.25<sup>2</sup> + 2 × 0.55 × 0.5 × 0.5 × 0.25<sup>2</sup>) = √0.0484375 = <b>22.0085%</b>
         <span class="lbl">The mean is unchanged at 12%, because both assets have the same μ. Diversification buys 2.99 points of volatility and 6.97 points of VaR, for free.</span></div>
       <div class="note"><span class="eyebrow">Concept check</span>The deck's four notes are the summary of the whole course. Portfolio return is the <strong>weighted average</strong> of asset returns. <strong>Cash has zero risk.</strong> Assets with the <strong>same source of risk</strong> — a stock and an option on it — can be offset exactly, which is delta hedging. Assets with <strong>non-zero correlation</strong> can only be partly offset, which is diversification. <strong>Hedging removes risk; diversification dilutes it.</strong></div>
+    </section>
+
+    <section class="block">
+      <h3>Deeper: the two Greeks the course leaves out</h3>
+      <div class="grid2" style="margin-top:14px">
+        <div class="deep"><div class="deep-tag">Hull OFOD<b>Gamma</b></div><div class="deep-body">
+          <h4>What two Greeks cannot see</h4>
+          <p>Reducing an option to Delta and Rho is a <strong>first-order</strong> statement: it assumes the option&rsquo;s value moves in a straight line with the stock. It does not. The curvature is Gamma = &phi;(d&#8321;)/(S&sigma;&radic;T), and the fuller expansion is &Delta;Op &asymp; &Delta;&middot;&Delta;S + &frac12;&Gamma;(&Delta;S)&sup2;.</p>
+          <p>The consequence is not that the VaR is slightly off &mdash; it is that the <strong>shape</strong> of the P&amp;L distribution changes. Because (&Delta;S)&sup2; is always positive, a long option position has a right-skewed P&amp;L: the delta-normal number <em>overstates</em> its risk. A short option position is skewed the other way and delta-normal <em>understates</em> it, which is the dangerous direction and the reason Hull spends a chapter on the delta-gamma correction.</p>
+          <p>For the one-day horizons in this course the correction is tiny, exactly as convexity is for bonds. Say that sentence rather than ignoring the issue.</p>
+        </div></div>
+        <div class="deep b2"><div class="deep-tag">Hull OFOD<b>Vega</b></div><div class="deep-body">
+          <h4>The risk factor this course does not model</h4>
+          <p>&sigma; enters every formula on this page as a <strong>constant</strong> estimated from history. It is not constant. Vega = S&radic;T&middot;&phi;(d&#8321;) measures what an option is worth per unit of volatility, and for the class example it is <strong>542.62</strong> &mdash; a one percentage-point rise in &sigma; is worth about 5.4 on an option priced at 83.41.</p>
+          <p>Compare that with the two factors the course does model and the omission is stark: volatility risk is the same order of magnitude as rate risk for an at-the-money option. A complete measurement would add &sigma; as a third risk factor with its own row in &Omega;. The decks leave it out, and the only defensible reason is that the VaR horizon is one day.</p>
+          <p>The same logic explains implied volatility: quote an option price and invert Black-Scholes for the &sigma; that reproduces it. Plot implied &sigma; against strike and it is not flat &mdash; the smile is the market saying the normal assumption behind this whole course is wrong in the tails.</p>
+        </div></div>
+      </div>
     </section>
 
     <section class="block">

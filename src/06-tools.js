@@ -356,7 +356,7 @@ function optionVarBench(){
   $("#ovRho").textContent = signed(rh,4);
   $("#ovWy").textContent = signed(wy,7);
   $("#ovWs").textContent = signed(ws,7);
-  $("#ovChk").textContent = fmt(ws - wy,7);
+  $("#ovChk").textContent = fmt(ws - wy/T,7);
   $("#ovSig").textContent = fmt(sp*100,6) + "%";
   $("#ovVar").textContent = signed(v*100,5) + "%";
   $("#ovVs").textContent = signed(vs*100,5) + "%";
@@ -364,10 +364,10 @@ function optionVarBench(){
   $("#ovFx").innerHTML = "w = [ dy " + signed(wy,6) + " ; r<sub>S</sub> " + signed(ws,6) + " ] &nbsp;·&nbsp; σ<sub>P</sub> = <b>"
     + fmt(sp*100,6) + "%</b> &nbsp;·&nbsp; =μ+<b>NORMSINV</b>(" + fmt(a,4) + ")*σ = <b>" + signed(v*100,5) + "%</b>";
   var vn = $("#ovNote");
-  vn.className = "verdict " + (Math.abs(ws - wy - 1) < 1e-6 ? "good" : "bad");
+  vn.className = "verdict " + (Math.abs(ws - wy/T - 1) < 1e-6 ? "good" : "bad");
   vn.innerHTML = (isCall ? "Call" : "Put") + " worth <b>" + fmt(px,4) + "</b>, Δ = <b>" + signed(dl,6) + "</b>, ρ = <b>" + signed(rh,3)
-    + "</b>. Weights <b>" + signed(wy,5) + "</b> on dy and <b>" + signed(ws,5) + "</b> on r<sub>S</sub>, differing by <b>" + fmt(ws-wy,7)
-    + "</b>" + (Math.abs(ws-wy-1) < 1e-6 ? " — exactly 1, as it must be." : " — <b>that should be 1.</b>")
+    + "</b>. Weights <b>" + signed(wy,5) + "</b> on dy and <b>" + signed(ws,5) + "</b> on r<sub>S</sub>; w<sub>rS</sub> − w<sub>dy</sub>/T = <b>" + fmt(ws-wy/T,7)
+    + "</b>" + (Math.abs(ws-wy/T-1) < 1e-6 ? " — exactly 1, as it must be." : " — <b>that should be 1.</b>")
     + " VaR <b>" + signed(v*100,5) + "%</b> against the stock's <b>" + signed(vs*100,5) + "%</b>.";
   drawOption(S,K,y,sg,T,isCall,px,dl,ss,z);
 }
@@ -398,9 +398,9 @@ CHARTS.push(optionVarBench); optionVarBench();
 TOOL_TALK["Option VaR bench"] = function(target){
   var chk = tn("#ovChk"), gear = tn("#ovGear"), isCall = $("#ovType").value === "c";
   if(!isFinite(chk)) return ["sad","I need a positive spot, strike, volatility and maturity before Black‑Scholes means anything (｡•́ - •̀｡)"];
-  if(Math.abs(chk - 1) > 1e-5) return ["fluster","The two weights differ by <b>" + tv("#ovChk") + "</b> and they should differ by <b>exactly 1</b> (・・；) Something upstream is off."];
+  if(Math.abs(chk - 1) > 1e-5) return ["fluster","w<sub>rS</sub> − w<sub>dy</sub>/T comes out at <b>" + tv("#ovChk") + "</b> and it should be <b>exactly 1</b> (・・；) Something upstream is off."];
   if(target && target.id === "ovType")
-    return ["smug","Switched to the <b>" + (isCall ? "call" : "put") + "</b>. Weights <b>" + tv("#ovWy") + "</b> and <b>" + tv("#ovWs") + "</b> — still exactly 1 apart, because C = S·N(d₁) − Ke<sup>−yT</sup>N(d₂) does not care which option you picked~"];
+    return ["smug","Switched to the <b>" + (isCall ? "call" : "put") + "</b>. Weights <b>" + tv("#ovWy") + "</b> and <b>" + tv("#ovWs") + "</b> — w<sub>rS</sub> − w<sub>dy</sub>/T is still exactly 1, because C = S·N(d₁) − Ke<sup>−yT</sup>N(d₂) does not care which option you picked~"];
   if(target && target.id === "ovR")
     return ["intense","Correlation now <b>" + fmt(num("#ovR",0),4) + "</b>, giving σ<sub>P</sub> = <b>" + tv("#ovSig") + "</b>. The class data has only <b>0.0583</b>, which is why the yield leg barely matters there."];
   if(isFinite(gear) && Math.abs(gear) > 5)

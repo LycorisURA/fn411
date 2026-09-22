@@ -42,22 +42,39 @@ follows throughout:
 
 ## What's on the page
 
-Nine panels, reachable from the rail:
+Ten panels, reachable from the rail:
 
 | | Panel | Contents |
 |---|---|---|
 | 00 | Orientation | The framework, the weight table, the two conventions |
+| GO | Exam day | Revision planner (20 / 45 / 90 / 180 min), the question router, the five checks, the numbers worth memorising, your own wrong answers collected for retry |
 | 01 | Financial institutions | Risk taxonomy, bankruptcy as a left-tail event, PD by rating and implied capital |
-| 02 | Market risk | VaR, expected shortfall, coherence, the subadditivity counterexample, √T scaling, EWMA |
-| 03 | Fixed income | Taylor → duration, the T-bill example, the 5-year coupon bond, bond+stock portfolio, marginal and component VaR |
-| 04 | Options | Black-Scholes, Delta and Rho, both the Greeks and building-block approaches, numerical Greeks, three risk-management levers |
+| 02 | Market risk | VaR, expected shortfall, coherence, the subadditivity counterexample, √T scaling, EWMA, the three standard approaches and backtesting |
+| 03 | Fixed income | Taylor → duration, the T-bill example, the 5-year coupon bond, bond+stock portfolio, marginal and component VaR, convexity and cash-flow mapping |
+| 04 | Options | Black-Scholes, Delta and Rho, both the Greeks and building-block approaches, numerical Greeks, three risk-management levers, what Gamma and Vega would add |
 | 05 | Forwards & futures | Forward = call − put, cost of carry, money weights, ZCB and coupon-bond futures |
 | XL | Spreadsheet layer | The eight-step workbook skeleton, legacy↔modern function map, array formulas, a 14-item trap list |
 | AS | Assignments | Three additional questions and two deck practice problems, worked in full |
 | EX | Exam prep | Timed self-marking mock and a one-page formula sheet |
 
-Plus **7 interactive benches**, **4 sorter games**, **56 flashcards** and **90 tiered
-questions** (42 easy / 30 medium / 18 difficult).
+Plus **7 interactive benches**, **4 sorter games**, **66 flashcards**, **11 fully worked
+problems** and **93 tiered questions** (42 easy / 31 medium / 20 difficult).
+
+Every panel opens with a **sixty-second version**: the four or five sentences that carry the
+lecture, and the one line to write down if nothing else.
+
+### Built for a deadline
+
+| | |
+|---|---|
+| <kbd>Ctrl</kbd>+<kbd>K</kbd> or <kbd>/</kbd> | Jump to any section, formula, trap, worked problem, flashcard or question — everything on the page is indexed |
+| <kbd>S</kbd> | The whole course as one printable A4 sheet, sixteen cards, with a print button |
+| <kbd>1</kbd>…<kbd>0</kbd>, <kbd>[</kbd> <kbd>]</kbd> | Switch tails |
+| <kbd>T</kbd> <kbd>C</kbd> <kbd>?</kbd> | Theme · chat · the shortcut list |
+
+The **GO** panel turns whatever time is left into an ordered plan whose steps link to the
+exact section they name, and collects every question you have answered wrongly so you can
+clear it and try again.
 
 ### Excel throughout
 
@@ -89,7 +106,7 @@ Each bench's default inputs reproduce the corresponding class workbook exactly:
 | Option VaR · weights | `8.4714078` / `9.4714078` | identical |
 | Futures · cost of carry | `101.511306` | `101.51` |
 
-**Thirteen figures in the course materials disagree with a recomputation.** They are
+**Fifteen figures in the course materials disagree with a recomputation.** They are
 documented in [ERRATA.md](ERRATA.md) and flagged in context on the page. The four largest:
 
 - L5 forward slide: `Rho(call) = 25.29` should be **52.293678** — corrupts the `dy` weight
@@ -116,6 +133,7 @@ Concatenates `src/` into `the-left-tail.html`. Edit the sources, not the built f
 src/
 ├── 01-head.html      <head>, CSS tokens, masthead, rail
 ├── 02a-panels.html   Tail 00 orientation + Tail 01
+├── 02g-cram.html     Tail GO exam day: planner, question router, checks, weak spots
 ├── 02b-panels.html   Tail 02 market risk
 ├── 02c-panels.html   Tail 03 fixed income
 ├── 02d-panels.html   Tail 04 options
@@ -126,10 +144,14 @@ src/
 ├── 04b-data.js       QUIZ, PSET, SEEDS, TEXTBOOK_CTX, LINES
 ├── 05-engine.html    study-platform-kit engine — do not edit
 ├── 06-tools.js       the seven benches + TOOL_TALK reactions
+├── 06b-ux.js         jump palette, shortcuts, planner, weak spots, printable sheet
 └── 07-boot.html      boot()
 ```
 
-Part order matters: panels → `course-data` → engine → `course-tools` → `boot()`.
+Part order matters: panels → `course-data` → engine → `course-tools` → UX layer → `boot()`.
+
+`06b-ux.js` wraps `boot()` rather than editing the engine, and keeps its own state under
+`COURSE.storageKey + ".ux"` so the engine's saved progress is untouched.
 
 ### Adding questions
 

@@ -362,6 +362,73 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
 @media (max-width:560px){.fxrow{grid-template-columns:minmax(0,1fr);gap:3px}}
 .keys{font-family:var(--mono);font-size:11px;border:1px solid var(--rule);border-bottom-width:2px;border-radius:3px;
   padding:1px 5px;background:var(--band);white-space:nowrap}
+
+/* ============ jump-to palette ============ */
+.pal-back{position:fixed;inset:0;z-index:80;background:rgba(10,18,24,.45);display:flex;align-items:flex-start;justify-content:center;padding:8vh 16px 16px}
+.pal{width:min(660px,100%);background:var(--card);border:1px solid var(--rule);border-radius:10px;box-shadow:0 24px 60px var(--shadow);overflow:hidden;display:flex;flex-direction:column;max-height:76vh}
+.pal input{font:inherit;font-size:16px;padding:13px 15px;border:0;border-bottom:1px solid var(--rule);background:var(--card);color:var(--ink);width:100%}
+.pal input:focus{outline:none}
+.pal-list{overflow-y:auto;padding:5px}
+.pal-item{display:flex;gap:10px;align-items:baseline;padding:8px 11px;border-radius:5px;cursor:pointer;border:1px solid transparent}
+.pal-item[aria-selected="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.pal-item .kind{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);flex:0 0 68px}
+.pal-item .lab{font-size:14px;line-height:1.35;flex:1 1 auto;min-width:0}
+.pal-item .lab b{color:var(--accent);font-weight:600}
+.pal-item .where{font-family:var(--mono);font-size:10.5px;color:var(--faint);flex:0 0 auto}
+.pal-foot{padding:7px 12px;border-top:1px solid var(--rule);background:var(--band);font-size:11.5px;color:var(--faint);display:flex;gap:14px;flex-wrap:wrap}
+.pal-empty{padding:18px;color:var(--mute);font-size:14px}
+@keyframes jumpflash{0%{background:var(--gold-soft)}100%{background:transparent}}
+.jumped{animation:jumpflash 1.6s ease-out}
+
+/* ============ cram planner + sheet overlay ============ */
+.clock-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.clock-btns button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.plan{list-style:none;margin:0;padding:0;counter-reset:step}
+.plan li{display:grid;grid-template-columns:26px 58px minmax(0,1fr);gap:10px;align-items:start;padding:9px 2px;border-bottom:1px dashed var(--rule)}
+.plan li:last-child{border-bottom:0}
+.plan .tick{width:20px;height:20px;border:1.5px solid var(--rule);border-radius:4px;background:var(--paper);cursor:pointer;padding:0;line-height:1;font-size:13px;color:var(--accent)}
+.plan .tick[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.plan .mins{font-family:var(--mono);font-size:11.5px;color:var(--faint);padding-top:3px;white-space:nowrap}
+.plan .what{font-size:14.5px;line-height:1.5}
+.plan .what a{color:var(--accent);text-decoration:none;border-bottom:1px dotted var(--accent);cursor:pointer}
+.plan li.done .what{opacity:.5;text-decoration:line-through}
+.plan-sum{margin-top:10px;font-family:var(--mono);font-size:12px;color:var(--mute)}
+.weak{display:grid;gap:7px}
+.weak-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid var(--rule);border-left:3px solid var(--bad);border-radius:0 2px 2px 0;background:var(--card);padding:8px 11px;font-size:13.5px}
+
+.sheet-back{display:none;position:fixed;inset:0;z-index:75;background:var(--paper);overflow-y:auto}
+.sheet-back.open{display:block}
+.sheet-bar{position:sticky;top:0;display:flex;gap:9px;align-items:center;padding:9px clamp(12px,3vw,26px);background:var(--ink);color:var(--paper);z-index:2}
+.sheet-bar h3{font-size:16px;color:var(--paper);margin-right:auto}
+.sheet-bar .btn.ghost{color:var(--paper);border-color:rgba(255,255,255,.45);background:transparent}
+.sheet-bar .btn.ghost:hover{color:var(--paper);border-color:var(--paper)}
+.sheet-bar .esc{font-size:11.5px;opacity:.7;font-family:var(--mono)}
+.a4{max-width:1180px;margin:0 auto;padding:16px clamp(12px,3vw,26px) 60px;columns:2;column-gap:26px}
+@media (max-width:820px){.a4{columns:1}}
+.a4 .card{break-inside:avoid;border:1px solid var(--rule);border-left:3px solid var(--accent);background:var(--card);border-radius:0 2px 2px 0;padding:9px 11px;margin:0 0 10px}
+.a4 .card h4{font-family:var(--sans);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:5px}
+.a4 .card p,.a4 .card li{font-size:12.5px;line-height:1.5}
+.a4 .card .f{font-family:var(--mono);font-size:12.5px;line-height:1.75;display:block}
+.a4 .card ul{margin:0;padding-left:16px}
+.a4 .card.trap{border-left-color:var(--bad)}
+.a4 .card.trap h4{color:var(--bad)}
+@media print{
+  body > *{display:none!important}
+  body > .sheet-back.open{display:block!important;position:static;overflow:visible;background:#fff;color:#000}
+  .sheet-bar{display:none!important}
+  .a4{columns:2;padding:0;max-width:none}
+  .a4 .card{border-color:#999;background:#fff;box-shadow:none}
+  .a4 .card h4{color:#000}
+  @page{size:A4 portrait;margin:11mm}
+}
+
+/* ============ sixty-second summary ============ */
+.tldr{border:1px solid var(--accent);border-radius:2px;background:var(--accent-soft);padding:12px 14px;margin-bottom:22px}
+.tldr .eyebrow{color:var(--accent);display:block;margin-bottom:5px}
+.tldr ol{margin:0;padding-left:19px;font-size:14.5px}
+.tldr li{margin-bottom:4px;line-height:1.5}
+.tldr li::marker{color:var(--accent);font-family:var(--mono);font-size:12px}
+.tldr .one{font-family:var(--mono);font-size:13.5px;background:var(--card);border:1px solid var(--rule);border-radius:2px;padding:6px 9px;margin-top:8px;display:block;overflow-x:auto}
 </style>
 
 <header class="mast">
@@ -375,6 +442,8 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
       <span class="chip xpchip" id="xpChip"><b id="hudLvl">Lv 1</b><span class="xpbar"><i id="hudBar"></i></span><span id="hudXp">0 XP</span></span>
       <span class="chip" title="Correct answers in a row">Streak <b id="hudStreak">0</b></span>
       <span class="chip" id="chipProgress"><b>0</b>/0</span>
+      <button class="tbtn" id="palBtn" type="button" title="Jump to anything on the page (Ctrl+K)">⌕ Jump</button>
+      <button class="tbtn" id="sheetBtn" type="button" title="The one-page sheet, ready to print (S)">▤ A4 sheet</button>
       <button class="tbtn" id="themeBtn" type="button">◐ Theme</button>
     </div>
   </div>
@@ -447,15 +516,16 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
     <section class="block">
       <h3>The shape of the page</h3>
       <div class="prose">
-        <p>Pick a <span class="term">tail</span> from the rail. Tails <strong>01–05</strong> are the five lecture decks in teaching order, each with the worked examples recomputed number by number. <strong>XL</strong> collects every Excel function and every trap in one reference. <strong>AS</strong> works the three additional questions in full. <strong>EX</strong> is a timed mock and the A4 sheet.</p>
+        <p>Pick a <span class="term">tail</span> from the rail. <strong>GO</strong> is exam day: a revision planner for whatever time you have left, a router that turns the words in a question into a weight vector, and the five checks worth running before you hand anything in. Tails <strong>01–05</strong> are the five lecture decks in teaching order, each with the worked examples recomputed number by number. <strong>XL</strong> collects every Excel function and every trap in one reference. <strong>AS</strong> works the three additional questions in full. <strong>EX</strong> is a timed mock and the A4 sheet.</p>
+        <p>Three things are always one keystroke away. <span class="keys">Ctrl</span>+<span class="keys">K</span> jumps to any formula, trap, worked problem or flashcard on the page. <span class="keys">S</span> opens the whole course as one printable sheet. <span class="keys">1</span>–<span class="keys">9</span> switch tails. Anything you answer wrongly collects itself on the <strong>GO</strong> panel so you can retry it later.</p>
         <p>Answering questions earns XP. Get <strong>80%</strong> of a panel's quiz right and the tail is <strong>measured ◣</strong>.</p>
       </div>
       <div class="grid3">
         <div class="ro"><div class="k">Difficulty tiers</div><div class="v">e · m · d</div></div>
         <div class="ro hi"><div class="k">To measure a tail</div><div class="v">80%</div></div>
-        <div class="ro"><div class="k">Errata flagged</div><div class="v">13</div></div>
+        <div class="ro"><div class="k">Errata flagged</div><div class="v">15</div></div>
       </div>
-      <div class="warn"><span class="eyebrow">Slide check</span>Nine figures in the lecture decks and four conventions in the workbooks disagree with a recomputation. Each one is flagged in a box like this one, on the panel where it appears, with the slide's figure, the correct figure and the cause. <strong>You may be marked against the slide, so both numbers are shown.</strong> The biggest is the forward-contract Rho on lecture 5 (25.29 should be 52.2937) and a futures price of 121.42 that cannot be right because the undiscounted cash flows only total 108.</div>
+      <div class="warn"><span class="eyebrow">Slide check</span>Nine figures in the lecture decks and six in the workbooks disagree with a recomputation. Each one is flagged in a box like this one, on the panel where it appears, with the slide's figure, the correct figure and the cause. <strong>You may be marked against the slide, so both numbers are shown.</strong> The biggest is the forward-contract Rho on lecture 5 (25.29 should be 52.2937) and a futures price of 121.42 that cannot be right because the undiscounted cash flows only total 108.</div>
       <div class="note"><span class="eyebrow">The rule about tiers</span>A question is <strong>difficult</strong> because of how much thinking it needs, not because it has arithmetic in it. Some one-line calculations are easy; some of the hardest questions here have no numbers at all.</div>
     </section>
 
@@ -474,6 +544,17 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
       <span class="eyebrow">Tail 01 · Financial Institutions</span>
       <h2>Where the risk comes from</h2>
       <p class="lede">Every activity a financial institution does generates its own kind of risk. Market risk is one of nine — and the reason it gets measured so precisely is that it is the one that can bankrupt you in a week.</p>
+    </div>
+
+    <div class="tldr">
+      <span class="eyebrow">The sixty-second version</span>
+      <ol>
+        <li>Pick a business line and the risk follows from it. <strong>Security trading &rarr; market risk</strong>; lending &rarr; credit; process &rarr; operational.</li>
+        <li>Bankruptcy is a statement about the left tail: the firm fails when the loss exceeds equity, <strong>r<sub>A</sub> &lt; &minus;E&#8320;/A&#8320;</strong>.</li>
+        <li>Read that forwards for a default probability, backwards for the capital a target rating needs. The price of safety is wildly non-linear in the rating.</li>
+        <li>Regulation writes the rules; supervision checks that a particular firm follows them. BIS for banks, IOSCO for securities, IAIS for insurance &mdash; and Basel wants <strong>at least 250 business days</strong> of data, which is why every class workbook has 250 rows.</li>
+      </ol>
+      <span class="one">PD = NORMSDIST((&minus;E&#8320;/A&#8320; &minus; &mu;_A) / &sigma;_A)</span>
     </div>
 
     <section class="block">
@@ -604,12 +685,126 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
     </section>
   </article>
 
+  <!-- ==================== PANEL: cram ==================== -->
+  <article class="panel" id="p-cram" hidden>
+    <div class="panel-head">
+      <span class="eyebrow">Tail GO · Exam day</span>
+      <h2>When the clock is running</h2>
+      <p class="lede">Everything on this page, sorted by how much time you have left. Pick a clock, work the list, and use the router below whenever a question looks unfamiliar — it almost never is.</p>
+    </div>
+
+    <section class="block">
+      <h3>Pick your clock</h3>
+      <div class="tool" id="planTool">
+        <div class="tool-h"><div><span class="eyebrow">Plan</span><h4>Revision planner</h4></div><span class="num" id="planScore" style="font-size:12px;color:var(--mute)"></span></div>
+        <div class="tool-b">
+          <div class="clock-btns" id="clockBtns"></div>
+          <ol class="plan" id="planList"></ol>
+          <div class="plan-sum" id="planSum"></div>
+          <div class="verdict" id="planNote">—</div>
+        </div>
+      </div>
+      <div class="note"><span class="eyebrow">How to use it</span>Each line jumps to the exact section it names. Ticks are saved with the rest of your progress, so you can put the page down and come back to the same place.</div>
+    </section>
+
+    <section class="block">
+      <h3>What kind of question is this?</h3>
+      <div class="prose">
+        <p>Read the question once and answer one thing: <strong>what are the risk factors?</strong> Everything else — the weights, the matrix, the VaR line — follows mechanically. This table is the whole course in one page.</p>
+      </div>
+      <div class="sheet">
+        <table>
+          <caption>From the words in the question to the weight vector</caption>
+          <thead><tr><th class="l">The question gives you</th><th class="l">Risk factors</th><th class="l">Weight vector w</th><th class="l">Go to</th></tr></thead>
+          <tbody>
+            <tr><td class="l">μ and σ of one return</td><td class="l">r</td><td class="l">w = 1 — use VaR = μ + z σ directly</td><td class="l">Tail 02</td></tr>
+            <tr><td class="l">Money in several assets, their σ's and correlations</td><td class="l">one return per asset</td><td class="l">w<sub>i</sub> = value<sub>i</sub> / W₀; Ω<sub>ij</sub> = ρ<sub>ij</sub>σ<sub>i</sub>σ<sub>j</sub></td><td class="l">Tail 02</td></tr>
+            <tr><td class="l">A T-bill or zero-coupon bond and a rate history</td><td class="l">dy at its maturity</td><td class="l">w = −D<sub>mod</sub> (× portfolio share)</td><td class="l">Tail 03</td></tr>
+            <tr class="pick"><td class="l">A coupon bond and a spot curve</td><td class="l">dy₁ … dy<sub>T</sub>, one per cash flow</td><td class="l">w<sub>t</sub> = (PV<sub>t</sub>/B) × (−t)</td><td class="l">Tail 03</td></tr>
+            <tr><td class="l">A call or put with S, K, σ, y, T</td><td class="l">r<sub>S</sub>, dy</td><td class="l">w = [Δ·S/Op ; ρ/Op]</td><td class="l">Tail 04</td></tr>
+            <tr><td class="l">"Construct the equivalent asset", or an up/down tree</td><td class="l">r<sub>S</sub>, dy</td><td class="l">w = [ΔS/Op ; −(B/Op)·T/(1+y)]</td><td class="l">Tail 04</td></tr>
+            <tr><td class="l">A forward with a delivery price</td><td class="l">r<sub>S</sub>, dy</td><td class="l">w = [S/V<sub>F</sub> ; T·K·e<sup>−yT</sup>/V<sub>F</sub>]</td><td class="l">Tail 05</td></tr>
+            <tr><td class="l">Futures on an asset</td><td class="l">r<sub>S</sub>, dy<sub>T</sub></td><td class="l">w = [S₀ ; T·S₀] — <strong>money</strong></td><td class="l">Tail 05</td></tr>
+            <tr><td class="l">Futures on a zero-coupon bond</td><td class="l">dy<sub>(T+N)</sub>, dy<sub>T</sub></td><td class="l">w = [−(T+N)B₀ ; +T·B₀] — money</td><td class="l">Tail 05</td></tr>
+            <tr><td class="l">Futures on a coupon bond</td><td class="l">one dy<sub>(T+k)</sub> per post-delivery flow, plus dy<sub>T</sub></td><td class="l">w = [… −(T+k)X<sub>k</sub>B<sub>k</sub> … ; +T ΣX<sub>k</sub>B<sub>k</sub>]</td><td class="l">Tail 05</td></tr>
+            <tr><td class="l">A mix of positions</td><td class="l">the union of all of the above</td><td class="l">add the adjusted weights factor by factor</td><td class="l">Tail AS</td></tr>
+            <tr><td class="l">Loss outcomes with probabilities</td><td class="l">none — the distribution is discrete</td><td class="l">sort losses, cumulate probability, read the quantile</td><td class="l">Tail 02</td></tr>
+            <tr><td class="l">Assets, debt, μ<sub>A</sub>, σ<sub>A</sub></td><td class="l">r<sub>A</sub></td><td class="l">no w — PD = N((−E₀/A₀ − μ<sub>A</sub>)/σ<sub>A</sub>)</td><td class="l">Tail 01</td></tr>
+            <tr><td class="l">"Minimise the risk with futures"</td><td class="l">the position's factors plus each contract's</td><td class="l">choose n to minimise (w + Hn)ᵀΩ(w + Hn)</td><td class="l">Tail 05</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note"><span class="eyebrow">The one habit worth building</span>Write the factor list down <strong>before</strong> you write any numbers. Nearly every lost mark in this course comes from a weight vector that is in the wrong order, missing a row, or missing its minus sign — not from arithmetic.</div>
+    </section>
+
+    <section class="block">
+      <h3>The five checks that catch almost every lost mark</h3>
+      <div class="fxlist">
+        <div class="fxrow"><code>Is VaR negative?</code><div>This course writes VaR = μ + z σ with z negative. A positive answer means you dropped the sign or used the wrong z. <b>Label it</b>: "VaR(1%, 1 day) = −1.4521%".</div></div>
+        <div class="fxrow"><code>Do σ, y and T share one time unit?</code><div>Daily σ with an annual y is the single most expensive slip on the option questions. The deck's own example uses 5% per <b>month</b> with T = 12 <b>months</b>.</div></div>
+        <div class="fxrow"><code>Is w in the same order as Ω?</code><div>The option workbook stores <b>dy first, r<sub>S</sub> second</b>. Nothing will error — you will just get a plausible wrong number.</div></div>
+        <div class="fxrow"><code>w<sub>rS</sub> − w<sub>dy</sub>/T = 1</code><div>Free and exact for any call, put or forward. With T = 1 — every class example — the two weights simply differ by 1.</div></div>
+        <div class="fxrow"><code>Σ component VaR = portfolio VaR</code><div>Euler's theorem. If the components do not add up to the total, the Ωw column is wrong. And a futures price must sit between the PV of its cash flows and their undiscounted sum.</div></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h3>Numbers worth carrying in your head</h3>
+      <div class="grid3">
+        <div class="ro hi"><div class="k">z at 1%</div><div class="v">−2.326348</div></div>
+        <div class="ro"><div class="k">z at 2.5%</div><div class="v">−1.959964</div></div>
+        <div class="ro"><div class="k">z at 5%</div><div class="v">−1.644854</div></div>
+        <div class="ro"><div class="k">z at 10%</div><div class="v">−1.281552</div></div>
+        <div class="ro"><div class="k">ES mult · 1%</div><div class="v">2.665214</div></div>
+        <div class="ro"><div class="k">ES mult · 2.5%</div><div class="v">2.337803</div></div>
+        <div class="ro"><div class="k">ES mult · 5%</div><div class="v">2.062713</div></div>
+        <div class="ro"><div class="k">√252</div><div class="v">15.8745</div></div>
+        <div class="ro"><div class="k">√10</div><div class="v">3.16228</div></div>
+      </div>
+      <div class="note"><span class="eyebrow">Why these</span>−1.96 is the <strong>2.5%</strong> number and belongs to a 97.5% VaR; the lecture-3 portfolio slide uses it for a 95% VaR and overstates the answer by 19.2%. The ES multiplier is φ(z<sub>α</sub>)/α, so ES = μ − σ × multiplier when you keep the course's sign convention.</div>
+    </section>
+
+    <section class="block">
+      <h3>Your weak spots</h3>
+      <div class="prose">
+        <p>Every question you have answered wrongly, newest first. Retrying clears your answer so the question comes back blank.</p>
+      </div>
+      <div class="weak" id="weakSpots"></div>
+    </section>
+
+    <section class="block">
+      <h3>Shortcuts</h3>
+      <div class="fxlist">
+        <div class="fxrow"><code><span class="keys">Ctrl</span>+<span class="keys">K</span> &nbsp;or&nbsp; <span class="keys">/</span></code><div>Jump to any panel, section, formula, worked problem, trap or flashcard by typing a few letters.</div></div>
+        <div class="fxrow"><code><span class="keys">S</span></code><div>Open the one-page sheet — the whole course on one A4, with a print button.</div></div>
+        <div class="fxrow"><code><span class="keys">1</span> … <span class="keys">9</span></code><div>Jump straight to a tail. <span class="keys">[</span> and <span class="keys">]</span> step through them in order.</div></div>
+        <div class="fxrow"><code><span class="keys">T</span> · <span class="keys">C</span> · <span class="keys">?</span></code><div>Theme · talk to Kasumi · this list.</div></div>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" type="button" id="openSheetBtn">Open the one-page sheet</button>
+        <button class="btn ghost" type="button" id="openPalBtn">Jump to anything</button>
+      </div>
+    </section>
+  </article>
+
   <!-- ==================== PANEL: mr ==================== -->
   <article class="panel" id="p-mr" hidden>
     <div class="panel-head">
       <span class="eyebrow">Tail 02 · Market Risk</span>
       <h2>VaR and expected shortfall</h2>
       <p class="lede">Standard deviation tells you how much things move. It does not tell you how much you can lose. VaR answers the second question, badly but usefully — and expected shortfall fixes the one thing about it that is actually broken.</p>
+    </div>
+
+    <div class="tldr">
+      <span class="eyebrow">The sixty-second version</span>
+      <ol>
+        <li>Everything downstream is a return. Price is <strong>linear</strong> in the return, so if y = a + b&middot;r then &mu;<sub>y</sub> = a + b&mu; and &sigma;<sub>y</sub>&sup2; = b&sup2;&sigma;&sup2; &mdash; that one rule carries the whole course.</li>
+        <li><strong>VaR<sub>&alpha;</sub> = &mu; + z<sub>&alpha;</sub>&sigma;</strong>: the worst return you keep with confidence 1 &minus; &alpha;. Negative here, and the mean stays in.</li>
+        <li>Estimate &mu; and &sigma; from at least 250 days, then test whether &mu; is worth keeping: <strong>t = &mu;&#770;&radic;T/&sigma;&#770;</strong>.</li>
+        <li>VaR can <strong>fail subadditivity</strong> &mdash; two books can be riskier apart than together. Expected shortfall never does: <strong>ES = &mu; &minus; &sigma;&middot;&phi;(z<sub>&alpha;</sub>)/&alpha;</strong>.</li>
+        <li>Changing horizon: the mean scales with <strong>T</strong>, the volatility with <strong>&radic;T</strong>. Never scale the VaR itself.</li>
+      </ol>
+      <span class="one">VaR = &mu; + z&middot;&sigma; &nbsp;&middot;&nbsp; ES = &mu; &minus; &sigma;&middot;&phi;(z)/&alpha; &nbsp;&middot;&nbsp; z&#8321;% = &minus;2.326348</span>
     </div>
 
     <section class="block">
@@ -891,6 +1086,30 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
     </section>
 
     <section class="block">
+      <h3>Three ways to compute a VaR &mdash; and which one this course uses</h3>
+      <div class="prose">
+        <p>The decks teach exactly one of these and never name the other two. They are standard in Hull, they take one line each to describe, and a question that asks you to <em>compare approaches</em> is cheap for an examiner to write. Learn the three names and the one sentence that separates them.</p>
+      </div>
+      <div class="sheet">
+        <table>
+          <caption>The three standard approaches</caption>
+          <thead><tr><th class="l">Approach</th><th class="l">What it does</th><th class="l">What it assumes</th><th class="l">Where it breaks</th></tr></thead>
+          <tbody>
+            <tr><td class="l">Historical simulation</td><td class="l">Apply the last 250&ndash;500 days of <em>actual</em> factor moves to today&rsquo;s portfolio and read the percentile off the resulting distribution of P&amp;L.</td><td class="l">that the past is a fair sample of tomorrow</td><td class="l">it can never produce a move that has not happened; the tail rests on a handful of days</td></tr>
+            <tr class="pick"><td class="l">Model building<br><span class="num" style="font-size:11px;color:var(--faint)">= variance-covariance = delta-normal</span></td><td class="l"><strong>This course.</strong> Assume the factors are normal, reduce every instrument to a weight vector, and compute &mu;<sub>P</sub> = w<sup>T</sup>&mu; and &sigma;<sub>P</sub>&sup2; = w<sup>T</sup>&Omega;w.</td><td class="l">normal factors, and a <strong>linear</strong> instrument &mdash; options enter only through Delta and Rho</td><td class="l">fat tails, and convexity: a first-order approximation misprices a large move in an option book (that is what Gamma would fix)</td></tr>
+            <tr><td class="l">Monte Carlo</td><td class="l">Draw thousands of factor scenarios from the fitted distribution, reprice the portfolio properly in each, read the percentile.</td><td class="l">that you have the right distribution &mdash; nothing about linearity</td><td class="l">compute time, and the fact that a wrong distribution gives a confident wrong answer</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note"><span class="eyebrow">Not in the decks</span>This table is textbook context, not lecture material &mdash; no slide in the five decks names historical simulation or Monte Carlo. It is here because the sentence <strong>&ldquo;this course uses the model-building approach, which is a first-order approximation&rdquo;</strong> explains why options are handled with two Greeks and why the whole course is one weight vector away from a matrix multiplication.</div>
+      <div class="deep"><div class="deep-tag">Hull RMFI<b>Backtesting</b></div><div class="deep-body">
+        <h4>How you find out the model was wrong</h4>
+        <p>Count the days on which the actual loss exceeded the VaR. At 99&nbsp;% confidence you <em>expect</em> an exception one day in a hundred &mdash; about 2.5 days a year. Far more than that and the model is understating risk; far fewer and it is wasting capital. Regulators formalise this into zones that scale a bank&rsquo;s capital multiplier, which is the practical reason the number has to be right rather than merely conservative.</p>
+        <p>Two subtleties worth a sentence in an answer. First, exceptions should be <strong>independent</strong> &mdash; four in one week is a worse sign than four spread over a year, because it means the model missed a regime, not a bad day. Second, backtesting a <strong>one-day</strong> VaR is honest; backtesting a ten-day VaR against overlapping ten-day windows is not, because the windows share data.</p>
+      </div></div>
+    </section>
+
+    <section class="block">
       <h3>Concepts without a calculator</h3>
       <div class="cards" data-flash="mr"></div>
     </section>
@@ -907,6 +1126,18 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
       <span class="eyebrow">Tail 03 · VaR for fixed income</span>
       <h2>Bonds, duration and the curve</h2>
       <p class="lede">A bond's price cannot be used directly, because its maturity shrinks every day. So the risk factor is the <em>yield</em>, duration is the translator, and a coupon bond becomes a portfolio of zero-coupon bonds — one per cash flow.</p>
+    </div>
+
+    <div class="tldr">
+      <span class="eyebrow">The sixty-second version</span>
+      <ol>
+        <li>You cannot estimate a bond&rsquo;s return series, because yesterday&rsquo;s price belongs to a bond with one more day to run. <strong>Model the yield instead.</strong></li>
+        <li>One Taylor term turns a yield change into a return: <strong>r<sub>B</sub> = &minus;D<sub>mod</sub>&middot;dy</strong>.</li>
+        <li>A coupon bond is a <strong>portfolio of zero-coupon bonds</strong>, one per cash flow, each discounted at its own spot rate. Its weights are <strong>w<sub>t</sub> = (PV<sub>t</sub>/B) &times; (&minus;t)</strong>.</li>
+        <li>After that it is the same three lines as every other instrument: &mu;<sub>P</sub> = w<sup>T</sup>&mu;, &sigma;<sub>P</sub>&sup2; = w<sup>T</sup>&Omega;w, VaR = &mu;<sub>P</sub> + z&sigma;<sub>P</sub>.</li>
+        <li>Marginal and component VaR then say <em>which</em> position carries the risk, and the components add up to the total exactly.</li>
+      </ol>
+      <span class="one">w_t = (PV_t / B) &times; (&minus;t) &nbsp;&middot;&nbsp; D_mod = D_mac/(1+y)</span>
     </div>
 
     <section class="block">
@@ -1129,6 +1360,24 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
     </section>
 
     <section class="block">
+      <h3>Deeper: what the linear approximation leaves out</h3>
+      <div class="grid2" style="margin-top:14px">
+        <div class="deep"><div class="deep-tag">Hull RMFI<b>Convexity</b></div><div class="deep-body">
+          <h4>The term duration throws away</h4>
+          <p>r<sub>B</sub> = &minus;D<sub>mod</sub>&middot;dy is the <strong>first</strong> Taylor term. The second is convexity, C = (1/B)&middot;d&sup2;B/dy&sup2;, which under continuous discounting is just &Sigma;t&sup2;PV<sub>t</sub>/B. The fuller statement is &Delta;B/B &asymp; &minus;D<sub>mod</sub>&Delta;y + &frac12;C(&Delta;y)&sup2;.</p>
+          <p>Put the deck&rsquo;s own bond in and you can see why it is ignored. The five-year 3% bond has C = <strong>23.04</strong>. A two basis-point yield change &mdash; a typical day in the class data &mdash; moves the price <strong>0.0923%</strong> through duration and <strong>0.000046%</strong> through convexity: three orders of magnitude apart. Push the move to 200 basis points and the same two terms are <strong>9.23%</strong> and <strong>0.46%</strong>, so convexity is now worth 5% of the answer. Convexity is a stress-test correction, not a one-day-VaR correction &mdash; and that is exactly the argument that lets an option be reduced to Delta and Rho.</p>
+          <p>The sign is worth knowing on its own: convexity is <strong>positive</strong> for an ordinary bond, so duration alone always <em>overstates</em> the loss from a rise in yields and understates the gain from a fall.</p>
+        </div></div>
+        <div class="deep b2"><div class="deep-tag">Hull RMFI<b>Cash-flow mapping</b></div><div class="deep-body">
+          <h4>Why real desks do not use one factor per cash flow</h4>
+          <p>This course gives every cash-flow date its own risk factor, which is exact and perfectly manageable for a five-year bond. A trading book with thousands of bonds cannot do that &mdash; the covariance matrix would be enormous and most of it would be estimated from almost no data.</p>
+          <p>The standard fix is to choose a fixed set of <strong>standard vertices</strong> (1m, 3m, 6m, 1y, 2y, 5y, 10y&hellip;) and split each actual cash flow between the two neighbouring vertices, keeping its <strong>present value</strong> and its <strong>variance</strong> unchanged. Every bond in the book then loads onto the same short list of factors, and &Omega; stays small.</p>
+          <p>It matters for an exam only as a sentence: the method here is the exact case of a technique that is normally applied approximately.</p>
+        </div></div>
+      </div>
+    </section>
+
+    <section class="block">
       <h3>Concepts without a calculator</h3>
       <div class="cards" data-flash="fix"></div>
     </section>
@@ -1150,6 +1399,18 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
       <span class="eyebrow">Tail 04 · VaR for options</span>
       <h2>Options as portfolios</h2>
       <p class="lede">An option's price depends on the underlying and on the interest rate, so it has two risk factors and a two-element weight vector. Build it two ways — from the Greeks, or from an equivalent stock-and-bond portfolio — and they agree.</p>
+    </div>
+
+    <div class="tldr">
+      <span class="eyebrow">The sixty-second version</span>
+      <ol>
+        <li><strong>Gearing is the whole problem.</strong> A call costs a fraction of the stock, so the same move in the stock is a far bigger move in the option &mdash; the option&rsquo;s VaR is a multiple of the stock&rsquo;s.</li>
+        <li>Price it with Black-Scholes, then take <strong>two Greeks only</strong>: Delta for the stock, Rho for the rate.</li>
+        <li>That is the weight vector: <strong>w = [&Delta;&middot;S/Op ; &rho;/Op]</strong> over the factors [r<sub>S</sub> ; dy].</li>
+        <li>Or build the <strong>equivalent asset</strong>: an option is &Delta;S of stock plus B of bond, so w = [&Delta;S/Op ; &minus;(B/Op)&middot;T/(1+y)]. Both routes agree to four decimals.</li>
+        <li>Free check: <strong>w<sub>rS</sub> &minus; w<sub>dy</sub>/T = 1</strong>, always.</li>
+      </ol>
+      <span class="one">w = [&Delta;&middot;S/Op ; &rho;/Op] &nbsp;&middot;&nbsp; &Delta;_C = N(d&#8321;), &rho;_C = TKe^(&minus;yT)N(d&#8322;)</span>
     </div>
 
     <section class="block">
@@ -1256,7 +1517,7 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
           </tbody>
         </table>
       </div>
-      <div class="note"><span class="eyebrow">Concept check</span>Look at those two pairs: <strong>9.4714078 − 8.4714078 = 1</strong>, and <strong>−9.4494856 − (−10.4494856) = 1</strong>. That is not a coincidence, and it is a free check on your sheet. Because C = S·N(d₁) − Ke<sup>−yT</sup>N(d₂), dividing by C gives <strong>w<sub>rS</sub> − w<sub>dy</sub> = C/C = 1 exactly</strong>. The same identity holds for the put. <strong>If your two weights do not differ by exactly 1, you have made an arithmetic error.</strong></div>
+      <div class="note"><span class="eyebrow">Concept check</span>Look at those two pairs: <strong>9.4714078 − 8.4714078 = 1</strong>, and <strong>−9.4494856 − (−10.4494856) = 1</strong>. That is not a coincidence, and it is a free check on your sheet — here T = 1. Because C = S·N(d₁) − Ke<sup>−yT</sup>N(d₂), dividing by C gives <strong>w<sub>rS</sub> − w<sub>dy</sub>/T = C/C = 1</strong>, because ρ/T = K·e<sup>−yT</sup>·N(d₂). The same identity holds for the put. With <strong>T = 1</strong> — every class example — the two weights therefore differ by exactly 1. <strong>For any other T, check w<sub>rS</sub> − w<sub>dy</sub>/T = 1 instead</strong>; the plain difference will not be 1.</div>
       <div class="sheet">
         <table>
           <thead><tr><th class="l"></th><th class="l">Excel</th><th>μ</th><th>σ</th><th>VaR 1%, 1 day</th></tr></thead>
@@ -1292,7 +1553,7 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
               <div class="ro"><div class="k">Rho</div><div class="v" id="ovRho">—</div></div>
               <div class="ro"><div class="k">w for dy</div><div class="v" id="ovWy">—</div></div>
               <div class="ro"><div class="k">w for r<sub>S</sub></div><div class="v" id="ovWs">—</div></div>
-              <div class="ro"><div class="k">w<sub>rS</sub> − w<sub>dy</sub></div><div class="v" id="ovChk">—</div></div>
+              <div class="ro"><div class="k">w<sub>rS</sub> − w<sub>dy</sub>/T</div><div class="v" id="ovChk">—</div></div>
               <div class="ro"><div class="k">σ of option return</div><div class="v" id="ovSig">—</div></div>
               <div class="ro hi"><div class="k">VaR (1 day)</div><div class="v" id="ovVar">—</div></div>
               <div class="ro"><div class="k">VaR of the stock</div><div class="v" id="ovVs">—</div></div>
@@ -1341,7 +1602,7 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
         </table>
       </div>
       <div class="warn"><span class="eyebrow">Slide check</span>A small labelling slip on the analysis slide: it reads "<strong>C1u</strong> = Max(0, 904.84 − 1000) = 0.00" when that line is the <strong>down</strong> state and should read <strong>C1d</strong>. The value 0.00 is correct. Also note the bond block: recomputing with unrounded u and d gives <strong>B = −461.1853</strong> against the deck's −461.19, and C = <strong>63.7939</strong> against 63.79 — rounding only.</div>
-      <div class="note"><span class="eyebrow">Concept check</span>The two weights are <strong>+8.23 on the stock and −7.23 on the bond before discounting</strong>, and those differ by exactly <strong>1</strong> again, for the same reason as before: ΔS + B = C. The second element becomes 7.02 only after multiplying by T/(1+y) = 1/1.03. <strong>Check the raw blocks differ by 1 before you apply the duration factor.</strong></div>
+      <div class="note"><span class="eyebrow">Concept check</span>The two weights are <strong>+8.23 on the stock and −7.23 on the bond before discounting</strong>, and they <strong>sum to exactly 1</strong>, because ΔS + B = C — this one holds for any T. The second element becomes 7.02 only after multiplying by T/(1+y) = 1/1.03. <strong>Check the raw block weights sum to 1 before you apply the duration factor.</strong></div>
       <div class="note"><span class="eyebrow">Fine print</span>A one-step binomial is a crude pricer. On the additional-questions put (strike 1,050, T = 1) the binomial gives <strong>0.7864</strong> while Black-Scholes gives <strong>3.5367</strong> — a factor of four and a half. Yet the two VaRs come out at <strong>−10.7423%</strong> and <strong>−10.7474%</strong>, within 0.005 percentage points. <strong>The weight vector is far more robust than the price</strong>, because the gearing and the price errors largely cancel in the ratio.</div>
     </section>
 
@@ -1364,6 +1625,7 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
       </div>
       <div class="note"><span class="eyebrow">Why this matters</span>The deck's sanity check is worth repeating because it makes the method obvious: for y = 2x + 1 with x = 10 and Δx = 0.1, the central difference gives (21.2 − 20.8)/0.2 = <strong>exactly 2</strong>, which is the true derivative. For a <strong>linear</strong> function the central difference is exact at any step size; for a curved one, a step that is too large picks up curvature and a step that is too small loses precision to rounding. <strong>ΔS = 1 on a spot of 1,382 is about 0.07% — a good default.</strong></div>
       <div class="note"><span class="eyebrow">Fine print</span>The deck also gives <span class="term">cash-or-nothing digital options</span>, which pay $1 in the money and have closed forms: <span class="fx">C = e<sup>−yT</sup>N(d₂)</span> and <span class="fx">P = e<sup>−yT</sup>N(−d₂)</span>. Their deltas and rhos come from the same machinery, and the class digital sheet confirms the numerical and analytical rho agree to seven digits — <strong>0.6739535</strong> for the call.</div>
+      <div class="warn"><span class="eyebrow">Workbook check</span>In the exercise answer sheet's <em>digital option</em> tab, the analytical digital-call Delta is computed as <code>EXP(-y*T)*N(d2)/(S*σ*SQRT(T))</code> — the <strong>CDF</strong> N(d₂) where the <strong>density</strong> φ(d₂) belongs. For S = K = 120, σ = 25%, T = 0.25, y = 1.25% it reports <strong>0.0322</strong>; the correct value is <strong>0.0265</strong>, and the same sheet's own numerical Delta (0.02648) says so. A giveaway: the resulting stock weight Δ·S/Op always comes out as exactly 1/(σ√T) = 8, whatever the inputs; the correct weight is <strong>6.5753</strong>. The digital Rho in that sheet is right.</div>
     </section>
 
     <section class="block">
@@ -1402,6 +1664,24 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
     </section>
 
     <section class="block">
+      <h3>Deeper: the two Greeks the course leaves out</h3>
+      <div class="grid2" style="margin-top:14px">
+        <div class="deep"><div class="deep-tag">Hull OFOD<b>Gamma</b></div><div class="deep-body">
+          <h4>What two Greeks cannot see</h4>
+          <p>Reducing an option to Delta and Rho is a <strong>first-order</strong> statement: it assumes the option&rsquo;s value moves in a straight line with the stock. It does not. The curvature is Gamma = &phi;(d&#8321;)/(S&sigma;&radic;T), and the fuller expansion is &Delta;Op &asymp; &Delta;&middot;&Delta;S + &frac12;&Gamma;(&Delta;S)&sup2;.</p>
+          <p>The consequence is not that the VaR is slightly off &mdash; it is that the <strong>shape</strong> of the P&amp;L distribution changes. Because (&Delta;S)&sup2; is always positive, a long option position has a right-skewed P&amp;L: the delta-normal number <em>overstates</em> its risk. A short option position is skewed the other way and delta-normal <em>understates</em> it, which is the dangerous direction and the reason Hull spends a chapter on the delta-gamma correction.</p>
+          <p>For the one-day horizons in this course the correction is tiny, exactly as convexity is for bonds. Say that sentence rather than ignoring the issue.</p>
+        </div></div>
+        <div class="deep b2"><div class="deep-tag">Hull OFOD<b>Vega</b></div><div class="deep-body">
+          <h4>The risk factor this course does not model</h4>
+          <p>&sigma; enters every formula on this page as a <strong>constant</strong> estimated from history. It is not constant. Vega = S&radic;T&middot;&phi;(d&#8321;) measures what an option is worth per unit of volatility, and for the class example it is <strong>542.62</strong> &mdash; a one percentage-point rise in &sigma; is worth about 5.4 on an option priced at 83.41.</p>
+          <p>Compare that with the two factors the course does model and the omission is stark: volatility risk is the same order of magnitude as rate risk for an at-the-money option. A complete measurement would add &sigma; as a third risk factor with its own row in &Omega;. The decks leave it out, and the only defensible reason is that the VaR horizon is one day.</p>
+          <p>The same logic explains implied volatility: quote an option price and invert Black-Scholes for the &sigma; that reproduces it. Plot implied &sigma; against strike and it is not flat &mdash; the smile is the market saying the normal assumption behind this whole course is wrong in the tails.</p>
+        </div></div>
+      </div>
+    </section>
+
+    <section class="block">
       <h3>Concepts without a calculator</h3>
       <div class="cards" data-flash="opt"></div>
     </section>
@@ -1418,6 +1698,18 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
       <span class="eyebrow">Tail 05 · VaR for forwards and futures</span>
       <h2>Contracts worth nothing</h2>
       <p class="lede">A futures contract has no value when you enter it, so it has no percentage return. That breaks every formula so far — and the fix is to work the whole thing in <em>money</em> instead.</p>
+    </div>
+
+    <div class="tldr">
+      <span class="eyebrow">The sixty-second version</span>
+      <ol>
+        <li>A forward is <strong>long one call + short one put</strong> struck at the delivery price, so V<sub>F</sub> = C &minus; P and the option machinery carries straight over.</li>
+        <li>A futures contract is worth <strong>nothing at inception</strong>. There is no percentage return to model, so the weights are in <strong>money</strong> and the VaR comes out in money.</li>
+        <li>Second decomposition: futures &asymp; long the asset, borrow its spot price. <strong>w = [S&#8320; ; T&middot;S&#8320;]</strong>.</li>
+        <li>On a zero-coupon bond, <strong>w = [&minus;(T+N)B&#8320; ; +T&middot;B&#8320;]</strong>. On a coupon bond, one row per post-delivery cash flow plus a single financing row &mdash; and that row <strong>carries a factor of T</strong>.</li>
+        <li>The deck&rsquo;s two largest errors are on this lecture. Both are flagged where they appear.</li>
+      </ol>
+      <span class="one">w = [S&#8320; ; T&middot;S&#8320;] &mdash; in money &nbsp;&middot;&nbsp; &#8320;F_T = S&#8320;&middot;e^(y_T&middot;T)</span>
     </div>
 
     <section class="block">
@@ -1481,7 +1773,7 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
           </tbody>
         </table>
       </div>
-      <div class="note"><span class="eyebrow">Concept check</span>Use the <strong>difference-of-one identity</strong> as your check, exactly as on the options panel. Here S/V<sub>F</sub> − TKe<sup>−yT</sup>/V<sub>F</sub> = (118 − 117.6238)/0.376159 = <strong>1.000000</strong>. The deck's pair differs by 72.05, which is the single fastest way to see that something is wrong. <strong>If a forward's two weights do not differ by exactly 1, recheck Rho.</strong></div>
+      <div class="note"><span class="eyebrow">Concept check</span>Use the identity <strong>w<sub>rS</sub> − w<sub>dy</sub>/T = 1</strong> as your check, exactly as on the options panel. With T = 1 here, S/V<sub>F</sub> − TKe<sup>−yT</sup>/V<sub>F</sub> = (118 − 117.6238)/0.376159 = <strong>1.000000</strong>. The deck's pair differs by 72.05, which is the single fastest way to see that something is wrong. <strong>If w<sub>rS</sub> − w<sub>dy</sub>/T is not 1, recheck Rho.</strong></div>
     </section>
 
     <section class="block">
@@ -1516,13 +1808,13 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
           <thead><tr><th class="l">Quantity</th><th class="l">Working</th><th>Value</th></tr></thead>
           <tbody>
             <tr><td class="l"><sub>0</sub>F<sub>T</sub></td><td class="f">=EXP(-0.052*1.5+0.05*1)</td><td>0.972388</td></tr>
-            <tr><td class="l">B₀</td><td class="f">=EXP(-0.052*1.5)</td><td>0.924963</td></tr>
-            <tr class="pick"><td class="l">w for dy<sub>1.5Y</sub></td><td class="f">=-1.5*0.924963</td><td>−1.387445</td></tr>
-            <tr class="pick"><td class="l">w for dy<sub>1Y</sub></td><td class="f">=+1.0*0.924963</td><td>+0.924963</td></tr>
+            <tr><td class="l">B₀</td><td class="f">=EXP(-0.052*1.5)</td><td>0.924964</td></tr>
+            <tr class="pick"><td class="l">w for dy<sub>1.5Y</sub></td><td class="f">=-1.5*0.924964</td><td>−1.387447</td></tr>
+            <tr class="pick"><td class="l">w for dy<sub>1Y</sub></td><td class="f">=+1.0*0.924964</td><td>+0.924964</td></tr>
           </tbody>
         </table>
       </div>
-      <div class="note"><span class="eyebrow">Concept check</span>The two weights do <strong>not</strong> cancel: −1.3874 + 0.9250 = −0.4624. A long bond-futures position is <strong>net long duration</strong>, because the underlying bond is longer-dated than the financing. The gap is exactly <strong>N × B₀</strong> = 0.5 × 0.924963 — the extra six months of exposure you are buying. <strong>N is the source of the residual risk</strong>, which is why a futures hedge can never be perfect unless the contract's underlying matures exactly when the contract delivers.</div>
+      <div class="note"><span class="eyebrow">Concept check</span>The two weights do <strong>not</strong> cancel: −1.3874 + 0.9250 = −0.4624. A long bond-futures position is <strong>net long duration</strong>, because the underlying bond is longer-dated than the financing. The gap is exactly <strong>N × B₀</strong> = 0.5 × 0.924964 — the extra six months of exposure you are buying. <strong>N is the source of the residual risk</strong>, which is why a futures hedge can never be perfect unless the contract's underlying matures exactly when the contract delivers.</div>
     </section>
 
     <section class="block">
@@ -1619,6 +1911,7 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
         <div class="ro"><div class="k">σ (money)</div><div class="v">1.7048701</div></div>
         <div class="ro hi"><div class="k">VaR 1% · futures</div><div class="v">−3.9136 Baht</div></div>
       </div>
+      <div class="warn"><span class="eyebrow">Workbook check</span>The answer key's −3.9136 is built on a covariance matrix with a <strong>broken TRANSPOSE</strong>. In <code>Spot Curves_ans2.xlsx</code>, cell <code>V268</code> holds <code>{=TRANSPOSE(U272)}</code> — a single cell — and it was copied across <code>V268:Y268</code>, so row 2 of the 6×6 Ω repeats Cov(dy₂, dy₆) = 2.9757×10<sup>−8</sup> four times instead of holding Cov(dy₂, dy₃), Cov(dy₂, dy₄), Cov(dy₂, dy₅). The matrix is therefore not even symmetric. With the correct matrix (same population divisor as the key) the futures VaR is <strong>−3.9138 Baht</strong>. The difference is small because those covariances are similar in size, but a wrong matrix is a wrong matrix — the Excel solver defaults to the corrected one.</div>
       <div class="note"><span class="eyebrow">Why this matters</span>Note the units: this VaR is <strong>−3.9136 Baht</strong>, not a percentage, because the futures weights are in money. Against the bond's −3.8389 Baht the two are strikingly close, which is what makes the hedge work. But the answer to the deck's question — <em>can the remaining net risk be completely eliminated?</em> — is <strong>no</strong>. The bond loads on dy₁…dy₅ while the futures book loads on dy₂…dy₆ <em>and</em> dy₁ through the financing leg. Six factors, five contracts, and a different loading pattern: you can minimise the residual but not zero it. <strong>That residual is basis risk.</strong></div>
 
       <div class="tool">
@@ -1675,6 +1968,18 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
       <span class="eyebrow">Tail XL · Excel</span>
       <h2>The spreadsheet layer</h2>
       <p class="lede">Every function the class workbooks use, the modern name for each, the keystrokes that make array formulas work, and the traps that return a plausible wrong number instead of an error.</p>
+    </div>
+
+    <div class="tldr">
+      <span class="eyebrow">The sixty-second version</span>
+      <ol>
+        <li>All nine workbooks share <strong>one eight-step skeleton</strong>. Steps 1&ndash;4 and 7&ndash;8 never change; only the instrument and its weights do.</li>
+        <li>The class files use the <strong>legacy function names</strong> &mdash; NORMSINV, NORMSDIST, STDEV, COVAR. They still work, but <code>COVAR</code> is the <strong>population</strong> version while <code>STDEV</code> is the sample one, which is why the two disagree in the fifth decimal.</li>
+        <li><code>MMULT</code> and <code>TRANSPOSE</code> need <strong>Ctrl+Shift+Enter</strong> in Excel 2019 and earlier, or you silently get the top-left element and a portfolio &sigma; that is far too small.</li>
+        <li><code>varcovar()</code> is a <strong>VBA function shipped with the course files</strong>, not real Excel. Three ways to rebuild it are below.</li>
+        <li>No <code>PRICE</code>, <code>YIELD</code> or <code>MDURATION</code> anywhere &mdash; this course discounts every cash flow at its own spot rate, so you build the column.</li>
+      </ol>
+      <span class="one">=MMULT(TRANSPOSE(w),mu) + NORMSINV(a)*SQRT(MMULT(MMULT(TRANSPOSE(w),Om),w))</span>
     </div>
 
     <section class="block">
@@ -1785,7 +2090,12 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
         <div class="fxrow trap"><code>Coupons before delivery in a futures price</code><div>Only <b>post-delivery</b> cash flows belong in <sub>0</sub>F<sub>T</sub>. And the price must sit between their PV and their undiscounted sum.</div></div>
         <div class="fxrow trap"><code>Forgetting T in the financing row</code><div>A coupon-bond-futures weight vector's last element is <b>+T</b>×Σ(X·B), not Σ(X·B). The lecture-5 slide drops the T.</div></div>
       </div>
-      <div class="note"><span class="eyebrow">Your A4 sheet</span>Only four things from this panel are worth the space: <strong>NORMSINV(0.01) = −2.326348</strong> and <strong>NORMSINV(0.05) = −1.644854</strong>; <strong>VaR = wᵀμ + z·√(wᵀΩw)</strong>; <strong>mean scales with T, volatility with √T</strong>; and <strong>the two weights of an option or forward differ by exactly 1</strong>. The rest you can rebuild.</div>
+      <div class="note"><span class="eyebrow">Your A4 sheet</span>Only four things from this panel are worth the space: <strong>NORMSINV(0.01) = −2.326348</strong> and <strong>NORMSINV(0.05) = −1.644854</strong>; <strong>VaR = wᵀμ + z·√(wᵀΩw)</strong>; <strong>mean scales with T, volatility with √T</strong>; and <strong>w<sub>rS</sub> − w<sub>dy</sub>/T = 1 for an option or forward</strong> (they differ by exactly 1 when T = 1). The rest you can rebuild.</div>
+    </section>
+
+    <section class="block">
+      <h3>Concepts without a calculator</h3>
+      <div class="cards" data-flash="xl"></div>
     </section>
 
     <section class="block">
@@ -1869,7 +2179,7 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
         <span class="lbl">Continuous discounting: multiplier −t. Discrete: −t/(1+y_t). Coupon bond = portfolio of zeros, one per cash flow.</span></div>
       <div class="eq">C = S N(d<sub>1</sub>) − Ke<sup>−yT</sup>N(d<sub>2</sub>)&nbsp;&nbsp;&nbsp;d<sub>1</sub> = <span class="fr"><span>ln(S/K) + (y + σ<sup>2</sup>/2)T</span><span>σ√T</span></span>&nbsp;&nbsp;&nbsp;d<sub>2</sub> = d<sub>1</sub> − σ√T
         <span class="lbl">Δ_call = N(d₁); Δ_put = −N(−d₁); ρ_call = TKe^(−yT)N(d₂); ρ_put = −TKe^(−yT)N(−d₂).</span></div>
-      <div class="eq"><b>w</b><sub>Op</sub> = [ Δ <span class="fr"><span>S</span><span>Op</span></span> , ρ <span class="fr"><span>1</span><span>Op</span></span> ]&nbsp;&nbsp;&nbsp;check: w<sub>rS</sub> − w<sub>dy</sub> = <b>1</b> exactly
+      <div class="eq"><b>w</b><sub>Op</sub> = [ Δ <span class="fr"><span>S</span><span>Op</span></span> , ρ <span class="fr"><span>1</span><span>Op</span></span> ]&nbsp;&nbsp;&nbsp;check: w<sub>rS</sub> − w<sub>dy</sub>/T = <b>1</b>
         <span class="lbl">Binomial alternative: Δ = (C₁u − C₁d)/(S(u−d)), B = (C₁d(1+u) − C₁u(1+d))/((1+y)(u−d)), u = e^σ − 1.</span></div>
       <div class="eq">forward: V<sub>F</sub> = C − P,&nbsp; w = [ <span class="fr"><span>S</span><span>V<sub>F</sub></span></span> , <span class="fr"><span>TKe<sup>−yT</sup></span><span>V<sub>F</sub></span></span> ]&nbsp;&nbsp;&nbsp;futures: <sub>0</sub>F<sub>T</sub> = S<sub>0</sub>e<sup>y<sub>T</sub>T</sup>,&nbsp; w = [ S<sub>0</sub> , T S<sub>0</sub> ]
         <span class="lbl">Futures weights are in MONEY, so the VaR is in money. No percentage return exists.</span></div>
@@ -1918,7 +2228,7 @@ var COURSE = {
   railHead: "Pick a tail",
   mastery: 0.8,
   books: [{name:"Hull RMFI", badge:"b1"}, {name:"Hull OFOD", badge:"b2"}],
-  footer: "Built from the five lecture decks — Financial Institutions, Market Risk, VaR for fixed income, VaR for option, VaR for futures — and the nine class workbooks that go with them. Every worked number on this page was recomputed from the formulas shown before it was written down: the normal quantiles, the T-bill and coupon-bond VaRs, the Black-Scholes prices and Greeks, the binomial decomposition, the forward and futures weight vectors, and all three additional questions. <strong>Thirteen figures in the materials disagree with a recomputation</strong> and each one is flagged on the panel where it appears, with the slide's number, the correct number and the likely cause. Progress is saved with this page, so closing the tab loses nothing.",
+  footer: "Built from the five lecture decks — Financial Institutions, Market Risk, VaR for fixed income, VaR for option, VaR for futures — and the nine class workbooks that go with them. Every worked number on this page was recomputed from the formulas shown before it was written down: the normal quantiles, the T-bill and coupon-bond VaRs, the Black-Scholes prices and Greeks, the binomial decomposition, the forward and futures weight vectors, and all three additional questions. <strong>Fifteen figures in the materials disagree with a recomputation</strong> and each one is flagged on the panel where it appears, with the slide's number, the correct number and the likely cause. Progress is saved with this page, so closing the tab loses nothing.",
   chat: {
     course: "a market risk and Value at Risk course taught by A. Khanthavit, following Hull's Risk Management and Financial Institutions, worked almost entirely in Excel",
     context: "Five lectures. (1) Financial Institutions: risk taxonomy, bankruptcy as a left-tail event, PD by rating, regulation vs supervision, BIS/IOSCO/IAIS, three-pillar risk-based supervision. (2) Market Risk: returns, VaR = mu + z*sigma, the z table, NORMSINV/NORMSDIST, parameter estimation, BIS 250-day minimum, VaR vs expected shortfall, coherent risk measures, Hull's subadditivity counterexample, sqrt-T scaling, EWMA. (3) VaR for fixed income: why bond prices cannot be used, Taylor expansion, Macaulay and modified duration, the T-bill example, coupon bond as a portfolio of zeros, the w/mu/Omega matrix framework, MMULT and TRANSPOSE with Ctrl+Shift+Enter, bond-plus-stock portfolio, marginal and component VaR. (4) VaR for options: payoffs, gearing, Black-Scholes with NORMSDIST, Delta and Rho only, w = [Delta*S/Op ; Rho/Op], the building-block/LEGO decomposition into stock and bond, one-step binomial, numerical Greeks by central difference, digital options, delta and rho hedging, diversification. (5) VaR for forwards and futures: forward = long call + short put, cost of carry, futures = long asset + short ZCB, dFu = dS + T*S0*dy so w = [S0 ; T*S0] IN MONEY with no percentage return, ZCB futures, coupon-bond futures as a portfolio of ZCB futures, forward rates. The unifying framework is VaR = w'mu + z*SQRT(w'Omega*w) and the only thing that changes between lectures is how w is built.",
@@ -1946,6 +2256,9 @@ var COURSE = {
       "Lecture 2, t-test slide: degrees of freedom should be T-1 = 9, not 8. The critical value for 9 df is 2.2622, not 2.31. The conclusion is unchanged because t = 1.9914 is below both. The concluding sentence is also garbled - it says 'cannot reject the null hypothesis that the expected return is significantly different from zero' when the null is that the mean IS zero.",
       "Lecture 2 gives two different variance formulas: the VaR slide divides by T-1 and the later volatility slide divides by T. Those are STDEV.S and STDEV.P. Every class workbook uses STDEV, the T-1 version, so follow that.",
       "Class workbooks build Omega with =STDEV(...)^2 on the diagonal (n-1) and =COVAR(...) off it (n). Legacy COVAR is the population version. The off-diagonals are 0.4% too small at n = 250; the effect on VaR is in the fifth decimal place. Pair VAR.S with COVARIANCE.S in your own sheets.",
+      "Exercise workbook, digital option sheet: the analytical digital-call Delta is computed as EXP(-y*T)*N(d2)/(S*sigma*SQRT(T)) - the CDF N(d2) where the density phi(d2) belongs. For S = K = 120, sigma = 25%, T = 0.25, y = 1.25% it gives 0.0322 instead of the correct 0.0265, and the sheet's own numerical Delta (0.02648) contradicts it. Its stock weight always comes out as 1/(sigma*sqrt(T)) = 8; the correct weight is 6.5753. The digital Rho is correct.",
+      "Spot Curves practice answer key (futures on the 5-year bond): cell V268 is {=TRANSPOSE(U272)} copied across V268:Y268, so row 2 of the 6x6 covariance matrix repeats Cov(dy2,dy6) four times and the matrix is not symmetric. The key's futures VaR -3.9136 uses it; with the correct population-divisor matrix the VaR is -3.9138.",
+      "Note on VarCovar(): the lecturer's custom function differs between files. The lecture example workbooks use Var + Covar (sample diagonal, population off-diagonal); the additional-questions workbook uses Var_S + Covariance_S (sample throughout). Match whichever the question's workbook used.",
       "Exercise workbook, plain-vanilla option sheet: the question says the options are at the money with T = 3 months, but the answer block prices them with Time to Exp = 1 year, and the binomial leg uses u = EXP(sigma) - 1 with no time scaling, which is also one year. Ask the lecturer which was intended."
     ]
   },
@@ -1980,7 +2293,7 @@ var COMPANION = {
     "Be honest when the student is wrong. Teasing is fine; praising a wrong answer is not, ever. If you are unsure of a figure, say so rather than inventing one.",
     "Short: two to five sentences, or a tight worked list when doing maths. Plain text only, no markdown headings and no bold markers."
   ],
-  intro: "There you are ( ˶^ᵕ^˵ ) I'm Kasumi. I live on the left-hand side of the distribution, where all the interesting things happen, and I keep you company while you measure it.\n\nI know all five decks and all nine workbooks — the T-bill VaR, the coupon-bond weight vector, both option approaches, the forward and futures decompositions, and the thirteen places where a slide or a sheet disagrees with the arithmetic. Ask me about whatever's on screen, or tell me a number you got and I'll work out which step produced it.\n\nTwo things about this course, so we don't argue later: VaR is negative here, and the mean stays in. Say \"quiz me\" whenever you'd rather be tested than told.",
+  intro: "There you are ( ˶^ᵕ^˵ ) I'm Kasumi. I live on the left-hand side of the distribution, where all the interesting things happen, and I keep you company while you measure it.\n\nI know all five decks and all nine workbooks — the T-bill VaR, the coupon-bond weight vector, both option approaches, the forward and futures decompositions, and the fifteen places where a slide or a sheet disagrees with the arithmetic. Ask me about whatever's on screen, or tell me a number you got and I'll work out which step produced it.\n\nTwo things about this course, so we don't argue later: VaR is negative here, and the mean stays in. Say \"quiz me\" whenever you'd rather be tested than told.",
   ack: "Understood — I'm Kasumi, and I'm watching the tail ( ˶^ᵕ^˵ )",
   thinkingFace: "( ˙꒳˙ )",
   errors: {
@@ -2005,6 +2318,9 @@ var TOPICS = [
   {id:"start", n:"00", t:"How this page works", panel:"p-start",
    ctx:"Orientation. The unifying framework: every instrument becomes a weight vector w over risk factors, then mu_P = w'mu, sigma_P^2 = w'Omega*w, VaR_alpha = mu_P + z_alpha*sigma_P. Table of how each lecture builds w: stock = portfolio share; ZCB = -D_mod * share; coupon bond = (PV_t/B)*(-t) per cash flow; option = [Delta*S/Op ; Rho/Op]; forward = long call + short put combined; futures = [S0 ; T*S0] in money. Two conventions that differ from most textbooks: VaR IS REPORTED NEGATIVE, and the mean mu is kept rather than set to zero. The class workbooks use legacy Excel names NORMSINV, NORMSDIST, STDEV and COVAR. Tiers e/m/d, 80% mastery to mark a tail measured, thirteen errata flagged across the page."},
 
+  {id:"cram", n:"GO", t:"Exam day", panel:"p-cram",
+   ctx:"Exam-day panel: the rest of the page sorted by how much time is left, plus the things worth checking under pressure. A revision planner with 20 / 45 / 90 / 180-minute plans, each step linking to the exact section it names. A question router mapping the words in a question to the risk factors and the weight vector: mu/sigma given -> w = 1; money in several assets -> w_i = value_i/W0 with Omega_ij = rho_ij sigma_i sigma_j; T-bill -> w = -D_mod; coupon bond -> w_t = (PV_t/B)(-t); option -> [Delta S/Op ; Rho/Op]; equivalent asset / binomial -> [Delta S/Op ; -(B/Op)T/(1+y)]; forward -> [S/V_F ; TKe^(-yT)/V_F]; futures on an asset -> [S0 ; T S0] in money; ZCB futures -> [-(T+N)B0 ; +T B0]; coupon-bond futures -> one row per post-delivery flow plus a financing row carrying T; a mix -> add adjusted weights factor by factor; discrete loss outcomes -> sort and cumulate; assets/debt -> PD = N((-E0/A0 - mu_A)/sigma_A). The five checks: is VaR negative, do sigma/y/T share one time unit, is w in the same order as Omega, does w_rS - w_dy/T = 1, do the component VaRs sum to the portfolio VaR. The z values (-2.326348, -1.959964, -1.644854, -1.281552) and ES multipliers (2.665214, 2.337803, 2.062713). A weak-spot list built from the student's own wrong answers, and the keyboard shortcuts. Nothing new is taught here."},
+
   {id:"fi", n:"01", t:"Financial institutions & risk", panel:"p-fi",
    ctx:"Lecture 1, the shortest deck. FI types: banks, securities and investment companies, insurance companies, others. Value maximisation: Assets = Debt + Equity, management and operations add value. Activity-to-risk mapping: business strategy -> strategic risk; business process -> operational risk; lending -> credit risk; security trading -> MARKET RISK; selling insurance -> insurance risk; managing cash flows against obligations -> liquidity risk. Full taxonomy adds concentration, enterprise-wide and group risk. Market risk also called price risk or interest rate risk. Risk is defined as the possibility the FI makes mistakes in its operations leading to financial OR non-financial loss. Bankruptcy: at t=1 the FI is bankrupt if assets < debt, equivalently if the loss exceeds equity, equivalently if r_A < -E0/A0. So PD = NORMSDIST((-E0/A0 - mu_A)/sigma_A) and required equity ratio = -(mu_A + NORMSINV(PD)*sigma_A). Deck's PD table by rating with z = NORMSINV(PD) and capital at sigma_A = 10%, mu = 0: AAA 0.014038% z=-3.632434 cap 36.32%; AA 0.020902% z=-3.528425 cap 35.28%; A 0.123945% z=-3.025905 cap 30.26%; BBB 0.997917% z=-2.327130 cap 23.27%; BB 2.488875% z=-1.961871 cap 19.62%; B 4.611472% z=-1.683753 cap 16.84%; CCC 30.848573% z=-0.500147 cap 5.00%. Two observations: BBB's PD is almost exactly 1% so its z is almost exactly the 99% VaR multiplier; and capital is very non-linear in rating (BB to AAA costs 16.71 points, B to BB only 2.78). Regulation = the rules and framework; supervision = monitoring, inspection and enforcement of them. International bodies: BIS (banks, hosts the Basel Committee), IOSCO (securities), IAIS (insurance). Ends on the three-pillar approach and risk-based supervision. Link to the rest of the course: Pillar 1 market risk capital comes from a VaR or ES model, and the BIS 250-business-day minimum is why every class workbook has 250 rows."},
 
@@ -2015,10 +2331,10 @@ var TOPICS = [
    ctx:"Lecture 3. Bond X has 5 years left, Bond Y has 2 - you cannot estimate either from a price history, because time to maturity shrinks daily so yesterday's price belongs to a different instrument. Model the YIELD instead; the deck's alternative return series is the Zero Rate Return (ZRR) index, a price index of a constant-maturity zero. Pricing: B0 = F_T/(1+y_T)^T or approximately EXP(-y_T*T)*F_T; a coupon bond discounts EACH cash flow at its OWN spot rate. Spot rate = the current rate on a zero maturing at that time. Deck distinguishes the yield curve from the zero yield curve (both ThaiBMA); bond pricing needs the ZERO curve. Taylor: dB = -T*B0*dy_T for a continuous zero, so r_B = dB/B0 = -T*dy_T and VaR = z*T*sigma(dy_T) - the bond price cancels entirely, and for a continuous zero duration IS maturity. Discrete: D_mac = sum(t*w_t), D_mod = D_mac/(1+y), dB/B = -D_mod*dy, mu_B = -D_mod*mu_y, sigma_B^2 = D_mod^2*sigma_y^2, VaR = -D_mod*mu_dy + z*D_mod*sigma_dy. T-BILL EXAMPLE: 1-year ZCB, THB 1,000,000 par, yield 3%, semiannual. B = 1,000,000/1.015^2 = 970,661.7486. D_mac = 2 periods (all PV at period 2), D_mod = 2/1.015 = 1.9704433. Ten dy observations from eleven rates: AVERAGE = -0.000175, STDEV = 0.0008895223. mu_B = -1.9704433*(-0.000175) = 0.00034483 (POSITIVE, because yields fell on average), sigma_B = 1.9704433*0.0008895223 = 0.00175275. VaR_1% = 0.00034483 - 2.326348*0.00175275 = -0.00373269, times 970,661.75 = -3,623.18. The deck labels the two sigmas as sigma^2 - they are standard deviations. Coupon bond as a portfolio of zeros: r_B = sum(w_t*r_Bt) with w_t = (1/B0)*CF_t/(1+y_t)^t and r_Bt = -D_mod_t*dy_t, so the ADJUSTED weight multiplying dy_t is w_t*(-duration_t). Covariances collapse: Var(r_Bi) = i^2*Var(dy_i) and Cov(r_Bi,r_Bj) = (-i)(-j)Cov(dy_i,dy_j), so durations fold into w and Omega stays the raw yield-change matrix. Matrix form with the deck's own Excel note: 1. TRANSPOSE(Array) 2. MMULT(Array1,Array2) then Ctrl+Shift+Enter. FIVE-YEAR COUPON BOND, C=3%, FV=100, Thai zero curve: spots 1.510592, 1.621256, 1.777315, 1.910292, 2.326193; PVs 2.9553566, 2.9050401, 2.8455635, 2.7813079, 91.8127808; B = 103.3000490; weights 2.860944%, 2.812235%, 2.754658%, 2.692456%, 88.879707%; adjusted weights -0.0286094, -0.0562447, -0.0826398, -0.1076982, -4.4439853 summing to -4.7191775 = minus the Macaulay duration of 4.7192 years. mu_P = 2.22635e-05, sigma_P^2 = 2.3251e-06, sigma_P = 0.15248%. VaR_1% = -0.35251% and VaR with zero mean = -0.35473%, so because mu is POSITIVE here dropping the mean makes VaR MORE negative - the zero-mean version is the conservative one. On the 103.30 price that is -0.3642 per 100 face. 88.88% of the bond's value sits in the final cash flow. PORTFOLIO OF BASIC ASSETS: bond T=2, C=3% annual, FV=1000, priced CONTINUOUSLY with EXP(-y*t), plus a stock. PVs 29.5502 and 997.1369, bond price 1026.6871, stock 1381.41, W0 = 2408.0971. Weights 1.22712%, 41.40767%, 57.36521%; adjusted weights -0.0122712, -0.8281534, +0.5736521. mu_P = -0.02636%, sigma_P = 0.61286%. VaR(1%,1d) = -1.45208%, VaR(5%,1d) = -1.03442%, VaR(1%,3d) = -2.54849% computed as mu*3 + z*sigma*SQRT(3). The 5% slide prints (-1.96) but the workbook uses NORMSINV(0.05) = -1.644854. Marginal VaR = dVaR/dx_i = (z/sigma_P)*(Omega*w)_i; component VaR = x_i*marginal. Three properties: component VaR is approximately incremental VaR, the components SUM EXACTLY to total VaR by Euler's theorem, and it is therefore a sensible allocation. Incremental VaR is a different number: portfolio VaR minus the VaR of the book without that position."},
 
   {id:"opt", n:"04", t:"VaR for options", panel:"p-opt",
-   ctx:"Lecture 4. Call = right to buy, put = right to sell; European exercisable only at expiry, American any time. Payoffs: long call Max(S_T-K,0), short call Min(K-S_T,0), long put Max(K-S_T,0), short put Min(S_T-K,0). GEARING is the deck's framing of option risk: a call costs far less than the share, so a small percentage move in the asset gives a much larger percentage move in the option, on the upside AND the downside. Two determinants of the option price matter: the underlying price and the interest rate, so market risk = price risk of the underlying + interest rate risk. Treat the option as a portfolio of stock and bond. Stock price lognormal: dS/S = mu*dt + sigma*dz, r_S ~ N(mu - sigma^2/2, sigma^2). BSM: C = S0*N(d1) - K*EXP(-y*T)*N(d2), P = K*EXP(-y*T)*N(-d2) - S0*N(-d1), d1 = (LN(S0/K) + (y + sigma^2/2)T)/(sigma*SQRT(T)), d2 = d1 - sigma*SQRT(T), N(x) = NORMSDIST(x). DECK EXAMPLE S=100, sigma=5%/month, y=1%/month, T=12 months, X=80: d1 = 2.067743 (deck 2.07), N(d1) = 0.980668 (0.98), d2 = 1.894538 (1.89), N(d2) = 0.970923 (0.97), C = 29.176296 (29.17), P = 0.129900 (0.13). Note sigma and y are per MONTH with T in MONTHS - they must share a unit. Only two Greeks matter: Delta = dOp/dS = N(d1) for a call, -N(-d1) for a put; Rho = dOp/dy = T*K*EXP(-y*T)*N(d2) for a call, -T*K*EXP(-y*T)*N(-d2) for a put. First-order Taylor: dOp = Delta*dS + Rho*dy, so r_Op = Delta*(S/Op)*r_S + Rho*(1/Op)*dy, and those two coefficients ARE the weight vector. Omega is the 2x2 matrix of r_S and dy. MAIN EXAMPLE: ATM call and put on stock A, T=1, 99% CL. S0 = K = 1382.41, one-year spot y = 1.510592%, sigma_S = 0.8359212%/day annualising to 13.269837% via STDEV*SQRT(252). d1 = 0.1801857, d2 = 0.0474873, N(d1) = 0.5714966, N(d2) = 0.5189376, C = 83.4134316, P = 62.6877908, Rho_call = 706.629194, Rho_put = -655.055165. Weight vectors, dy FIRST then r_S: w_C = [8.4714078 ; 9.4714078], w_P = [-10.4494856 ; -9.4494856]. KEY IDENTITY: w_rS - w_dy = 1 EXACTLY, for both, because C = S*N(d1) - K*e^(-yT)*N(d2) so dividing by C gives C/C = 1 - use it as a free check. mu_C = -0.4524017%, sigma_C = 7.9249710%, VaR_C = -18.888641%; mu_P = +0.4553653%, sigma_P = 7.9086722%, VaR_P = -17.942957%. Against the underlying's -1.99% that is roughly NINE TIMES the risk - gearing quantified. The class Omega has Var(dy) = 1.8796e-08, Var(r_S) = 6.98764e-05, Cov = 6.6829e-08, a correlation of only 0.0583. BUILDING BLOCK / LEGO approach: two blocks, the underlying and a ZCB. One-step binomial gives two equations in two unknowns: C1u = Delta*S1u + B(1+y) and C1d = Delta*S1d + B(1+y), so Delta = (C1u-C1d)/(S(u-d)) and B = (C1d(1+u) - C1u(1+d))/((1+y)(u-d)), with u = EXP(sigma)-1 and d = EXP(-sigma)-1, and p = (y-d)/(u-d). Then r_C = (Delta*S/C)r_S + (B/C)r_B where r_B = -(T/(1+y))dy, so w_C' = [Delta*S/C , -(B/C)(T/(1+y))]. If the bond is priced continuously the duration is T instead of T/(1+y). DECK BINOMIAL EXAMPLE S0=K=1000, sigma=10%, y=3%, T=1: u = 10.5171%, d = -9.5163%, S1u = 1105.17, C1u = 105.17, S1d = 904.84, C1d = 0, Delta = 0.524979, Delta*S = 524.98, B = -461.19 (recomputed -461.1853), C = 63.79 (63.7939), stock weight 8.23, bond weight -7.23, w' = [8.23 ; 7.02] after multiplying by T/(1+y) = 1/1.03. The raw blocks 8.23 and -7.23 differ by exactly 1 because Delta*S + B = C. A one-step binomial is crude: on the additional-questions put it gives 0.7864 against Black-Scholes 3.5367, a factor of 4.5, yet the two VaRs are -10.7423% and -10.7474%, within 0.005 points - the weight vector is far more robust than the price. NUMERICAL GREEKS by central difference: dy/dx = (y(x+dx) - y(x-dx))/(2*dx). Class sheet uses dS = 1 and dy = 0.0001: numerical delta 0.5714966 matches analytical exactly, numerical rho 706.6292 matches too. The deck's sanity check: for y = 2x+1 at x=10 with dx=0.1 the central difference gives exactly 2, because for a LINEAR function it is exact at any step size. Digital cash-or-nothing options pay $1 in the money: C = EXP(-y*T)*N(d2), P = EXP(-y*T)*N(-d2). RISK MANAGEMENT, three levers. (1) Reduce exposure: 10 shares at THB 70 with r~N(10%,30%) gives VaR_1% = 10% - 2.33*30% = -59.90%; sell 5 and hold THB 350 cash, so w = [50%,50%], mu = 5%, sigma = 15% (cash has ZERO risk so its Omega row is zeros), VaR = -29.95%. (2) Delta hedge: hold -Delta shares, so dPortfolio = dOp - Delta*dS = 0; the risk from dy is much smaller than from dS. Rho hedge ratio = Rho/(T*EXP(-y_T*T)) held in a ZCB with FV 1 and maturity T. (3) Diversification: mu_A = mu_B = 12%, sigma = 25% each, rho = 0.55; w = [100%,0%] gives VaR = -46.25%, w = [50%,50%] gives sigma_P = SQRT(2*0.5^2*0.25^2 + 2*0.55*0.5*0.5*0.25^2) = 22.0085% and VaR = -39.28%. The deck's summary: portfolio return is the weighted average; cash has zero risk; assets with the SAME source of risk can be offset exactly (hedging); assets with non-zero correlation can only be partly offset (diversification)."},
+   ctx:"Lecture 4. Call = right to buy, put = right to sell; European exercisable only at expiry, American any time. Payoffs: long call Max(S_T-K,0), short call Min(K-S_T,0), long put Max(K-S_T,0), short put Min(S_T-K,0). GEARING is the deck's framing of option risk: a call costs far less than the share, so a small percentage move in the asset gives a much larger percentage move in the option, on the upside AND the downside. Two determinants of the option price matter: the underlying price and the interest rate, so market risk = price risk of the underlying + interest rate risk. Treat the option as a portfolio of stock and bond. Stock price lognormal: dS/S = mu*dt + sigma*dz, r_S ~ N(mu - sigma^2/2, sigma^2). BSM: C = S0*N(d1) - K*EXP(-y*T)*N(d2), P = K*EXP(-y*T)*N(-d2) - S0*N(-d1), d1 = (LN(S0/K) + (y + sigma^2/2)T)/(sigma*SQRT(T)), d2 = d1 - sigma*SQRT(T), N(x) = NORMSDIST(x). DECK EXAMPLE S=100, sigma=5%/month, y=1%/month, T=12 months, X=80: d1 = 2.067743 (deck 2.07), N(d1) = 0.980668 (0.98), d2 = 1.894538 (1.89), N(d2) = 0.970923 (0.97), C = 29.176296 (29.17), P = 0.129900 (0.13). Note sigma and y are per MONTH with T in MONTHS - they must share a unit. Only two Greeks matter: Delta = dOp/dS = N(d1) for a call, -N(-d1) for a put; Rho = dOp/dy = T*K*EXP(-y*T)*N(d2) for a call, -T*K*EXP(-y*T)*N(-d2) for a put. First-order Taylor: dOp = Delta*dS + Rho*dy, so r_Op = Delta*(S/Op)*r_S + Rho*(1/Op)*dy, and those two coefficients ARE the weight vector. Omega is the 2x2 matrix of r_S and dy. MAIN EXAMPLE: ATM call and put on stock A, T=1, 99% CL. S0 = K = 1382.41, one-year spot y = 1.510592%, sigma_S = 0.8359212%/day annualising to 13.269837% via STDEV*SQRT(252). d1 = 0.1801857, d2 = 0.0474873, N(d1) = 0.5714966, N(d2) = 0.5189376, C = 83.4134316, P = 62.6877908, Rho_call = 706.629194, Rho_put = -655.055165. Weight vectors, dy FIRST then r_S: w_C = [8.4714078 ; 9.4714078], w_P = [-10.4494856 ; -9.4494856]. KEY IDENTITY: w_rS - w_dy/T = 1 for both, because Rho/T = K*e^(-yT)*N(d2) and C = S*N(d1) - K*e^(-yT)*N(d2), so dividing by C gives C/C = 1. With T = 1 (every class example) the two weights differ by exactly 1; for any other T the plain difference is NOT 1 - check w_rS - w_dy/T instead. mu_C = -0.4524017%, sigma_C = 7.9249710%, VaR_C = -18.888641%; mu_P = +0.4553653%, sigma_P = 7.9086722%, VaR_P = -17.942957%. Against the underlying's -1.99% that is roughly NINE TIMES the risk - gearing quantified. The class Omega has Var(dy) = 1.8796e-08, Var(r_S) = 6.98764e-05, Cov = 6.6829e-08, a correlation of only 0.0583. BUILDING BLOCK / LEGO approach: two blocks, the underlying and a ZCB. One-step binomial gives two equations in two unknowns: C1u = Delta*S1u + B(1+y) and C1d = Delta*S1d + B(1+y), so Delta = (C1u-C1d)/(S(u-d)) and B = (C1d(1+u) - C1u(1+d))/((1+y)(u-d)), with u = EXP(sigma)-1 and d = EXP(-sigma)-1, and p = (y-d)/(u-d). Then r_C = (Delta*S/C)r_S + (B/C)r_B where r_B = -(T/(1+y))dy, so w_C' = [Delta*S/C , -(B/C)(T/(1+y))]. If the bond is priced continuously the duration is T instead of T/(1+y). DECK BINOMIAL EXAMPLE S0=K=1000, sigma=10%, y=3%, T=1: u = 10.5171%, d = -9.5163%, S1u = 1105.17, C1u = 105.17, S1d = 904.84, C1d = 0, Delta = 0.524979, Delta*S = 524.98, B = -461.19 (recomputed -461.1853), C = 63.79 (63.7939), stock weight 8.23, bond weight -7.23, w' = [8.23 ; 7.02] after multiplying by T/(1+y) = 1/1.03. The raw block weights 8.23 and -7.23 sum to exactly 1 because Delta*S + B = C (true for any T). A one-step binomial is crude: on the additional-questions put it gives 0.7864 against Black-Scholes 3.5367, a factor of 4.5, yet the two VaRs are -10.7423% and -10.7474%, within 0.005 points - the weight vector is far more robust than the price. NUMERICAL GREEKS by central difference: dy/dx = (y(x+dx) - y(x-dx))/(2*dx). Class sheet uses dS = 1 and dy = 0.0001: numerical delta 0.5714966 matches analytical exactly, numerical rho 706.6292 matches too. The deck's sanity check: for y = 2x+1 at x=10 with dx=0.1 the central difference gives exactly 2, because for a LINEAR function it is exact at any step size. Digital cash-or-nothing options pay $1 in the money: C = EXP(-y*T)*N(d2), P = EXP(-y*T)*N(-d2). RISK MANAGEMENT, three levers. (1) Reduce exposure: 10 shares at THB 70 with r~N(10%,30%) gives VaR_1% = 10% - 2.33*30% = -59.90%; sell 5 and hold THB 350 cash, so w = [50%,50%], mu = 5%, sigma = 15% (cash has ZERO risk so its Omega row is zeros), VaR = -29.95%. (2) Delta hedge: hold -Delta shares, so dPortfolio = dOp - Delta*dS = 0; the risk from dy is much smaller than from dS. Rho hedge ratio = Rho/(T*EXP(-y_T*T)) held in a ZCB with FV 1 and maturity T. (3) Diversification: mu_A = mu_B = 12%, sigma = 25% each, rho = 0.55; w = [100%,0%] gives VaR = -46.25%, w = [50%,50%] gives sigma_P = SQRT(2*0.5^2*0.25^2 + 2*0.55*0.5*0.5*0.25^2) = 22.0085% and VaR = -39.28%. The deck's summary: portfolio return is the weighted average; cash has zero risk; assets with the SAME source of risk can be offset exactly (hedging); assets with non-zero correlation can only be partly offset (diversification)."},
 
   {id:"fut", n:"05", t:"VaR for forwards & futures", panel:"p-fut",
-   ctx:"Lecture 5. Futures = agreement to buy or sell at a future time T for a set price, traded on an exchange; forwards are the OTC equivalent. Long = agree to buy. TWO DECOMPOSITIONS: a forward is equivalent to LONG ONE CALL + SHORT ONE PUT both struck at 0F_T (proved by a payoff table: in both states the portfolio pays S_T - 0F_T); a futures is equivalent to LONG THE ASSET + BORROWING its spot price (cost of carry). Equivalent assets have the same payoff in every state so the same price and the same risk; a dominant asset pays more in one state and no less in the others, which is what makes an arbitrage argument work. FORWARD EXAMPLE: T=1, 0F_T = THB 120, S0 = 118, sigma = 30% p.a., y_1Y = 2%. Call 14.236219 (deck 14.24), Delta_C 0.563813 (0.56), Rho_C 52.293678 (DECK SAYS 25.29 - WRONG, looks like a transposition), Put 13.860060 (13.86), Delta_P -0.436187 (-0.44), Rho_P -65.330163 (-65.33), V_F = C - P = 0.376159 (0.38). Risk: r_VF = [(C/V_F)Delta_C(S/C) - (P/V_F)Delta_P(S/P)]r_S + [(C/V_F)Rho_C(1/C) - (P/V_F)Rho_P(1/P)]dy, and the C's and P's cancel to give w_rS = (Delta_C - Delta_P)S/V_F = S/V_F because Delta_C - Delta_P = 1 exactly, and w_dy = (Rho_C - Rho_P)/V_F = T*K*e^(-yT)/V_F because Rho_C - Rho_P = T*K*e^(-yT)[N(d2)+N(-d2)]. Correct weights [313.70 ; 312.70], differing by exactly 1; the deck reports [310.52 ; 238.47] and the 238.47 is wrong because of the Rho typo (with the correct Rho and the deck's rounded V_F = 0.38 it would be 309.54). COST OF CARRY: 0F_T = S0*EXP(y_T*T); example S=100, T=6 months, y=3% p.a. gives 100*EXP(0.03/12*6) = 101.5113. FUTURES DECOMPOSITION: Fu = +1*S - 1*B with B_T = S0*e^(y_T*T) and B0 = S0, so dB = -T*B0*dy_T = -T*S0*dy_T and dFu = dS - dB = dS + T*S0*dy_T. Two minus signs make a plus: a long futures GAINS when rates rise, because it is short a bond. Writing dS = S0*r_S gives dFu = S0*r_S + T*S0*dy_T so w = [S0 ; T*S0] = [100 ; 50] for the example - IN MONEY. The deck asks 'can we find % return for a futures contract?' and the answer is NO, because its initial value is zero, so futures VaR is always in money units, never a percentage. ZCB FUTURES: underlying ZCB has FV 1 and TTM T+N, contract life T. 0F_T = EXP(-y_(T+N)(T+N) + y_T*T). dFu = -(T+N)B0*dy_(T+N) + T*B0*dy_T so w = [-(T+N) ; +T]*B0. Example T=1, N=0.5, y_T = 5%, y_(T+N) = 5.2%: 0F_T = EXP(-0.052*1.5 + 0.05) = 0.972388 (deck 0.9724), B0 = EXP(-0.052*1.5) = 0.924963 (0.9250), w = [-1.387445 ; +0.924963]. They do not cancel: the sum is -0.4624 = -N*B0, so a long bond-futures position is net long duration by exactly the extra N periods of life - and that is the source of basis risk. COUPON BOND FUTURES: only POST-DELIVERY cash flows count. 0F_T = {sum of CF*EXP(-y_(T+k)(T+k))}*EXP(y_T*T), equivalently discount at the forward rates (T)f(K) = [y_(T+K)(T+K) - y_T*T]/K. DECK EXAMPLE T=1 year, FV=100, C=4% p.a. semiannual, underlying has 2 years left at delivery, so periods are half-years, delivery is period 2 and coupons fall at periods 3,4,5,6 with spots 2.00%, 2.50%, 3.00%, 3.50% p.a.: PVs 1.940891, 1.902459, 1.855487, 91.833101 summing to 97.531938, times EXP(0.015/2*2) = 1.015113 gives 0F_T = 99.0059. THE DECK SAYS 119.61 AND 121.42, WHICH ARE IMPOSSIBLE because the undiscounted cash flows total only 108. Risk: w = [-(T+N)X_N*B_N,0 ; -(T+M)X_M*B_M,0 ; +T*(X_N*B_N,0 + X_M*B_M,0)] for factors dy_(T+N), dy_(T+M), dy_T - every underlying cash flow gets its own long-bond row, and ALL of them share ONE financing row which carries a factor of T. Deck example T=2 periods, contract 1 X_N = $2 with N=1, contract 2 X_M = $102 with M=2, y2=5%, y3=7%, y4=8%: B_N = EXP(-0.21) = 0.810584, B_M = EXP(-0.32) = 0.726149, w = [-4.8635 ; -296.2688 ; 151.3767]. THE DECK SAYS 75.68 for the third element, having dropped the coefficient T. PRACTICE PROBLEM (Spot Curves workbook): 5-year G.Bond, FV THB 1,000, C = 6% p.a. annual, continuous discounting off the Thai zero curve. PVs 59.100456, 58.085696, 56.884626, 55.586084, 943.611502, B = 1,173.268365; weights 5.037250%, 4.950760%, 4.848390%, 4.737713%, 80.425888%; adjusted weights summing to -4.5056423 = minus the Macaulay duration. mu = 2.46702e-05, sigma = 0.14171%, VaR_1% = -0.32720% = -3.8389 Baht. Then five ZCB futures with T = 1 year on ZCBs maturing at 2,3,4,5,6 years: futures prices 58.969795, 57.750444, 56.432137, 54.224934, 931.907152, with forward rates 1.73192%, 1.910677%, 2.043525%, 2.530093%, 2.575820% reproducing them exactly as a check. Futures book: mu = 0.0525646, sigma = 1.7048701 (money), VaR_1% = -3.9136 Baht. Can the net risk be eliminated completely? NO - the bond loads on dy1..dy5 while the futures book loads on dy2..dy6 plus dy1 through the shared financing leg, so six factors against five contracts with a different loading pattern. The residual is basis risk."},
+   ctx:"Lecture 5. Futures = agreement to buy or sell at a future time T for a set price, traded on an exchange; forwards are the OTC equivalent. Long = agree to buy. TWO DECOMPOSITIONS: a forward is equivalent to LONG ONE CALL + SHORT ONE PUT both struck at 0F_T (proved by a payoff table: in both states the portfolio pays S_T - 0F_T); a futures is equivalent to LONG THE ASSET + BORROWING its spot price (cost of carry). Equivalent assets have the same payoff in every state so the same price and the same risk; a dominant asset pays more in one state and no less in the others, which is what makes an arbitrage argument work. FORWARD EXAMPLE: T=1, 0F_T = THB 120, S0 = 118, sigma = 30% p.a., y_1Y = 2%. Call 14.236219 (deck 14.24), Delta_C 0.563813 (0.56), Rho_C 52.293678 (DECK SAYS 25.29 - WRONG, looks like a transposition), Put 13.860060 (13.86), Delta_P -0.436187 (-0.44), Rho_P -65.330163 (-65.33), V_F = C - P = 0.376159 (0.38). Risk: r_VF = [(C/V_F)Delta_C(S/C) - (P/V_F)Delta_P(S/P)]r_S + [(C/V_F)Rho_C(1/C) - (P/V_F)Rho_P(1/P)]dy, and the C's and P's cancel to give w_rS = (Delta_C - Delta_P)S/V_F = S/V_F because Delta_C - Delta_P = 1 exactly, and w_dy = (Rho_C - Rho_P)/V_F = T*K*e^(-yT)/V_F because Rho_C - Rho_P = T*K*e^(-yT)[N(d2)+N(-d2)]. Correct weights [313.70 ; 312.70], differing by exactly 1 because T = 1 (in general w_rS - w_dy/T = 1); the deck reports [310.52 ; 238.47] and the 238.47 is wrong because of the Rho typo (with the correct Rho and the deck's rounded V_F = 0.38 it would be 309.54). COST OF CARRY: 0F_T = S0*EXP(y_T*T); example S=100, T=6 months, y=3% p.a. gives 100*EXP(0.03/12*6) = 101.5113. FUTURES DECOMPOSITION: Fu = +1*S - 1*B with B_T = S0*e^(y_T*T) and B0 = S0, so dB = -T*B0*dy_T = -T*S0*dy_T and dFu = dS - dB = dS + T*S0*dy_T. Two minus signs make a plus: a long futures GAINS when rates rise, because it is short a bond. Writing dS = S0*r_S gives dFu = S0*r_S + T*S0*dy_T so w = [S0 ; T*S0] = [100 ; 50] for the example - IN MONEY. The deck asks 'can we find % return for a futures contract?' and the answer is NO, because its initial value is zero, so futures VaR is always in money units, never a percentage. ZCB FUTURES: underlying ZCB has FV 1 and TTM T+N, contract life T. 0F_T = EXP(-y_(T+N)(T+N) + y_T*T). dFu = -(T+N)B0*dy_(T+N) + T*B0*dy_T so w = [-(T+N) ; +T]*B0. Example T=1, N=0.5, y_T = 5%, y_(T+N) = 5.2%: 0F_T = EXP(-0.052*1.5 + 0.05) = 0.972388 (deck 0.9724), B0 = EXP(-0.052*1.5) = 0.924964 (0.9250), w = [-1.387447 ; +0.924964]. They do not cancel: the sum is -0.4624 = -N*B0, so a long bond-futures position is net long duration by exactly the extra N periods of life - and that is the source of basis risk. COUPON BOND FUTURES: only POST-DELIVERY cash flows count. 0F_T = {sum of CF*EXP(-y_(T+k)(T+k))}*EXP(y_T*T), equivalently discount at the forward rates (T)f(K) = [y_(T+K)(T+K) - y_T*T]/K. DECK EXAMPLE T=1 year, FV=100, C=4% p.a. semiannual, underlying has 2 years left at delivery, so periods are half-years, delivery is period 2 and coupons fall at periods 3,4,5,6 with spots 2.00%, 2.50%, 3.00%, 3.50% p.a.: PVs 1.940891, 1.902459, 1.855487, 91.833101 summing to 97.531938, times EXP(0.015/2*2) = 1.015113 gives 0F_T = 99.0059. THE DECK SAYS 119.61 AND 121.42, WHICH ARE IMPOSSIBLE because the undiscounted cash flows total only 108. Risk: w = [-(T+N)X_N*B_N,0 ; -(T+M)X_M*B_M,0 ; +T*(X_N*B_N,0 + X_M*B_M,0)] for factors dy_(T+N), dy_(T+M), dy_T - every underlying cash flow gets its own long-bond row, and ALL of them share ONE financing row which carries a factor of T. Deck example T=2 periods, contract 1 X_N = $2 with N=1, contract 2 X_M = $102 with M=2, y2=5%, y3=7%, y4=8%: B_N = EXP(-0.21) = 0.810584, B_M = EXP(-0.32) = 0.726149, w = [-4.8635 ; -296.2688 ; 151.3767]. THE DECK SAYS 75.68 for the third element, having dropped the coefficient T. PRACTICE PROBLEM (Spot Curves workbook): 5-year G.Bond, FV THB 1,000, C = 6% p.a. annual, continuous discounting off the Thai zero curve. PVs 59.100456, 58.085696, 56.884626, 55.586084, 943.611502, B = 1,173.268365; weights 5.037250%, 4.950760%, 4.848390%, 4.737713%, 80.425888%; adjusted weights summing to -4.5056423 = minus the Macaulay duration. mu = 2.46702e-05, sigma = 0.14171%, VaR_1% = -0.32720% = -3.8389 Baht. Then five ZCB futures with T = 1 year on ZCBs maturing at 2,3,4,5,6 years: futures prices 58.969795, 57.750444, 56.432137, 54.224934, 931.907152, with forward rates 1.73192%, 1.910677%, 2.043525%, 2.530093%, 2.575820% reproducing them exactly as a check. Futures book: mu = 0.0525646, sigma = 1.7048701 (money), VaR_1% = -3.9136 Baht. Can the net risk be eliminated completely? NO - the bond loads on dy1..dy5 while the futures book loads on dy2..dy6 plus dy1 through the shared financing leg, so six factors against five contracts with a different loading pattern. The residual is basis risk."},
 
   {id:"xl", n:"XL", t:"The spreadsheet layer", panel:"p-xl",
    ctx:"Cross-cutting Excel reference. The eight-step skeleton every class workbook shares: raw data; factor changes (=(B5-B4)/100 for dy, =LN(E5/E4) for returns); means (=AVERAGE); Omega (=varcovar, a custom VBA function); the instrument (price, PV weights, durations or Greeks); w; mu_P and sigma_P as two array formulas; VaR. Steps 1-4 and 7-8 are identical everywhere - only 5 and 6 change between lectures. Legacy-to-modern map: NORMSINV = NORM.S.INV (identical); NORMSDIST(z) = NORM.S.DIST(z,TRUE) (the modern one NEEDS the TRUE, and with FALSE gives the density); STDEV = STDEV.S (both n-1); STDEVP = STDEV.P (both n); COVAR = COVARIANCE.P, the POPULATION version dividing by n, NOT COVARIANCE.S. The class sheets pair STDEV^2 (n-1) on the diagonal with COVAR (n) off it, making off-diagonals 0.4% too small at n=250 - Cov(dy,r_S) = 6.682909e-08 where the consistent sample value is 6.709748e-08; the VaR effect is in the fifth decimal place. NORMSDIST takes no second argument, so there is no legacy way to get the density, which is why the calculators build it by hand. varcovar is a VBA UDF supplied with the course, not standard Excel; reproduce it with Data Analysis > Covariance (static, population divisor), a grid of COVARIANCE.S, or =MMULT(TRANSPOSE(dev),dev)/(n-1) on mean-centred data. Array formulas: Ctrl+Shift+Enter is required in Excel 2019 and earlier; without it an array formula returns only the TOP-LEFT element with no error, and the classic symptom is a portfolio sigma that is far too small. Select the whole output range before entering. Microsoft 365 spills automatically and shows #SPILL! if blocked. Functions by job: NORMSINV/NORMSDIST for quantiles and the CDF; AVERAGE/STDEV/COVAR/CORREL for mu and Omega; LN/EXP for log returns and continuous discounting; SQRT; MMULT/TRANSPOSE for the quadratic form; SUMPRODUCT for Macaulay duration and as a TRANSPOSE-free alternative =SUMPRODUCT(w,MMULT(Om,w)); SUM/INDEX; MAX for binomial payoffs; PI() for the density; Goal Seek and Solver for implied volatility and for the minimum-risk hedge. NOTABLY ABSENT: no PRICE, YIELD, DURATION or MDURATION anywhere in the course, because those take a single yield to maturity and real dates, while this course discounts every cash flow at its own spot rate over integer periods. Do not reach for MDURATION in an exam here - build the column. Trap list: -1.96 for a 95% VaR (it belongs to 2.5%); forgetting the /100 on dy; sigma labelled as sigma^2; w order not matching Omega order (the option sheet puts dy FIRST); missing Ctrl+Shift+Enter; mixing continuous PV with discrete duration; 22/7 for pi; scaling a whole VaR by SQRT(T); expecting a percentage return on a futures contract; STDEV^2 beside COVAR; annual sigma with T in months; LOG instead of LN; including pre-delivery coupons in a futures price; and dropping the T from the financing row of a coupon-bond-futures weight vector."},
@@ -2027,7 +2343,7 @@ var TOPICS = [
    ctx:"All three additional questions from Additional question_ans_Market risk.xlsm, worked in full, plus the two practice problems the decks set. Q1: $300,000 gold and $500,000 silver, daily volatilities 1.8% and 1.2%, correlation 0.6 - find the 10-day 97.5% portfolio VaR, the diversification benefit, and the marginal and component VaR of each. Uses =_xlfn.NORM.S.INV(0.025) = -1.9599639845. Weights 0.375 and 0.625; sigma_P = 0.01275 exactly; 1-day VaR = -2.498954% = -$19,991.63; 10-day = -$63,219.09; sum of individual 10-day VaRs = -$70,656.63 so the diversification benefit is $7,437.54. Marginal VaR = (z/sigma_P)*MMULT(VCV,w) = -0.0311288 gold and -0.0213060 silver, or -$24,903.07 and -$17,044.77 on the $800,000 book. Component VaR = marginal x weight = -0.0116733 and -0.0133162, or -$9,338.65 and -$10,652.98, summing to exactly -$19,991.63. Shares 46.71% gold and 53.29% silver. Q2: eleven days of 1Y and 2Y spot rates and prices of stocks A and B; portfolio of 20 one-year ZCBs, 20 two-year ZCBs, 100 shares of A and 100 of B, FV THB 1,000, annual compounding, 1-day 99% VaR. Uses SIMPLE returns for the stocks, =(D29-D28)/D28. Bond values 1000/1.0736 = 931.4456 times 20 = 18,628.91 and 1000/1.0801^2 = 857.1801 times 20 = 17,143.60; stocks 12,800 and 4,200; W0 = 52,772.51. Weights 0.3530041, 0.3248585, 0.2425505, 0.0795869. Modified durations 1/(1+y1) = 0.9314456 and 2/(1+y2) = 1.8516804, stocks 1. Adjusted weights -0.3288041, -0.6015342, +0.2425505, +0.0795869. mu_P = 0.0086619, sigma_P = 0.0186555, VaR = mu + NORMSINV(1-0.99)*sigma = -3.47372% = -THB 1,833.17. Q3: the same data plus a stock index, portfolio of 5 shares of A, 10 of B and one long put on the index with strike 1,050 and T = 1 year, 1-day 99% VaR, done BOTH ways. Option-pricing-model approach: sigma annualised as (Var_daily*252)^0.5 = 0.0731397, y = 0.0736, S = 1,071.37; d1 = 1.3183363, d2 = 1.2451966, N(d1) = 0.90630445, N(d2) = 0.8934702; call 99.4112839, put 3.5366825; Delta_put = -0.09369555, Rho_put = -103.9192839; W0 = 640 + 420 + 3.5367 = 1,063.5367; weights for dy -0.0977110 and for the index -0.0943857, stock A 0.6017658, stock B 0.3949088; mu = 0.0302928, sigma = 0.0592202, VaR = -10.74739%. Building-block approach: u = EXP(sigma)-1 = 0.0758809, d = -0.0705290, S1u = 1,152.6665 with P1u = 0, S1d = 995.8073 with P1d = 54.1927; Delta = -0.3454864, stock value -370.1437, bond value 370.9301, put price 0.7863658 - note the one-step binomial puts it at 0.7864 against Black-Scholes 3.5367; block weights -470.7017 stock and +471.7017 bond, summing to 1; W0 = 1,060.7864; adjusted weights -0.3257029 for dy and -0.3489333 for the index; mu = 0.0304842, sigma = 0.0592808, VaR = -10.74235%. The two approaches agree to within 0.005 percentage points despite the price differing by a factor of 4.5. Practice problems: the plain-vanilla and digital option exercises, and the 5-year 6% G.Bond hedged with ZCB futures."},
 
   {id:"exam", n:"EX", t:"Exam prep", panel:"p-exam",
-   ctx:"A timed self-marking mock drawn from every quiz on the page in a 50/25/25 tier mix at 1.75 minutes a question, with 12/20/40 question options and coverage filters for foundations (lectures 1-2), instruments (3-5), or lectures only. NO EXAM GUIDELINES were supplied with the course files, so the mix and timing are the study kit's defaults and the panel says so - the student should ask for the real tier weighting, time allowed, whether a formula sheet is permitted, and whether lecture 5 is examinable. The panel also carries the A4 formula sheet: the master formula VaR = w'mu + z*SQRT(w'Omega*w); the four z values; the ES formula and its multipliers 2.665214, 2.337803, 2.062713; mean scales with T and volatility with SQRT(T) and sigma_annual = sigma_daily*SQRT(252); duration and the coupon-bond weight; Black-Scholes with d1 and d2 and all four Greeks; the option weight vector with the differ-by-exactly-1 check; the forward and futures weight vectors with the note that futures weights are in money; ZCB and coupon-bond futures weights with the forward-rate formula; and marginal, component and incremental VaR. Three non-formulas worth the space: VaR is negative in this course, the mean stays in, and sigma/y/T must share one time unit."}
+   ctx:"A timed self-marking mock drawn from every quiz on the page in a 50/25/25 tier mix at 1.75 minutes a question, with 12/20/40 question options and coverage filters for foundations (lectures 1-2), instruments (3-5), or lectures only. NO EXAM GUIDELINES were supplied with the course files, so the mix and timing are the study kit's defaults and the panel says so - the student should ask for the real tier weighting, time allowed, whether a formula sheet is permitted, and whether lecture 5 is examinable. The panel also carries the A4 formula sheet: the master formula VaR = w'mu + z*SQRT(w'Omega*w); the four z values; the ES formula and its multipliers 2.665214, 2.337803, 2.062713; mean scales with T and volatility with SQRT(T) and sigma_annual = sigma_daily*SQRT(252); duration and the coupon-bond weight; Black-Scholes with d1 and d2 and all four Greeks; the option weight vector with the w_rS - w_dy/T = 1 check; the forward and futures weight vectors with the note that futures weights are in money; ZCB and coupon-bond futures weights with the forward-rate formula; and marginal, component and incremental VaR. Three non-formulas worth the space: VaR is negative in this course, the mean stays in, and sigma/y/T must share one time unit."}
 ];
 
 /* flashcards: t title, h hint (front), b back */
@@ -2075,7 +2391,7 @@ var FLASH = {
     {t:"Gearing", h:"why option weights are huge", b:"A call costs far less than the share, so a small percentage move in the asset is a large percentage move in the option — <b>upside and downside equally</b>. That is why the weight vectors come out as 9.47 and −10.45 rather than fractions."},
     {t:"Only two Greeks", h:"this course ignores the rest", b:"<b>Delta = ∂Op/∂S</b> and <b>Rho = ∂Op/∂y</b>. Delta = N(d₁) for a call, −N(−d₁) for a put. Rho = TKe<sup>−yT</sup>N(d₂) for a call, −TKe<sup>−yT</sup>N(−d₂) for a put. Gamma and Vega appear in the calculator but not in the VaR."},
     {t:"The option weight vector", h:"two coefficients from one Taylor line", b:"dOp = Δ·dS + ρ·dy, so r<sub>Op</sub> = Δ(S/Op)r<sub>S</sub> + ρ(1/Op)dy and <b>w = [Δ·S/Op ; ρ/Op]</b>. The class sheet orders it <b>dy first</b> — match Ω's order."},
-    {t:"The differ-by-one check", h:"free, exact, and nobody uses it", b:"<b>w<sub>rS</sub> − w<sub>dy</sub> = 1 exactly</b>, because C = S·N(d₁) − Ke<sup>−yT</sup>N(d₂) so dividing by C gives C/C. Holds for calls, puts and forwards. If yours don't differ by 1, you have an error."},
+    {t:"The w_rS − w_dy/T = 1 check", h:"free, exact, and nobody uses it", b:"<b>w<sub>rS</sub> − w<sub>dy</sub>/T = 1</b>, because ρ/T = Ke<sup>−yT</sup>N(d₂) and C = S·N(d₁) − Ke<sup>−yT</sup>N(d₂). Holds for calls, puts and forwards. With <b>T = 1</b> the weights simply differ by 1; for other T divide the dy weight by T first."},
     {t:"Units must match", h:"σ, y and T share one clock", b:"The deck's own example uses <b>σ = 5% per month, y = 1% per month, T = 12 months</b>. Mixing an annual σ with T in months is the fastest way to destroy an option calculation."},
     {t:"The nine-times answer", h:"gearing, measured", b:"On the 1,382.41 example both options have a one-day VaR near <b>−18%</b> against the underlying's <b>−1.99%</b>. The call is riskier than the put almost entirely because μ was negative over the window, not because σ differed."},
     {t:"The LEGO decomposition", h:"two blocks, two equations", b:"Option = <b>stock + bond</b>. In a one-step binomial, two states give two equations: Δ = (C₁u − C₁d)/(S(u−d)) and B = (C₁d(1+u) − C₁u(1+d))/((1+y)(u−d)), with u = e<sup>σ</sup> − 1."},
@@ -2090,7 +2406,7 @@ var FLASH = {
     {t:"A futures is asset minus bond", h:"cost of carry", b:"Borrow S₀, buy the asset, hold to T. Net cash flow today is zero, so no arbitrage gives <b><sub>0</sub>F<sub>T</sub> = S₀e<sup>y<sub>T</sub>T</sup></b>."},
     {t:"No percentage return", h:"the deck asks and answers this", b:"A futures contract is <b>worth zero at inception</b>, so there is nothing to divide by. Futures VaR is done entirely in <b>money</b>: w = [S₀ ; T·S₀], and the answer comes out in Baht, not percent."},
     {t:"Long futures gains when rates rise", h:"two minus signs", b:"dB = −T·S₀·dy and dFu = dS − dB, so <b>dFu = dS + T·S₀·dy</b>. A long futures is <b>short a bond</b>, so rising rates help it."},
-    {t:"The forward's two weights", h:"they collapse beautifully", b:"<b>w<sub>rS</sub> = S/V<sub>F</sub></b> because Δ<sub>C</sub> − Δ<sub>P</sub> = 1 exactly. <b>w<sub>dy</sub> = TKe<sup>−yT</sup>/V<sub>F</sub></b> because ρ<sub>C</sub> − ρ<sub>P</sub> = TKe<sup>−yT</sup>. And they differ by exactly 1."},
+    {t:"The forward's two weights", h:"they collapse beautifully", b:"<b>w<sub>rS</sub> = S/V<sub>F</sub></b> because Δ<sub>C</sub> − Δ<sub>P</sub> = 1 exactly. <b>w<sub>dy</sub> = TKe<sup>−yT</sup>/V<sub>F</sub></b> because ρ<sub>C</sub> − ρ<sub>P</sub> = TKe<sup>−yT</sup>. So w<sub>rS</sub> − w<sub>dy</sub>/T = 1 — exactly 1 apart when T = 1."},
     {t:"ZCB futures weights", h:"opposite signs, no cancellation", b:"<b>w = [−(T+N), +T] × B₀</b>. They sum to <b>−N·B₀</b>, so a long bond-futures position is <b>net long duration</b> by exactly the extra N periods. <b>N is the source of basis risk.</b>"},
     {t:"Forward rate", h:"two routes, one futures price", b:"<b>(T)f(N) = [y<sub>T+N</sub>(T+N) − y<sub>T</sub>T]/N</b>. Carrying the spot price forward and discounting at the forward rate give the <b>same</b> futures price — use it as a check."},
     {t:"Only post-delivery cash flows", h:"and one impossible-answer test", b:"Coupons paid <b>before</b> delivery never enter <sub>0</sub>F<sub>T</sub>. And the futures price must sit <b>between the PV of the post-delivery flows and their undiscounted sum</b>. That check catches the deck's 121.42 against a cash flow total of 108."},
@@ -2143,7 +2459,7 @@ var SORTERS = {
       {t:"A futures contract on a stock, six months to delivery.", side:3, why:"<b>In money: w = [S₀ ; T·S₀].</b> A futures has zero initial value, so there is no share and no percentage return to compute."},
       {t:"A forward contract to buy a share in one year.", side:2, why:"Decompose into long call + short put, then combine the two option weight vectors: <b>w = [S/V<sub>F</sub> ; TKe<sup>−yT</sup>/V<sub>F</sub>]</b>. Still the Δ·S/Op family."},
       {t:"THB 350 held in cash alongside five shares.", side:0, why:"Cash's weight is its <b>share</b> — 50% in the deck's example — and its entire row in Ω is <b>zeros</b>, so it contributes nothing to σ<sub>P</sub>."},
-      {t:"A zero-coupon bond futures contract, T = 1, underlying matures at 1.5 years.", side:3, why:"<b>In money: w = [−(T+N) ; +T] × B₀</b> = [−1.387445 ; +0.924963]. Money again, because a futures contract has no initial value to divide by."},
+      {t:"A zero-coupon bond futures contract, T = 1, underlying matures at 1.5 years.", side:3, why:"<b>In money: w = [−(T+N) ; +T] × B₀</b> = [−1.387447 ; +0.924964]. Money again, because a futures contract has no initial value to divide by."},
       {t:"A two-year zero inside a bond-plus-stock portfolio worth 2,408.10.", side:1, why:"<b>w = (PV₂/W₀) × (−2)</b> = 41.40767% × (−2) = −0.8281534. Note the share is against the <b>whole portfolio</b>, not against the bond."},
       {t:"The financing leg of a coupon-bond futures contract.", side:3, why:"<b>In money: +T × Σ(X<sub>k</sub>B<sub>k</sub>)</b> — one row shared by every underlying cash flow, and it carries a factor of <b>T</b> that the deck's example drops."}
     ]
@@ -2255,7 +2571,11 @@ mr: [
  {tier:"d", q:"The deck states three conditions for VaR<sub>T</sub> = VaR<sub>1</sub>√T. Which one does this course routinely violate?", o:["Independence across days","Normality","Zero mean","None — the course satisfies all three"], a:2,
   e:"<b>Zero mean.</b> This course keeps μ, so the whole VaR cannot be multiplied by √T: the mean scales with <b>T</b> and the volatility with <b>√T</b>. The class workbooks get this right — the three-day cell reads <span class='fx'>=K22*3+NORMSINV(0.01)*K23*SQRT(3)</span>. Independence and normality are also questionable in reality, but they are not what the course's own arithmetic breaks."},
  {tier:"d", q:"Lowering λ in an EWMA model from 0.97 to 0.94 does what?", o:["Makes the estimate react faster to a volatility spike, and noisier between spikes","Makes the estimate react slower and smoother","Reduces the amount of data that must be stored","Increases the weight on the oldest observations"], a:0,
-  e:"<b>Faster and noisier.</b> The first weight is 1 − λ, so it rises from 3% to 6%, and the effective window 1/(1−λ) falls from about 33 days to about 17. Storage is unaffected — the deck's point is that EWMA needs almost none at any λ. And lower λ puts <em>less</em> weight on old data, not more."}
+  e:"<b>Faster and noisier.</b> The first weight is 1 − λ, so it rises from 3% to 6%, and the effective window 1/(1−λ) falls from about 33 days to about 17. Storage is unaffected — the deck's point is that EWMA needs almost none at any λ. And lower λ puts <em>less</em> weight on old data, not more."},
+  {tier:"m", q:"Every VaR in these five decks is computed by assuming the risk factors are normal and reducing each instrument to a weight vector over them. In the wider literature that approach is called:", o:["Historical simulation","Model building — the variance-covariance or delta-normal approach","Monte Carlo simulation","Backtesting"], a:1,
+   e:"<b>Model building.</b> Historical simulation instead applies the last few hundred days of <em>actual</em> factor moves to today's book and reads a percentile off the result; Monte Carlo draws scenarios from a fitted distribution and reprices properly in each. Backtesting is not an approach at all — it is how you check any of the three afterwards. The course's choice is why an option enters only through Delta and Rho: model building is a <b>first-order</b> approximation."},
+  {tier:"d", q:"A bank's 99% one-day VaR produced <b>14 exceptions in 250 trading days</b>. The most defensible conclusion is:", o:["The model is acceptable — exceptions arrive at random","The model understates risk: about 2.5 exceptions were expected","The model overstates risk and is tying up capital needlessly","Nothing can be concluded without also computing expected shortfall"], a:1,
+   e:"<b>It understates risk.</b> At 99% confidence you expect 1% of 250 ≈ <b>2.5</b> exceptions a year; fourteen is nearly six times that. Two refinements worth a mark: exceptions should also be <em>independent</em> — four in one week is worse news than four spread across the year, because it means the model missed a regime — and backtesting a ten-day VaR on overlapping ten-day windows is not a fair test, because the windows share data."},
 ],
 
 fix: [
@@ -2300,8 +2620,8 @@ opt: [
   e:"<b>[Δ·S/Op ; ρ·1/Op].</b> It comes from dividing dOp = Δ·dS + ρ·dy through by Op and multiplying the first term by S/S, so that the factor becomes r<sub>S</sub> rather than dS."},
  {tier:"e", q:"If d₁ = 0.1801857 and σ√T = 0.1326984, then d₂ is:", o:["0.3128841","0.0474873","1.3578","−0.0474873"], a:1,
   e:"d₂ = d₁ − σ√T = 0.1801857 − 0.1326984 = <b>0.0474873</b>. Adding instead of subtracting gives 0.3128841 — always subtract."},
- {tier:"e", q:"For the class example the call's two weights are 8.4714078 and 9.4714078. The fact that they differ by exactly 1:", o:["Is a coincidence of these particular inputs","Always holds, because C = S·N(d₁) − Ke<sup>−yT</sup>N(d₂) so dividing by C gives C/C","Holds only for at-the-money options","Indicates a rounding error in the workbook"], a:1,
-  e:"<b>It always holds.</b> w<sub>rS</sub> − w<sub>dy</sub> = [S·N(d₁) − Ke<sup>−yT</sup>N(d₂)]/Op = Op/Op = 1, for calls, puts and forwards alike. Use it as a free check on every weight vector you build."},
+ {tier:"e", q:"For the class example the call's two weights are 8.4714078 and 9.4714078. Here T = 1. The fact that they differ by exactly 1:", o:["Is a coincidence of these particular inputs","Follows from w_rS − w_dy/T = 1, which always holds — so with T = 1 the weights differ by exactly 1","Holds only for at-the-money options","Indicates a rounding error in the workbook"], a:1,
+  e:"<b>It follows from an identity that always holds:</b> since ρ/T = Ke<sup>−yT</sup>N(d₂), w<sub>rS</sub> − w<sub>dy</sub>/T = [S·N(d₁) − Ke<sup>−yT</sup>N(d₂)]/Op = Op/Op = 1, for calls, puts and forwards alike. With T = 1 that is a plain difference of 1. <b>For T ≠ 1 divide the dy weight by T before checking</b> — the raw difference will not be 1."},
  {tier:"e", q:"With σ = 10% per period, the binomial up move u = e<sup>σ</sup> − 1 is:", o:["10.0000%","10.5171%","11.0517%","9.5163%"], a:1,
   e:"e<sup>0.10</sup> − 1 = 1.105171 − 1 = <b>10.5171%</b>. 11.0517% forgets to subtract the 1, and 9.5163% is |d|, the down move."},
  {tier:"e", q:"Which Greeks does this course actually use in an option's VaR?", o:["Delta and Gamma","Delta and Rho","Delta, Gamma and Vega","All five"], a:1,
@@ -2335,8 +2655,8 @@ fut: [
   e:"<b>Zero initial value.</b> A percentage return would be division by zero — Excel returns <code>#DIV/0!</code>. So futures VaR is computed entirely in <b>money</b>, with w = [S₀ ; T·S₀], and the answer comes out in Baht."},
  {tier:"e", q:"For a futures on an asset, the weight vector is:", o:["[1 ; T]","[S₀ ; T·S₀]","[S₀ ; S₀/T]","[1/S₀ ; T/S₀]"], a:1,
   e:"<b>[S₀ ; T·S₀]</b>, for factors r<sub>S</sub> and dy<sub>T</sub>, in money. It comes from dFu = S₀r<sub>S</sub> + T·S₀·dy<sub>T</sub>. On the deck's example that is [100 ; 50]."},
- {tier:"e", q:"For a ZCB futures with T = 1 and an underlying maturing at 1.5 years, with B₀ = 0.924963, the weights are:", o:["[−1.5 ; +1.0]","[−1.387445 ; +0.924963]","[+1.387445 ; −0.924963]","[−0.924963 ; +1.387445]"], a:1,
-  e:"w = [−(T+N) ; +T] × B₀ = [−1.5 ; +1.0] × 0.924963 = <b>[−1.387445 ; +0.924963]</b>. The signs matter: the long bond loses when <em>its</em> yield rises, while the short financing leg gains when the funding yield rises."},
+ {tier:"e", q:"For a ZCB futures with T = 1 and an underlying maturing at 1.5 years, with B₀ = 0.924964, the weights are:", o:["[−1.5 ; +1.0]","[−1.387447 ; +0.924964]","[+1.387447 ; −0.924964]","[−0.924964 ; +1.387447]"], a:1,
+  e:"w = [−(T+N) ; +T] × B₀ = [−1.5 ; +1.0] × 0.924964 = <b>[−1.387447 ; +0.924964]</b>. The signs matter: the long bond loses when <em>its</em> yield rises, while the short financing leg gains when the funding yield rises."},
  {tier:"e", q:"Which cash flows of the underlying bond enter a coupon-bond futures price?", o:["All of them","Only those paid before delivery","Only those paid after delivery","Only the final principal repayment"], a:2,
   e:"<b>Only post-delivery cash flows.</b> Coupons paid before delivery go to whoever holds the bond in the meantime, not to the futures buyer."},
  {tier:"m", q:"For a forward, ρ<sub>C</sub> − ρ<sub>P</sub> simplifies to:", o:["T·K·e<sup>−yT</sup>","S","0","T·K·e<sup>−yT</sup>·N(d₂)"], a:0,
@@ -2353,8 +2673,10 @@ fut: [
   e:"<b>Six factors, five instruments, mismatched loadings.</b> The futures reach a sixth point on the curve that the bond does not touch, and they all share one financing exposure to dy₁ that the bond's own dy₁ loading cannot offset. You can minimise the residual — that is what Solver is for — but not zero it. The residual is basis risk."},
  {tier:"d", q:"Why does the forward's weight vector collapse to w = [S/V<sub>F</sub> ; TKe<sup>−yT</sup>/V<sub>F</sub>], with all the C's and P's disappearing?", o:["Because C and P are approximately equal for an at-the-money forward","Because each leg's share of V<sub>F</sub> is multiplied by a sensitivity divided by that same leg's price, so the prices cancel, and the two deltas and two rhos then combine by put-call symmetry","Because the forward has no value at inception","Because V<sub>F</sub> is defined as C − P"], a:1,
   e:"<b>The prices cancel, then symmetry does the rest.</b> (C/V<sub>F</sub>)·Δ<sub>C</sub>·(S/C) = Δ<sub>C</sub>S/V<sub>F</sub> — the C is gone. Combining the legs gives (Δ<sub>C</sub> − Δ<sub>P</sub>)S/V<sub>F</sub>, and Δ<sub>C</sub> − Δ<sub>P</sub> = N(d₁) − (N(d₁) − 1) = 1. The same happens to the rhos via N(d₂) + N(−d₂) = 1. It has nothing to do with C ≈ P, and a forward entered at the market forward price would have V<sub>F</sub> = 0 exactly, which is a different case."},
- {tier:"d", q:"The lecture-5 slide gives Rho(call) as 25.29 where the correct value is 52.2937. Which check would have caught it fastest, without recomputing Rho?", o:["Comparing Rho(call) with Rho(put)","Checking that the two weights of the forward differ by exactly 1","Verifying that C − P equals the deck's 0.38","Confirming that Delta(call) − Delta(put) = 1"], a:1,
-  e:"<b>The differ-by-one check on the weights.</b> The deck's pair is 310.52 and 238.47, differing by 72.05 rather than 1 — an immediate red flag. Delta<sub>C</sub> − Delta<sub>P</sub> = 1 does hold on the deck's rounded deltas, so that check passes and tells you nothing; C − P = 0.38 is also correct; and comparing the two rhos is suggestive but not decisive, since they are genuinely different numbers."}
+ {tier:"d", q:"The lecture-5 slide gives Rho(call) as 25.29 where the correct value is 52.2937. Which check would have caught it fastest, without recomputing Rho?", o:["Comparing Rho(call) with Rho(put)","Checking that the forward's weights satisfy w_rS − w_dy/T = 1 (here T = 1, so they should differ by 1)","Verifying that C − P equals the deck's 0.38","Confirming that Delta(call) − Delta(put) = 1"], a:1,
+  e:"<b>The w<sub>rS</sub> − w<sub>dy</sub>/T = 1 check on the weights</b> — with T = 1 here, a plain difference of 1. The deck's pair is 310.52 and 238.47, differing by 72.05 rather than 1 — an immediate red flag. Delta<sub>C</sub> − Delta<sub>P</sub> = 1 does hold on the deck's rounded deltas, so that check passes and tells you nothing; C − P = 0.38 is also correct; and comparing the two rhos is suggestive but not decisive, since they are genuinely different numbers."},
+  {tier:"d", q:"A five-year coupon bond is exposed to dy₁ … dy₅. You hedge it with five zero-coupon-bond futures, each of which moves with its own dy<sub>(T+N)</sub> <em>and</em> with the financing rate dy<sub>T</sub>. Can the risk be eliminated completely?", o:["Yes — five contracts for five cash flows is an exact match","No — the position and the contracts together span six factors, so five contracts cannot zero every exposure","Yes, provided the contracts are held all the way to delivery","No, because a futures contract has no percentage return"], a:1,
+   e:"<b>No.</b> Each contract carries <em>two</em> exposures, not one: −(T+N)B₀ on its own underlying rate and +T·B₀ on the shared financing rate. Five contracts therefore give you five free numbers against six exposures, and the system is short one instrument. The minimum-variance hedge — choose n to minimise (w + Hn)ᵀΩ(w + Hn) — removes most of the variance and leaves a residual. Saying <em>why</em> the residual exists is the point of the practice problem; a hedge that eliminated everything would mean the futures spanned the whole curve."},
 ],
 
 xl: [
@@ -2468,7 +2790,7 @@ add: [
     +"<div class='eq'>μ<sub>P</sub> = 0.0302928&nbsp;&nbsp;σ<sub>P</sub> = 0.0592202&nbsp;&nbsp;VaR<sub>1%</sub> = 0.0302928 − 2.326348(0.0592202) = <b>−10.74739%</b></div>"
     +"<b>(b) Building block approach.</b> Replace Black-Scholes with a one-step binomial and read the stock and bond blocks directly."
     +"<div class='eq'>u = e<sup>0.0731397</sup> − 1 = 7.58809%&nbsp;&nbsp;&nbsp;d = e<sup>−0.0731397</sup> − 1 = −7.05290%<span class='lbl'>S₁u = 1,152.6665 so P₁u = 0; S₁d = 995.8073 so P₁d = 1,050 − 995.8073 = 54.1927.</span></div>"
-    +"<div class='eq'>Δ = <span class='fr'><span>0 − 54.1927</span><span>1071.37 × 0.1464099</span></span> = −0.3454864&nbsp;&nbsp;&nbsp;ΔS = −370.1437<br>B = <span class='fr'><span>54.1927(1.0758809) − 0</span><span>1.0736 × 0.1464099</span></span> = +370.9301<span class='lbl'>Put price = −370.1437 + 370.9301 = 0.7863658. Block weights within the put: −470.7017 stock and +471.7017 bond, differing by exactly 1.</span></div>"
+    +"<div class='eq'>Δ = <span class='fr'><span>0 − 54.1927</span><span>1071.37 × 0.1464099</span></span> = −0.3454864&nbsp;&nbsp;&nbsp;ΔS = −370.1437<br>B = <span class='fr'><span>54.1927(1.0758809) − 0</span><span>1.0736 × 0.1464099</span></span> = +370.9301<span class='lbl'>Put price = −370.1437 + 370.9301 = 0.7863658. Block weights within the put: −470.7017 stock and +471.7017 bond, summing to exactly 1.</span></div>"
     +"<div class='tablewrap'><table class='q'><thead><tr><th>Factor</th><th>Working</th><th class='r'>Adjusted weight</th></tr></thead><tbody>"
     +"<tr><td>dy₁</td><td>471.7017 × 0.0007413 × (−1/1.0736)</td><td class='r'>−0.3257029</td></tr>"
     +"<tr><td>r<sub>index</sub></td><td>−470.7017 × 0.0007413</td><td class='r'>−0.3489333</td></tr>"
@@ -2566,7 +2888,7 @@ exam: [
     +"<div class='note'><span class='eyebrow'>Why this is a good exam answer</span>It answers the question asked — <em>without recomputing</em> — by bounding the quantity. Examiners like bounding arguments because they show you understand what the formula <em>does</em>, not just how to evaluate it.</div>"},
 
  {src:"Difficult · 2", tier:"d",
-  q:"Explain why a forward contract's two weights must differ by exactly 1, and use that fact to identify the error in a slide that reports them as 310.52 and 238.47.",
+  q:"Explain why a one-year (T = 1) forward contract's two weights must differ by exactly 1, and use that fact to identify the error in a slide that reports them as 310.52 and 238.47.",
   a:"<b>The identity.</b> A forward is long one call and short one put at the same strike, so V<sub>F</sub> = C − P. Its two weights combine the legs:"
     +"<div class='eq'>w<sub>rS</sub> = <span class='fr'><span>(Δ<sub>C</sub> − Δ<sub>P</sub>) S</span><span>V<sub>F</sub></span></span>&nbsp;&nbsp;&nbsp;w<sub>dy</sub> = <span class='fr'><span>ρ<sub>C</sub> − ρ<sub>P</sub></span><span>V<sub>F</sub></span></span><span class='lbl'>Each leg's price cancels: (C/V_F)·Δ_C·(S/C) = Δ_C·S/V_F.</span></div>"
     +"<div class='eq'>Δ<sub>C</sub> − Δ<sub>P</sub> = N(d<sub>1</sub>) − [N(d<sub>1</sub>) − 1] = <b>1</b><br>ρ<sub>C</sub> − ρ<sub>P</sub> = TKe<sup>−yT</sup>[N(d<sub>2</sub>) + N(−d<sub>2</sub>)] = <b>TKe<sup>−yT</sup></b></div>"
@@ -2580,10 +2902,11 @@ exam: [
 /* ===================== chat seeds ===================== */
 var SEEDS = {
   start:["Explain the w, mu, Omega framework","Why is VaR negative here?","Quiz me on anything"],
+  cram:["I have 45 minutes — what should I do?","Ask me what the risk factors are for a question type","What do I most often get wrong?"],
   fi:["How does PD relate to VaR?","Why is bank capital so non-linear in rating?","Give me a bankruptcy-probability problem"],
   mr:["Walk me through the subadditivity counterexample","Why can't I just multiply VaR by root T?","When should I set mu to zero?"],
   fix:["Build the weight vector for a coupon bond","Continuous or discrete duration — which do I use?","Component VaR vs incremental VaR"],
-  opt:["Why do the two option weights differ by 1?","Greeks approach or building block?","Give me a binomial decomposition to work"],
+  opt:["Why is w_rS − w_dy/T always 1?","Greeks approach or building block?","Give me a binomial decomposition to work"],
   fut:["Why is futures VaR in money, not percent?","Where does the deck's Rho error lead?","Can a bond futures hedge ever be perfect?"],
   xl:["Rebuild Omega without the VBA function","What breaks without Ctrl+Shift+Enter?","Why no MDURATION in this course?"],
   pset:["Check my method on additional question 2","Walk me through Q3 without the answer","Why do both option approaches agree?"],
@@ -2591,6 +2914,8 @@ var SEEDS = {
 };
 
 var TEXTBOOK_CTX = {
+  opt: "Hull OFOD on the Greeks this course omits. Gamma = phi(d1)/(S*sigma*sqrt(T)) is the curvature Delta misses; dOp = Delta*dS + 0.5*Gamma*(dS)^2, so a long option's P&L is right-skewed (delta-normal OVERstates its risk) and a short option's is left-skewed (delta-normal UNDERstates it, the dangerous direction). Vega = S*sqrt(T)*phi(d1) = 542.62 for the class example, so a one-point rise in sigma is worth about 5.4 on an option priced at 83.41 - volatility risk is the same order as rate risk for an ATM option, and the course simply does not model it. Implied volatility inverts Black-Scholes for the sigma that reproduces a quoted price; the smile is evidence against the normality assumption. All of this is one-day-horizon-small, which is the course's defence.",
+  fut: "Hull OFOD on forwards and futures. The two decompositions (long call + short put; long asset + borrow) and why a futures contract's zero initial value forces money weights. Marking to market and daily settlement are the practical difference between a forward and a future; the course ignores the financing difference and treats the two as equivalent for risk purposes.",
   fi:"Hull RMFI ch. 11 background: the deck's PD table and the three-pillar framing come from the Basel material; the 250-day minimum is the BIS market-risk requirement.",
   mr:"Hull RMFI ch. 11-12: advantages of VaR, VaR vs expected shortfall, the four coherent-risk-measure properties, Examples 11.5 and 11.7 (the two-project subadditivity counterexample), and the normal-distribution ES formula. Hull OFOD ch. on volatility for the EWMA recursion and lambda = 0.94.",
   fix:"Hull RMFI ch. 12: marginal VaR, component VaR and the Euler-theorem additivity property that makes component VaR a sensible allocation."
@@ -2620,7 +2945,7 @@ var LINES = {
   topic_fi:[["intense","Tail 01: where the risk comes from. The bit that matters for later — <b>bankruptcy is a left-tail event</b>, so PD is just VaR read backwards. ({done} of {total} answered)"]],
   topic_mr:[["intense","Tail 02, the important one. VaR = μ + z σ, and z is <b>negative</b>. Also: the mean stays in. I'll keep reminding you~ ({done} of {total})"]],
   topic_fix:[["happy","Tail 03: bonds. You can't use the price history because the bond keeps becoming a different bond. Model the <b>yield</b> ♪ ({done} of {total})"]],
-  topic_opt:[["smug","Tail 04: options. Two Greeks, one weight vector, and a free check — the two weights differ by <b>exactly 1</b>. ({done} of {total})"]],
+  topic_opt:[["smug","Tail 04: options. Two Greeks, one weight vector, and a free check — <b>w<sub>rS</sub> − w<sub>dy</sub>/T = 1</b>. ({done} of {total})"]],
   topic_fut:[["intense","Tail 05: forwards and futures. A contract worth <b>nothing</b>, so no percentage return exists. Everything here is money. And the deck has two real errors — I'll point them out. ({done} of {total})"]],
   topic_xl:[["happy","The spreadsheet layer ♪ Every function, every legacy name, and fourteen ways to get a plausible wrong number. ({done} of {total})"]],
   topic_pset:[["intense","Assignments. Paper first, working second. I'll know if you peek — I always know."]],
@@ -2696,6 +3021,14 @@ var LINES = {
   mockLow:[["sad","<b>{pct}%</b>. That's exactly what mocks are for (｡•́ - •̀｡) Start with <b>{weak}</b>, read the explanations above, then take a fresh one."]],
   mockTool:[["happy","<b>{n}</b> questions from {cover}, in a 50/25/25 mix. Start when you're ready — not a word from me until you submit~"]],
   deep:[["happy","Textbook depth — <b>{book}</b>. This is where exam questions like to dig."]],
+  jump:[["happy","Taking you to <b>{what}</b> ♪"],["smug","<b>{what}</b>. I knew you'd want that one."],["happy","There — <b>{what}</b>. Anything else, just hit <b>Ctrl+K</b> again~"]],
+  palette:[["happy","Type anything — a formula, a trap, a number from a slide. It's all indexed (｡•ᴗ•｡)"],["smug","Faster than scrolling, isn't it."]],
+  sheetOpen:[["intense","The whole course on one page. If you can rebuild these cards from memory you are ready."],["happy","Print it, fold it, carry it. Then try to write it out from memory — that's the part that actually works ♪"],["smug","Sixteen cards. That's the entire syllabus. I did warn you it was small."]],
+  planPick:[["intense","<b>{mins} minutes</b>, <b>{n} steps</b>. I'll keep time — you keep moving (๑•̀ᗜ•́)ง"],["happy","{mins} minutes it is. Work top to bottom; the order isn't decorative."]],
+  planTick:[["happy","{mins} minutes down ♪"],["smug","One less thing between you and the exam."],["happy","Ticked. Next one."]],
+  planDone:[["intense","Plan finished ( ˶^ᵕ^˵ ) Sit one more paper, then only reread what you got wrong."],["happy","That's the whole plan done. I'm a little proud of you, which is embarrassing for both of us~"]],
+  planTool:[["happy","The <b>{mins}-minute</b> plan: <b>{done} of {total}</b> steps ticked. Each line jumps to the exact section it names."],["smug","{done}/{total}. The clock doesn't care how you feel about it (¬‿¬)"]],
+  weakRetry:[["intense","Cleared — <b>{tail}</b>, one more time. Getting it wrong twice is how it sticks."],["happy","Blank again. Try it without scrolling up first ♪"]],
   quizAhead:[["intense","Quiz ahead. Answer from memory first — no scrolling back up. I'll know~"]],
   warnAhead:[["sad","Careful with this box — it's where the slide slips, or where you will."]],
   foot:[["smug","You read all the way to the bottom? ...I noticed. I notice everything."]],
@@ -3890,7 +4223,7 @@ function optionVarBench(){
   $("#ovRho").textContent = signed(rh,4);
   $("#ovWy").textContent = signed(wy,7);
   $("#ovWs").textContent = signed(ws,7);
-  $("#ovChk").textContent = fmt(ws - wy,7);
+  $("#ovChk").textContent = fmt(ws - wy/T,7);
   $("#ovSig").textContent = fmt(sp*100,6) + "%";
   $("#ovVar").textContent = signed(v*100,5) + "%";
   $("#ovVs").textContent = signed(vs*100,5) + "%";
@@ -3898,10 +4231,10 @@ function optionVarBench(){
   $("#ovFx").innerHTML = "w = [ dy " + signed(wy,6) + " ; r<sub>S</sub> " + signed(ws,6) + " ] &nbsp;·&nbsp; σ<sub>P</sub> = <b>"
     + fmt(sp*100,6) + "%</b> &nbsp;·&nbsp; =μ+<b>NORMSINV</b>(" + fmt(a,4) + ")*σ = <b>" + signed(v*100,5) + "%</b>";
   var vn = $("#ovNote");
-  vn.className = "verdict " + (Math.abs(ws - wy - 1) < 1e-6 ? "good" : "bad");
+  vn.className = "verdict " + (Math.abs(ws - wy/T - 1) < 1e-6 ? "good" : "bad");
   vn.innerHTML = (isCall ? "Call" : "Put") + " worth <b>" + fmt(px,4) + "</b>, Δ = <b>" + signed(dl,6) + "</b>, ρ = <b>" + signed(rh,3)
-    + "</b>. Weights <b>" + signed(wy,5) + "</b> on dy and <b>" + signed(ws,5) + "</b> on r<sub>S</sub>, differing by <b>" + fmt(ws-wy,7)
-    + "</b>" + (Math.abs(ws-wy-1) < 1e-6 ? " — exactly 1, as it must be." : " — <b>that should be 1.</b>")
+    + "</b>. Weights <b>" + signed(wy,5) + "</b> on dy and <b>" + signed(ws,5) + "</b> on r<sub>S</sub>; w<sub>rS</sub> − w<sub>dy</sub>/T = <b>" + fmt(ws-wy/T,7)
+    + "</b>" + (Math.abs(ws-wy/T-1) < 1e-6 ? " — exactly 1, as it must be." : " — <b>that should be 1.</b>")
     + " VaR <b>" + signed(v*100,5) + "%</b> against the stock's <b>" + signed(vs*100,5) + "%</b>.";
   drawOption(S,K,y,sg,T,isCall,px,dl,ss,z);
 }
@@ -3932,9 +4265,9 @@ CHARTS.push(optionVarBench); optionVarBench();
 TOOL_TALK["Option VaR bench"] = function(target){
   var chk = tn("#ovChk"), gear = tn("#ovGear"), isCall = $("#ovType").value === "c";
   if(!isFinite(chk)) return ["sad","I need a positive spot, strike, volatility and maturity before Black‑Scholes means anything (｡•́ - •̀｡)"];
-  if(Math.abs(chk - 1) > 1e-5) return ["fluster","The two weights differ by <b>" + tv("#ovChk") + "</b> and they should differ by <b>exactly 1</b> (・・；) Something upstream is off."];
+  if(Math.abs(chk - 1) > 1e-5) return ["fluster","w<sub>rS</sub> − w<sub>dy</sub>/T comes out at <b>" + tv("#ovChk") + "</b> and it should be <b>exactly 1</b> (・・；) Something upstream is off."];
   if(target && target.id === "ovType")
-    return ["smug","Switched to the <b>" + (isCall ? "call" : "put") + "</b>. Weights <b>" + tv("#ovWy") + "</b> and <b>" + tv("#ovWs") + "</b> — still exactly 1 apart, because C = S·N(d₁) − Ke<sup>−yT</sup>N(d₂) does not care which option you picked~"];
+    return ["smug","Switched to the <b>" + (isCall ? "call" : "put") + "</b>. Weights <b>" + tv("#ovWy") + "</b> and <b>" + tv("#ovWs") + "</b> — w<sub>rS</sub> − w<sub>dy</sub>/T is still exactly 1, because C = S·N(d₁) − Ke<sup>−yT</sup>N(d₂) does not care which option you picked~"];
   if(target && target.id === "ovR")
     return ["intense","Correlation now <b>" + fmt(num("#ovR",0),4) + "</b>, giving σ<sub>P</sub> = <b>" + tv("#ovSig") + "</b>. The class data has only <b>0.0583</b>, which is why the yield leg barely matters there."];
   if(isFinite(gear) && Math.abs(gear) > 5)
@@ -4021,6 +4354,458 @@ TOOL_TALK["Futures VaR bench"] = function(target){
   if(kind === "asset")
     return ["happy","<sub>0</sub>F<sub>T</sub> = <b>" + tv("#fuF") + "</b> by cost of carry. VaR <b>" + tv("#fuVar") + "</b> in money. Remember the sign on dy: a long futures is <b>short a bond</b>, so it <em>gains</em> when rates rise~"];
   return ["intense","<sub>0</sub>F<sub>T</sub> = <b>" + tv("#fuF") + "</b>, forward rate <b>" + tv("#fuFwd") + "</b> — discounting at that rate reproduces the same price, which is your check. VaR <b>" + tv("#fuVar") + "</b> in money."];
+};
+</script>
+<script id="course-ux">
+/* ============================================================
+   UX layer — jump palette, keyboard shortcuts, the revision
+   planner, the weak-spot list and the printable one-page sheet.
+   Runs after boot(); nothing here touches the engine's data.
+   ============================================================ */
+
+/* ---------------- revision plans ---------------- */
+var PLANS = [
+  {mins:20, label:"20 min", blurb:"The night-before skim. Read, then take one short paper.", steps:[
+    {m:4,  topic:"exam", find:"The A4 sheet", t:"Read <b>the A4 sheet</b> top to bottom. Ten lines; everything else is a way of filling in <b>w</b>."},
+    {m:3,  topic:"cram", find:"The five checks", t:"The <b>five checks</b>. They cost nothing and they catch sign errors, unit errors and wrong-order weights."},
+    {m:5,  topic:"start", find:"The whole course in three symbols", t:"The <b>build-w table</b> — six instruments, six weight vectors. If you can rebuild this table you can start any question."},
+    {m:8,  topic:"exam", find:"Sit a paper", t:"A <b>12-question paper</b>. Filter to Easy and Medium; you are checking recall, not stamina."}
+  ]},
+  {mins:45, label:"45 min", blurb:"One pass over the machinery, then a short paper.", steps:[
+    {m:4,  topic:"exam", find:"The A4 sheet", t:"The <b>A4 sheet</b>."},
+    {m:4,  topic:"start", find:"Two conventions", t:"The <b>two conventions</b> that are not the textbook's: VaR is negative here, and the mean stays in."},
+    {m:3,  topic:"cram", find:"What kind of question", t:"The <b>question router</b>. Practise naming the risk factors out loud for three or four question types."},
+    {m:8,  topic:"fix", find:"The five-year coupon bond, worked", t:"The <b>five-year coupon bond</b>, worked. This is the fixed-income question in its most examinable form."},
+    {m:8,  topic:"opt", find:"The main example, worked", t:"The <b>option example</b>, both the Greeks route and the building-block route. Check the two weights against w<sub>rS</sub> − w<sub>dy</sub>/T = 1."},
+    {m:3,  topic:"fut", find:"Cost of carry", t:"<b>Futures weights are in money.</b> Read the cost-of-carry block until that sentence is obvious."},
+    {m:15, topic:"exam", find:"Sit a paper", t:"A <b>12-question paper</b>, all tiers, marked at the end."}
+  ]},
+  {mins:90, label:"90 min", blurb:"Every instrument once, the traps, and a full-length paper.", steps:[
+    {m:5,  topic:"exam", find:"The A4 sheet", t:"The <b>A4 sheet</b>, then cover it and write the master formula from memory."},
+    {m:8,  topic:"mr",  find:"The deck's worked example", t:"<b>VaR and ES from μ and σ</b> — the worked example, and the ES multiplier."},
+    {m:6,  topic:"mr",  find:"The counterexample, worked in full", t:"<b>Why VaR is not subadditive</b>. A favourite non-calculation question."},
+    {m:10, topic:"fix", find:"The T-bill example", t:"<b>T-bill</b>: price, D_mac, D_mod, VaR in percent and in Baht."},
+    {m:10, topic:"fix", find:"The five-year coupon bond, worked", t:"<b>Coupon bond</b> as a portfolio of zeros; then marginal and component VaR just below it."},
+    {m:12, topic:"opt", find:"The main example, worked", t:"<b>Option VaR</b> both ways, then the numerical-Greeks check."},
+    {m:10, topic:"fut", find:"The forward example", t:"<b>Forward and futures</b>: the two decompositions, the weights in money, and the deck's two big errors."},
+    {m:6,  topic:"xl",  find:"The trap list", t:"The <b>trap list</b>. Read it as a list of marks you are about to lose."},
+    {m:23, topic:"exam", find:"Sit a paper", t:"A <b>20-question paper</b> across everything, timed."}
+  ]},
+  {mins:180, label:"3 hours", blurb:"The full pass: measure every tail, then sit a long paper.", steps:[
+    {m:10, topic:"fi",  find:"Bankruptcy is a statement", t:"<b>Lecture 1</b>: bankruptcy as a left-tail statement, and the capital-versus-rating table."},
+    {m:25, topic:"mr",  find:"Returns first", t:"<b>Lecture 2</b> end to end, then its quiz to 80%."},
+    {m:25, topic:"fix", find:"Why you cannot just take the return", t:"<b>Lecture 3</b> end to end, then its quiz to 80%."},
+    {m:25, topic:"opt", find:"Payoffs, and why leverage", t:"<b>Lecture 4</b> end to end, then its quiz to 80%."},
+    {m:25, topic:"fut", find:"Two decompositions", t:"<b>Lecture 5</b> end to end, then its quiz to 80%."},
+    {m:15, topic:"xl",  find:"The build order", t:"<b>The spreadsheet layer</b>: the eight-step skeleton and the trap list."},
+    {m:25, topic:"pset", find:"Additional questions", t:"The <b>three additional questions</b>, worked. Cover the answer and try each one first."},
+    {m:30, topic:"exam", find:"Sit a paper", t:"A <b>40-question paper</b> across everything. Mark it, then reread only what you got wrong."}
+  ]}
+];
+
+/* ---------------- the one-page sheet ---------------- */
+var SHEET_CARDS = [
+  {h:"The master formula", b:'<span class="f"><b>VaR<sub>α</sub> = μ<sub>P</sub> + z<sub>α</sub> σ<sub>P</sub></b></span><span class="f">μ<sub>P</sub> = w<sup>T</sup>μ &nbsp;&nbsp; σ<sub>P</sub><sup>2</sup> = w<sup>T</sup>Ωw</span><p>Negative output. The mean stays in. Everything below is a way of building <b>w</b>.</p>'},
+  {h:"Quantiles and ES", b:'<span class="f">z: 1% −2.326348 · 2.5% −1.959964<br>5% −1.644854 · 10% −1.281552</span><span class="f">ES = μ − σ·φ(z<sub>α</sub>)/α</span><span class="f">multiplier: 2.665214 (1%) · 2.337803 (2.5%) · 2.062713 (5%)</span><p>−1.96 is the 2.5% value, never the 5% one.</p>'},
+  {h:"Horizon", b:'<span class="f">μ<sub>T</sub> = μ·T &nbsp;&nbsp; σ<sub>T</sub> = σ·√T &nbsp;&nbsp; σ<sub>ann</sub> = σ<sub>daily</sub>√252</span><p>Scale the pieces, never the VaR itself. Needs iid returns.</p>'},
+  {h:"Returns and the linear rule", b:'<span class="f">discrete r = (P₁ + D − P₀)/P₀ &nbsp; continuous r = ln((P₁+D)/P₀)</span><span class="f">y = a + b·r → μ<sub>y</sub> = a + bμ, σ<sub>y</sub>² = b²σ²</span><p>Price is linear in return, which is why one rule carries the whole course.</p>'},
+  {h:"Building w", b:'<span class="f">stock &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; w = share of W₀<br>ZCB &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; w = −D<sub>mod</sub> × share<br>coupon bond w<sub>t</sub> = (PV<sub>t</sub>/B)(−t)<br>option &nbsp;&nbsp;&nbsp; w = [Δ·S/Op ; ρ/Op]<br>forward &nbsp;&nbsp; w = [S/V<sub>F</sub> ; TKe<sup>−yT</sup>/V<sub>F</sub>]<br>futures &nbsp;&nbsp; w = [S₀ ; T·S₀] in money</span>'},
+  {h:"Fixed income", b:'<span class="f">D<sub>mac</sub> = Σ t·w<sub>t</sub> &nbsp;&nbsp; D<sub>mod</sub> = D<sub>mac</sub>/(1+y)</span><span class="f">r<sub>B</sub> = −D<sub>mod</sub>·dy</span><p>Continuous discounting pairs with multiplier −t; discrete with −t/(1+y<sub>t</sub>). Each cash flow is discounted at <b>its own</b> spot rate.</p>'},
+  {h:"Black-Scholes", b:'<span class="f">C = S·N(d₁) − Ke<sup>−yT</sup>N(d₂)</span><span class="f">d₁ = [ln(S/K) + (y + σ²/2)T] / (σ√T)<br>d₂ = d₁ − σ√T</span><span class="f">Δ<sub>C</sub> = N(d₁) &nbsp; Δ<sub>P</sub> = −N(−d₁)<br>ρ<sub>C</sub> = TKe<sup>−yT</sup>N(d₂) &nbsp; ρ<sub>P</sub> = −TKe<sup>−yT</sup>N(−d₂)</span>'},
+  {h:"Building block", b:'<span class="f">u = e<sup>σ</sup> − 1, d = e<sup>−σ</sup> − 1</span><span class="f">Δ = (X₁u − X₁d)/(S(u−d))</span><span class="f">B = [X₁d(1+u) − X₁u(1+d)]/[(1+y)(u−d)]</span><span class="f">w = [ΔS/Op ; −(B/Op)·T/(1+y)]</span><p>Price = ΔS + B. The two block weights sum to 1.</p>'},
+  {h:"Futures", b:'<span class="f">asset: ₀F<sub>T</sub> = S₀e<sup>y<sub>T</sub>T</sup>, w = [S₀ ; T·S₀]</span><span class="f">ZCB: w = [−(T+N)B₀ ; +T·B₀]</span><span class="f">coupon bond: w = [… −(T+k)X<sub>k</sub>B<sub>k</sub> … ; +T·ΣX<sub>k</sub>B<sub>k</sub>]</span><span class="f">(T)f(N) = [y<sub>T+N</sub>(T+N) − y<sub>T</sub>T]/N</span><p>Weights in money, so the VaR is in money. The financing row carries a factor of T.</p>'},
+  {h:"Decomposing VaR", b:'<span class="f">marginal<sub>i</sub> = μ<sub>i</sub> + z(Ωw)<sub>i</sub>/σ<sub>P</sub></span><span class="f">component<sub>i</sub> = w<sub>i</sub> × marginal<sub>i</sub></span><span class="f">Σ components = VaR (Euler)</span><p>Incremental VaR is different: portfolio VaR minus the VaR of the book without that position.</p>'},
+  {h:"Institutions", b:'<span class="f">bankrupt ⟺ r<sub>A</sub> &lt; −E₀/A₀</span><span class="f">PD = N((−E₀/A₀ − μ<sub>A</sub>)/σ<sub>A</sub>)</span><span class="f">capital = −(μ<sub>A</sub> + N<sup>−1</sup>(PD)·σ<sub>A</sub>)</span><p>The BBB default probability of 0.9979% is almost exactly the 1% tail, so its z is the 99% VaR multiplier.</p>'},
+  {h:"Volatility", b:'<span class="f">EWMA: σ²<sub>n</sub> = λσ²<sub>n−1</sub> + (1−λ)u²<sub>n−1</sub></span><p>λ = 0.94; effective window 1/(1−λ) ≈ 16.7 days. BIS wants at least 250 business days of data.</p>'},
+  {h:"Discrete distributions", b:'<p>VaR at 1−α = the smallest loss L with P(loss ≤ L) ≥ 1−α. ES = the average of the worst α.</p><p><b>VaR is not subadditive:</b> two projects each losing 10 with probability 2% have VaR 1 apiece and 11 combined. ES never does this.</p>'},
+  {h:"Excel", b:'<span class="f">=NORMSINV(α) · =NORMSDIST(z)</span><span class="f">=MMULT(TRANSPOSE(w),mu)</span><span class="f">=SQRT(MMULT(MMULT(TRANSPOSE(w),Om),w))</span><span class="f">density: =EXP(-(d^2)/2)/SQRT(2*PI())</span><p>Array formulas need <b>Ctrl+Shift+Enter</b> in Excel 2019 and earlier, or you silently get the top-left element. COVAR is the <b>population</b> version.</p>'},
+  {h:"The five checks", cls:"trap", b:'<ul><li>Is VaR negative?</li><li>Do σ, y and T share one time unit?</li><li>Is w in the same order as Ω?</li><li>w<sub>rS</sub> − w<sub>dy</sub>/T = 1 for an option or forward.</li><li>Σ component VaR = portfolio VaR; a futures price sits between the PV and the undiscounted sum.</li></ul>'},
+  {h:"Slips in the materials", cls:"trap", b:'<ul><li>Forward Rho 25.29 should be <b>52.2937</b> (weights 313.70 / 312.70).</li><li>Coupon-bond futures quoted 121.42 when the flows only total 108; correct <b>99.0059</b>.</li><li>Financing weight 75.68 drops the factor T; correct <b>151.3767</b>.</li><li>−1.96 used for a 95% VaR; the 5% value is <b>−1.644854</b>.</li><li>Digital Delta printed with N(d₂) instead of φ(d₂): 0.0322 should be <b>0.0265</b>.</li></ul>'}
+];
+
+/* ---------------- own storage (the engine's payload() is left alone) ---------------- */
+var UX = {clock:45, done:{}};
+function uxKey(){ return COURSE.storageKey + ".ux"; }
+function uxLoad(){ try{ var r = localStorage.getItem(uxKey()); if(r) Object.assign(UX, JSON.parse(r)); }catch(e){} }
+function uxSave(){ try{ localStorage.setItem(uxKey(), JSON.stringify(UX)); }catch(e){} }
+
+/* ---------------- helpers ---------------- */
+function uxTopicOf(node){
+  var p = node && node.closest ? node.closest(".panel") : null;
+  if(!p) return null;
+  var hit = TOPICS.filter(function(t){ return t.panel === p.id; })[0];
+  return hit ? hit.id : null;
+}
+function uxClip(s, n){
+  s = String(s).replace(/\s+/g, " ").trim();
+  return s.length > n ? s.slice(0, n - 1) + "…" : s;
+}
+function uxFlash(node){
+  if(!node) return;
+  node.classList.remove("jumped");
+  void node.offsetWidth;
+  node.classList.add("jumped");
+  setTimeout(function(){ node.classList.remove("jumped"); }, 1700);
+}
+/* go to a topic, then scroll to the first heading whose text contains `find` */
+function uxJump(topic, find, node){
+  if(topic && topic !== state.topic) go(topic);
+  setTimeout(function(){
+    var target = node || null;
+    if(!target && find){
+      var panel = $("#" + (TOPICS.filter(function(t){ return t.id === topic; })[0] || {}).panel);
+      if(panel){
+        var low = find.toLowerCase();
+        target = $$("h3, h4, caption, code", panel).filter(function(h){
+          return (h.textContent || "").toLowerCase().indexOf(low) >= 0;
+        })[0];
+        if(target && target.closest("section.block")) target = target.closest("section.block");
+      }
+    }
+    if(!target) return;
+    var y = target.getBoundingClientRect().top + window.scrollY - 96;
+    window.scrollTo({top: Math.max(0, y), behavior: "smooth"});
+    uxFlash(target);
+  }, topic && topic !== state.topic ? 90 : 0);
+}
+
+/* ---------------- jump palette ---------------- */
+var PAL = null, palItems = null, palSel = 0, palShown = [];
+function palIndex(){
+  if(palItems) return palItems;
+  var out = [];
+  TOPICS.forEach(function(t){
+    out.push({kind:"tail", lab:(isNumbered(t) ? COURSE.unit + " " + t.n + " · " : "") + t.t, topic:t.id, node:null, w:0});
+  });
+  $$(".panel section.block > h3").forEach(function(h){
+    out.push({kind:"section", lab:uxClip(h.textContent, 90), topic:uxTopicOf(h), node:h.closest("section.block"), w:1});
+  });
+  $$(".panel .tool-h h4").forEach(function(h){
+    out.push({kind:"bench", lab:uxClip(h.textContent, 60), topic:uxTopicOf(h), node:h.closest(".tool"), w:1});
+  });
+  $$(".panel .eq").forEach(function(e){
+    var lbl = e.querySelector(".lbl");
+    var head = e.cloneNode(true);
+    $$(".lbl", head).forEach(function(x){ x.remove(); });
+    out.push({kind:"formula", lab:uxClip(head.textContent, 88) + (lbl ? " — " + uxClip(lbl.textContent, 50) : ""), topic:uxTopicOf(e), node:e, w:2});
+  });
+  $$(".panel .fxrow").forEach(function(r){
+    var c = r.querySelector("code"), d = r.querySelector("div");
+    out.push({kind:r.classList.contains("trap") ? "trap" : "excel",
+              lab:uxClip(c ? c.textContent : "", 44) + " — " + uxClip(d ? d.textContent : "", 72),
+              topic:uxTopicOf(r), node:r, w:2});
+  });
+  $$(".panel .warn").forEach(function(w){
+    out.push({kind:"erratum", lab:uxClip(w.textContent.replace(/^(Slide check|Workbook check|Check with your lecturer)/, ""), 100), topic:uxTopicOf(w), node:w, w:2});
+  });
+  $$(".panel .pset").forEach(function(p){
+    var src = p.querySelector(".src"), q = p.querySelector(".pset-q");
+    out.push({kind:"problem", lab:uxClip(src ? src.textContent : "", 34) + " — " + uxClip(q ? q.textContent.replace(/Show working/, "") : "", 84),
+              topic:uxTopicOf(p), node:p, w:1});
+  });
+  $$(".panel .fc").forEach(function(c){
+    var t = c.querySelector(".fct"), h = c.querySelector(".fcb");
+    out.push({kind:"card", lab:uxClip(t ? t.textContent : "", 60) + (h ? " — " + uxClip(h.textContent, 60) : ""),
+              topic:uxTopicOf(c), node:c, w:3});
+  });
+  $$(".panel .qitem").forEach(function(q){
+    var qq = q.querySelector(".qq");
+    if(!qq) return;
+    var clone = qq.cloneNode(true);
+    $$(".n, .qsrc, .tier", clone).forEach(function(x){ x.remove(); });
+    out.push({kind:"question", lab:uxClip(clone.textContent, 104), topic:uxTopicOf(q), node:q, w:4});
+  });
+  palItems = out.filter(function(x){ return x.lab && x.lab.length > 2; });
+  return palItems;
+}
+function palScore(item, q){
+  var s = item.lab.toLowerCase(), i = s.indexOf(q);
+  if(i < 0){
+    var parts = q.split(/\s+/).filter(Boolean);
+    if(parts.length > 1 && parts.every(function(p){ return s.indexOf(p) >= 0; })) return 60 + item.w;
+    return -1;
+  }
+  return i + item.w * 3 + (i === 0 ? -10 : 0);
+}
+function palRender(q){
+  var list = $("#palList");
+  q = (q || "").trim().toLowerCase();
+  var items = palIndex();
+  if(!q){
+    palShown = items.filter(function(x){ return x.kind === "tail"; })
+      .concat(items.filter(function(x){ return x.kind === "bench" || x.kind === "problem"; }).slice(0, 10));
+  } else {
+    palShown = items.map(function(x){ return [palScore(x, q), x]; })
+      .filter(function(p){ return p[0] >= 0; })
+      .sort(function(a, b){ return a[0] - b[0]; })
+      .slice(0, 45).map(function(p){ return p[1]; });
+  }
+  palSel = 0;
+  if(!palShown.length){ list.innerHTML = '<div class="pal-empty">Nothing matches “' + esc(q) + '”. Try a formula name, an instrument, or a number from the slides.</div>'; return; }
+  list.innerHTML = "";
+  palShown.forEach(function(it, i){
+    var t = TOPICS.filter(function(x){ return x.id === it.topic; })[0];
+    var b = el("div", "pal-item");
+    b.setAttribute("role", "option");
+    b.setAttribute("aria-selected", String(i === 0));
+    var lab = esc(it.lab);
+    if(q){
+      var i0 = it.lab.toLowerCase().indexOf(q);
+      if(i0 >= 0) lab = esc(it.lab.slice(0, i0)) + "<b>" + esc(it.lab.slice(i0, i0 + q.length)) + "</b>" + esc(it.lab.slice(i0 + q.length));
+    }
+    b.innerHTML = '<span class="kind">' + it.kind + '</span><span class="lab">' + lab + '</span><span class="where">' +
+      (t ? esc(isNumbered(t) ? COURSE.unit + " " + t.n : t.n) : "") + '</span>';
+    b.addEventListener("mouseenter", function(){ palSelect(i); });
+    b.addEventListener("click", function(){ palGo(i); });
+    list.appendChild(b);
+  });
+}
+function palSelect(i){
+  palSel = Math.max(0, Math.min(palShown.length - 1, i));
+  $$(".pal-item", $("#palList")).forEach(function(n, j){ n.setAttribute("aria-selected", String(j === palSel)); });
+  var cur = $$(".pal-item", $("#palList"))[palSel];
+  if(cur) cur.scrollIntoView({block:"nearest"});
+}
+function palGo(i){
+  var it = palShown[i == null ? palSel : i];
+  if(!it) return;
+  palClose();
+  uxJump(it.topic, null, it.node);
+  react("jump", false, {vars:{what: esc(uxClip(it.lab, 60))}});
+}
+function palOpen(){
+  if(!PAL){
+    PAL = el("div", "pal-back");
+    PAL.innerHTML = '<div class="pal" role="dialog" aria-label="Jump to anything">' +
+      '<input id="palInput" placeholder="Jump to a formula, a trap, a worked problem, a flashcard…" autocomplete="off" aria-label="Search the page">' +
+      '<div class="pal-list" id="palList" role="listbox"></div>' +
+      '<div class="pal-foot"><span><span class="keys">↑</span><span class="keys">↓</span> move</span><span><span class="keys">↵</span> jump</span><span><span class="keys">Esc</span> close</span><span>everything on the page is in here</span></div></div>';
+    document.body.appendChild(PAL);
+    PAL.addEventListener("click", function(ev){ if(ev.target === PAL) palClose(); });
+    $("#palInput", PAL).addEventListener("input", function(){ palRender(this.value); });
+    $("#palInput", PAL).addEventListener("keydown", function(ev){
+      if(ev.key === "ArrowDown"){ ev.preventDefault(); palSelect(palSel + 1); }
+      else if(ev.key === "ArrowUp"){ ev.preventDefault(); palSelect(palSel - 1); }
+      else if(ev.key === "Enter"){ ev.preventDefault(); palGo(); }
+      else if(ev.key === "Escape"){ ev.preventDefault(); palClose(); }
+    });
+  }
+  PAL.style.display = "flex";
+  $("#palInput").value = "";
+  palRender("");
+  $("#palInput").focus();
+  react("palette", true);
+}
+function palClose(){ if(PAL) PAL.style.display = "none"; }
+function palIsOpen(){ return PAL && PAL.style.display !== "none"; }
+
+/* ---------------- one-page sheet ---------------- */
+var SHEET = null;
+function sheetOpen(){
+  if(!SHEET){
+    SHEET = el("div", "sheet-back");
+    var cards = SHEET_CARDS.map(function(c){
+      return '<div class="card' + (c.cls ? " " + c.cls : "") + '"><h4>' + c.h + '</h4>' + c.b + '</div>';
+    }).join("");
+    SHEET.innerHTML = '<div class="sheet-bar"><h3>The whole course on one page</h3>' +
+      '<button class="btn sm" type="button" id="sheetPrint">Print</button>' +
+      '<button class="btn sm ghost" type="button" id="sheetClose">Close</button>' +
+      '<span class="esc">Esc</span></div>' +
+      '<div class="a4">' + cards + '</div>';
+    document.body.appendChild(SHEET);
+    $("#sheetClose", SHEET).addEventListener("click", sheetClose);
+    $("#sheetPrint", SHEET).addEventListener("click", function(){
+      try{ window.print(); }
+      catch(e){ toast("Printing is blocked here — use your browser's print menu"); }
+    });
+  }
+  SHEET.classList.add("open");
+  document.body.style.overflow = "hidden";
+  react("sheetOpen");
+}
+function sheetClose(){
+  if(SHEET) SHEET.classList.remove("open");
+  document.body.style.overflow = "";
+}
+function sheetIsOpen(){ return SHEET && SHEET.classList.contains("open"); }
+
+/* ---------------- revision planner ---------------- */
+function planPaint(){
+  var P = UX;
+  var plan = PLANS.filter(function(p){ return p.mins === P.clock; })[0] || PLANS[1];
+  $$("#clockBtns button").forEach(function(b){ b.setAttribute("aria-pressed", String(+b.dataset.mins === P.clock)); });
+  var list = $("#planList");
+  list.innerHTML = "";
+  var doneMins = 0;
+  plan.steps.forEach(function(s, i){
+    var key = P.clock + ":" + i, done = !!P.done[key];
+    if(done) doneMins += s.m;
+    var li = el("li", done ? "done" : "");
+    var tick = el("button", "tick", done ? "✓" : "");
+    tick.type = "button";
+    tick.setAttribute("aria-pressed", String(done));
+    tick.setAttribute("aria-label", done ? "Mark as not done" : "Mark as done");
+    tick.addEventListener("click", function(ev){
+      ev.stopPropagation();
+      if(P.done[key]) delete P.done[key]; else P.done[key] = 1;
+      uxSave();
+      planPaint();
+      if(P.done[key]) react(Object.keys(P.done).filter(function(k){ return k.indexOf(P.clock + ":") === 0; }).length >= plan.steps.length ? "planDone" : "planTick", false, {vars:{mins:s.m}});
+    });
+    var mins = el("span", "mins", s.m + " min");
+    var what = el("span", "what");
+    what.innerHTML = '<a role="button" tabindex="0">' + s.t + '</a>';
+    var jump = function(){ uxJump(s.topic, s.find); };
+    $("a", what).addEventListener("click", jump);
+    $("a", what).addEventListener("keydown", function(ev){ if(ev.key === "Enter") jump(); });
+    li.appendChild(tick); li.appendChild(mins); li.appendChild(what);
+    list.appendChild(li);
+  });
+  var total = plan.steps.reduce(function(a, s){ return a + s.m; }, 0);
+  $("#planSum").textContent = doneMins + " of " + total + " minutes ticked off · " + plan.blurb;
+  $("#planScore").textContent = Object.keys(P.done).length + " steps done";
+  var left = total - doneMins;
+  $("#planNote").className = "verdict" + (left === 0 ? " good" : "");
+  $("#planNote").innerHTML = left === 0
+    ? "<strong>Plan finished.</strong> Sit one more paper if there is time, and reread only the questions you got wrong."
+    : "<strong>" + left + " minutes left in this plan.</strong> Work top to bottom — the order is deliberate, each step assumes the one above it.";
+}
+function planInit(){
+  var host = $("#clockBtns");
+  if(!host) return;
+  PLANS.forEach(function(p){
+    var b = el("button", "btn sm ghost", p.label);
+    b.type = "button";
+    b.dataset.mins = p.mins;
+    b.addEventListener("click", function(){
+      UX.clock = p.mins;
+      uxSave();
+      planPaint();
+      react("planPick", false, {vars:{mins:p.mins, n:p.steps.length}});
+    });
+    host.appendChild(b);
+  });
+  planPaint();
+  TOOL_TALK["Revision planner"] = function(){
+    var P = UX;
+    var plan = PLANS.filter(function(x){ return x.mins === P.clock; })[0] || PLANS[1];
+    var n = Object.keys(P.done).filter(function(k){ return k.indexOf(P.clock + ":") === 0; }).length;
+    return pick(LINES.planTool).map(function(x, i){ return i === 0 ? x : fill(x, {mins:P.clock, done:n, total:plan.steps.length}); });
+  };
+}
+
+/* ---------------- weak spots ---------------- */
+function resetQuestion(key, i){
+  delete state.answers[key + ":" + i];
+  save();
+  var host = $('[data-quiz="' + key + '"]');
+  if(host){
+    var item = $$(".qitem", host)[i];
+    if(item){
+      var why = $(".why", item);
+      if(why) why.remove();
+      $$(".opt", item).forEach(function(o){ o.disabled = false; o.classList.remove("right", "wrong", "picked"); });
+    }
+    updateScore(key);
+  }
+  refreshProgress();
+}
+function weakPaint(){
+  var host = $("#weakSpots");
+  if(!host) return;
+  var rows = [];
+  Object.keys(QUIZ).forEach(function(k){
+    QUIZ[k].forEach(function(q, i){
+      var a = state.answers[k + ":" + i];
+      if(a != null && a !== q.a) rows.push({k:k, i:i, q:q});
+    });
+  });
+  host.innerHTML = "";
+  if(!rows.length){
+    host.innerHTML = '<div class="verdict good">Nothing wrong yet — either you have not started, or you are having a very good day. Answer a quiz and anything you miss will collect here.</div>';
+    return;
+  }
+  rows.forEach(function(r){
+    var t = TOPICS.filter(function(x){ return x.id === r.k; })[0];
+    var row = el("div", "weak-row");
+    row.innerHTML = '<span><span class="eyebrow">' + esc(t ? (isNumbered(t) ? COURSE.unit + " " + t.n : t.n) + " · " + t.t : r.k) + '</span>' +
+      uxClip(stripTags(r.q.q), 130) + '</span>';
+    var b = el("button", "btn sm ghost", "Retry");
+    b.type = "button";
+    b.addEventListener("click", function(){
+      resetQuestion(r.k, r.i);
+      weakPaint();
+      uxJump(r.k, null, $$(".qitem", $('[data-quiz="' + r.k + '"]'))[r.i]);
+      react("weakRetry", false, {vars:{tail: t ? t.t.toLowerCase() : "that tail"}});
+    });
+    row.appendChild(b);
+    host.appendChild(row);
+  });
+  var all = el("div", "sorter-btns");
+  var clearAll = el("button", "btn sm", "Retry all " + rows.length);
+  clearAll.type = "button";
+  clearAll.addEventListener("click", function(){
+    rows.forEach(function(r){ resetQuestion(r.k, r.i); });
+    weakPaint();
+    react("weakRetry", false, {vars:{tail:"everything you missed"}});
+  });
+  all.appendChild(clearAll);
+  host.appendChild(all);
+}
+
+/* ---------------- keyboard ---------------- */
+function uxKeys(){
+  document.addEventListener("keydown", function(ev){
+    var tag = (ev.target.tagName || "").toLowerCase();
+    var typing = tag === "input" || tag === "textarea" || tag === "select" || ev.target.isContentEditable;
+    if((ev.key === "k" || ev.key === "K") && (ev.metaKey || ev.ctrlKey)){ ev.preventDefault(); palIsOpen() ? palClose() : palOpen(); return; }
+    if(ev.key === "Escape"){
+      if(palIsOpen()){ palClose(); return; }
+      if(sheetIsOpen()){ sheetClose(); return; }
+      if(!$("#cpPanel").hidden){ closeChat(); return; }
+      return;
+    }
+    if(typing || ev.metaKey || ev.ctrlKey || ev.altKey) return;
+    if(ev.key === "/"){ ev.preventDefault(); palOpen(); return; }
+    if(ev.key === "?"){ ev.preventDefault(); uxJump("cram", "Shortcuts"); return; }
+    if(ev.key === "s" || ev.key === "S"){ ev.preventDefault(); sheetIsOpen() ? sheetClose() : sheetOpen(); return; }
+    if(ev.key === "t" || ev.key === "T"){ $("#themeBtn").click(); return; }
+    if(ev.key === "c" || ev.key === "C"){ ev.preventDefault(); $("#cpPanel").hidden ? openChat() : closeChat(); return; }
+    if(ev.key === "[" || ev.key === "]"){
+      var idx = TOPICS.map(function(t){ return t.id; }).indexOf(state.topic);
+      var next = (idx + (ev.key === "]" ? 1 : TOPICS.length - 1)) % TOPICS.length;
+      go(TOPICS[next].id);
+      return;
+    }
+    if(/^[0-9]$/.test(ev.key)){
+      var t = TOPICS[ev.key === "0" ? 9 : +ev.key - 1];
+      if(t) go(t.id);
+    }
+  });
+}
+
+/* ---------------- boot hook ---------------- */
+function initUX(){
+  uxLoad();
+  planInit();
+  weakPaint();
+  uxKeys();
+  $("#palBtn").addEventListener("click", palOpen);
+  $("#sheetBtn").addEventListener("click", sheetOpen);
+  var ob = $("#openSheetBtn"), op = $("#openPalBtn");
+  if(ob) ob.addEventListener("click", sheetOpen);
+  if(op) op.addEventListener("click", palOpen);
+  /* the quiz buttons call `answer` by name, so wrapping the global keeps the weak-spot list live */
+  var answerBase = answer;
+  answer = function(key, i, choice, item){
+    answerBase(key, i, choice, item);
+    weakPaint();
+  };
+}
+var _bootBeforeUX = boot;
+boot = function(){
+  _bootBeforeUX();
+  try{ initUX(); }catch(e){ console.warn("UX layer failed:", e); }
 };
 </script>
 <script>boot();</script>

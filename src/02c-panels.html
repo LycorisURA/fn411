@@ -7,6 +7,18 @@
       <p class="lede">A bond's price cannot be used directly, because its maturity shrinks every day. So the risk factor is the <em>yield</em>, duration is the translator, and a coupon bond becomes a portfolio of zero-coupon bonds — one per cash flow.</p>
     </div>
 
+    <div class="tldr">
+      <span class="eyebrow">The sixty-second version</span>
+      <ol>
+        <li>You cannot estimate a bond&rsquo;s return series, because yesterday&rsquo;s price belongs to a bond with one more day to run. <strong>Model the yield instead.</strong></li>
+        <li>One Taylor term turns a yield change into a return: <strong>r<sub>B</sub> = &minus;D<sub>mod</sub>&middot;dy</strong>.</li>
+        <li>A coupon bond is a <strong>portfolio of zero-coupon bonds</strong>, one per cash flow, each discounted at its own spot rate. Its weights are <strong>w<sub>t</sub> = (PV<sub>t</sub>/B) &times; (&minus;t)</strong>.</li>
+        <li>After that it is the same three lines as every other instrument: &mu;<sub>P</sub> = w<sup>T</sup>&mu;, &sigma;<sub>P</sub>&sup2; = w<sup>T</sup>&Omega;w, VaR = &mu;<sub>P</sub> + z&sigma;<sub>P</sub>.</li>
+        <li>Marginal and component VaR then say <em>which</em> position carries the risk, and the components add up to the total exactly.</li>
+      </ol>
+      <span class="one">w_t = (PV_t / B) &times; (&minus;t) &nbsp;&middot;&nbsp; D_mod = D_mac/(1+y)</span>
+    </div>
+
     <section class="block">
       <h3>Why you cannot just take the return on a bond</h3>
       <div class="prose">
@@ -224,6 +236,24 @@
         <div class="fxrow"><code>A sensible allocation</code><div>So component VaR is how you charge risk to desks. Standalone VaRs do not add up and would over-charge everyone.</div></div>
       </div>
       <div class="note"><span class="eyebrow">Fine print</span><strong>Incremental VaR is not the same as component VaR.</strong> The class equity sheet computes incremental VaR separately as <span class="fx">=VaR_P − VaR_without_i</span> — for the MS/ATT book that is 1,620,113.82 − 367,850 = <strong>1,252,263.82</strong> for MS, against a component VaR of 1,436,389.57. Both are correct answers to different questions. The assignments panel works this example in full.</div>
+    </section>
+
+    <section class="block">
+      <h3>Deeper: what the linear approximation leaves out</h3>
+      <div class="grid2" style="margin-top:14px">
+        <div class="deep"><div class="deep-tag">Hull RMFI<b>Convexity</b></div><div class="deep-body">
+          <h4>The term duration throws away</h4>
+          <p>r<sub>B</sub> = &minus;D<sub>mod</sub>&middot;dy is the <strong>first</strong> Taylor term. The second is convexity, C = (1/B)&middot;d&sup2;B/dy&sup2;, which under continuous discounting is just &Sigma;t&sup2;PV<sub>t</sub>/B. The fuller statement is &Delta;B/B &asymp; &minus;D<sub>mod</sub>&Delta;y + &frac12;C(&Delta;y)&sup2;.</p>
+          <p>Put the deck&rsquo;s own bond in and you can see why it is ignored. The five-year 3% bond has C = <strong>23.04</strong>. A two basis-point yield change &mdash; a typical day in the class data &mdash; moves the price <strong>0.0923%</strong> through duration and <strong>0.000046%</strong> through convexity: three orders of magnitude apart. Push the move to 200 basis points and the same two terms are <strong>9.23%</strong> and <strong>0.46%</strong>, so convexity is now worth 5% of the answer. Convexity is a stress-test correction, not a one-day-VaR correction &mdash; and that is exactly the argument that lets an option be reduced to Delta and Rho.</p>
+          <p>The sign is worth knowing on its own: convexity is <strong>positive</strong> for an ordinary bond, so duration alone always <em>overstates</em> the loss from a rise in yields and understates the gain from a fall.</p>
+        </div></div>
+        <div class="deep b2"><div class="deep-tag">Hull RMFI<b>Cash-flow mapping</b></div><div class="deep-body">
+          <h4>Why real desks do not use one factor per cash flow</h4>
+          <p>This course gives every cash-flow date its own risk factor, which is exact and perfectly manageable for a five-year bond. A trading book with thousands of bonds cannot do that &mdash; the covariance matrix would be enormous and most of it would be estimated from almost no data.</p>
+          <p>The standard fix is to choose a fixed set of <strong>standard vertices</strong> (1m, 3m, 6m, 1y, 2y, 5y, 10y&hellip;) and split each actual cash flow between the two neighbouring vertices, keeping its <strong>present value</strong> and its <strong>variance</strong> unchanged. Every bond in the book then loads onto the same short list of factors, and &Omega; stays small.</p>
+          <p>It matters for an exam only as a sentence: the method here is the exact case of a technique that is normally applied approximately.</p>
+        </div></div>
+      </div>
     </section>
 
     <section class="block">
