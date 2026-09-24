@@ -40,7 +40,7 @@ var PLANS = [
     {m:25, topic:"opt", find:"Payoffs, and why leverage", t:"<b>Lecture 4</b> end to end, then its quiz to 80%."},
     {m:25, topic:"fut", find:"Two decompositions", t:"<b>Lecture 5</b> end to end, then its quiz to 80%."},
     {m:15, topic:"xl",  find:"The build order", t:"<b>The spreadsheet layer</b>: the eight-step skeleton and the trap list."},
-    {m:25, topic:"pset", find:"Additional questions", t:"The <b>three additional questions</b>, worked. Cover the answer and try each one first."},
+    {m:25, topic:"pset", find:"Additional questions", t:"The <b>three additional questions</b>, worked. Press <b>Hide working</b> and try each one first."},
     {m:30, topic:"exam", find:"Sit a paper", t:"A <b>40-question paper</b> across everything. Mark it, then reread only what you got wrong."}
   ]}
 ];
@@ -66,10 +66,22 @@ var SHEET_CARDS = [
 ];
 
 /* ---------------- own storage (the engine's payload() is left alone) ---------------- */
-var UX = {clock:45, done:{}};
+var UX = {clock:45, done:{}, companion:false};
 function uxKey(){ return COURSE.storageKey + ".ux"; }
 function uxLoad(){ try{ var r = localStorage.getItem(uxKey()); if(r) Object.assign(UX, JSON.parse(r)); }catch(e){} }
 function uxSave(){ try{ localStorage.setItem(uxKey(), JSON.stringify(UX)); }catch(e){} }
+
+/* ---------------- companion on/off — off by default ---------------- */
+function cpIsOn(){ return document.documentElement.classList.contains("cp-on"); }
+function cpSet(on, quiet){
+  document.documentElement.classList.toggle("cp-on", on);
+  var b = $("#cpBtn");
+  if(b){ b.setAttribute("aria-pressed", String(on)); b.textContent = on ? "☺ Kasumi · on" : "☺ Kasumi"; }
+  if(!on) closeChat();
+  UX.companion = on;
+  uxSave();
+  if(on && !quiet) react("greet");
+}
 
 /* ---------------- helpers ---------------- */
 function uxTopicOf(node){
@@ -142,7 +154,7 @@ function palIndex(){
   });
   $$(".panel .pset").forEach(function(p){
     var src = p.querySelector(".src"), q = p.querySelector(".pset-q");
-    out.push({kind:"problem", lab:uxClip(src ? src.textContent : "", 34) + " — " + uxClip(q ? q.textContent.replace(/Show working/, "") : "", 84),
+    out.push({kind:"problem", lab:uxClip(src ? src.textContent : "", 34) + " — " + uxClip(q ? q.textContent.replace(/(Show|Hide) working/, "") : "", 84),
               topic:uxTopicOf(p), node:p, w:1});
   });
   $$(".panel .fc").forEach(function(c){
@@ -412,7 +424,12 @@ function uxKeys(){
     if(ev.key === "?"){ ev.preventDefault(); uxJump("cram", "Shortcuts"); return; }
     if(ev.key === "s" || ev.key === "S"){ ev.preventDefault(); sheetIsOpen() ? sheetClose() : sheetOpen(); return; }
     if(ev.key === "t" || ev.key === "T"){ $("#themeBtn").click(); return; }
-    if(ev.key === "c" || ev.key === "C"){ ev.preventDefault(); $("#cpPanel").hidden ? openChat() : closeChat(); return; }
+    if(ev.key === "c" || ev.key === "C"){
+      ev.preventDefault();
+      if(!cpIsOn()) cpSet(true, true);
+      $("#cpPanel").hidden ? openChat() : closeChat();
+      return;
+    }
     if(ev.key === "[" || ev.key === "]"){
       var idx = TOPICS.map(function(t){ return t.id; }).indexOf(state.topic);
       var next = (idx + (ev.key === "]" ? 1 : TOPICS.length - 1)) % TOPICS.length;
@@ -429,6 +446,8 @@ function uxKeys(){
 /* ---------------- boot hook ---------------- */
 function initUX(){
   uxLoad();
+  cpSet(!!UX.companion, true);
+  $("#cpBtn").addEventListener("click", function(){ cpSet(!cpIsOn()); });
   planInit();
   weakPaint();
   uxKeys();
@@ -437,6 +456,12 @@ function initUX(){
   var ob = $("#openSheetBtn"), op = $("#openPalBtn");
   if(ob) ob.addEventListener("click", sheetOpen);
   if(op) op.addEventListener("click", palOpen);
+  /* worked problems open by default — the working is what gets marked */
+  $$(".pset").forEach(function(p){
+    var a = $(".pset-a", p), b = $(".pset-q .btn", p);
+    if(a) a.hidden = false;
+    if(b) b.textContent = "Hide working";
+  });
   /* the quiz buttons call `answer` by name, so wrapping the global keeps the weak-spot list live */
   var answerBase = answer;
   answer = function(key, i, choice, item){
