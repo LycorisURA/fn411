@@ -130,6 +130,40 @@
       <div class="note"><span class="eyebrow">Your A4 sheet</span>Only four things from this panel are worth the space: <strong>NORMSINV(0.01) = −2.326348</strong> and <strong>NORMSINV(0.05) = −1.644854</strong>; <strong>VaR = wᵀμ + z·√(wᵀΩw)</strong>; <strong>mean scales with T, volatility with √T</strong>; and <strong>w<sub>rS</sub> − w<sub>dy</sub>/T = 1 for an option or forward</strong> (they differ by exactly 1 when T = 1). The rest you can rebuild.</div>
     </section>
 
+    <section class="block" id="xlSolverBlock">
+      <h3>Working with the Excel solver</h3>
+      <div class="prose">
+        <p>The workbook <em>FN411_solver.xlsx</em> is this page's other half: <strong>the page explains, the workbook computes</strong>. Every sheet in it has a <span class="term">📖 On the study page</span> line that opens this page at the section that teaches the method, and every method on this page names the sheet and the cells that do the arithmetic. The workflow is always the same four moves.</p>
+      </div>
+      <div class="fxlist">
+        <div class="fxrow"><code>1 · Find the question</code><div>Type a few words from the question into the finder on the <b>GO</b> panel (or the Start sheet). The row names the sheet, the first cell to type in, and the Solve Guide example that walks the same question.</div></div>
+        <div class="fxrow"><code>2 · Type the yellow cells</code><div>Yellow = your numbers (rates as decimals unless the grey hint says %). Each sheet's <b>Method</b> line is the formula this page derives; the <b>▼ Inputs · ▼ Answers · ▼ Working</b> links under the answer strip move you through the sheet.</div></div>
+        <div class="fxrow"><code>3 · Read the green answer</code><div>The green strip at the top of every sheet always shows the headline numbers; <b>►</b> marks the main answers. The Practice Qs sheet recomputes the course's answer keys live, so a ✓ there means the workbook still reproduces them.</div></div>
+        <div class="fxrow"><code>4 · Copy the grey working</code><div>The ✍ WORKING lines are rewritten with your numbers and each has an <b>↳ in Excel</b> line naming the cell and function. The <b>Why</b> under each step is the one-sentence explanation an examiner wants; the 📖 link opens the fuller one here.</div></div>
+      </div>
+      <div class="note"><span class="eyebrow">Deep links</span>The workbook's 📖 links open <code>the-left-tail.html#go=…</code>. Keep the page beside the workbook (or paste its full path or URL into the Start sheet's settings, cell C92) and they land on the exact section. This page links back the other way: every <b>Solve Guide #n</b> button below and in the finder opens the walk-through, and <code>#sg=n</code> or <code>#xl=Sheet</code> in the address bar does the same.</div>
+
+      <h4 style="margin-top:22px">Every sheet, what it does, where to type, where to read, and the section that explains it</h4>
+      <div class="sheet"><table>
+        <thead><tr><th class="l">Sheet</th><th class="l">Use it for</th><th class="l">Type in</th><th class="l">Read at</th><th class="l">Solve Guide</th><th class="l">Explained on this page</th></tr></thead>
+        <tbody id="xlSheets"></tbody>
+      </table></div>
+      <div class="note"><span class="eyebrow">New in this version of the workbook</span>The <strong>Extras</strong> sheet gives a calculator to five ideas this page teaches as textbook context but the decks never compute: historical-simulation VaR and ES with a backtest of exceptions, a GARCH(1,1) update, the convexity term a duration-only bond VaR drops, the Gamma term a Delta-only option VaR drops, and implied volatility by Newton's method (what Goal Seek does). Each pulls its inputs from the Coupon Bond or Option BSM sheet or takes typed values.</div>
+
+      <h4 style="margin-top:22px">The Solve Guide: every class question, cell by cell</h4>
+      <div class="prose">
+        <p>The same 35 walk-throughs as the workbook's Solve Guide sheet, so you can read the steps here and type them there. Each row says what to do, the exact cell, and the value to type or the answer to read (green rows). Filter by a word from the question or by sheet.</p>
+      </div>
+      <div class="finder">
+        <div class="finder-bar">
+          <input id="sgFilter" type="search" placeholder="Filter the 35 examples — “gold”, “coupon”, “put”, “futures”…" autocomplete="off" aria-label="Filter the Solve Guide">
+          <span class="srch-count" id="sgCount"></span>
+        </div>
+        <div class="sg-chips" id="sgSheets"></div>
+        <div id="sgIndex"></div>
+      </div>
+    </section>
+
     <section class="block">
       <h3>Concepts without a calculator</h3>
       <div class="cards" data-flash="xl"></div>
