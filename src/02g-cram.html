@@ -4,8 +4,27 @@
     <div class="panel-head">
       <span class="eyebrow">Tail GO · Exam day</span>
       <h2>When the clock is running</h2>
-      <p class="lede">Everything on this page, sorted by how much time you have left. Pick a clock, work the list, and use the router below whenever a question looks unfamiliar — it almost never is.</p>
+      <p class="lede">Find the question type first, then everything on this page sorted by how much time you have left. Use the finder and the router below whenever a question looks unfamiliar — it almost never is.</p>
     </div>
+
+    <section class="block" id="finderBlock">
+      <h3>Find your question</h3>
+      <div class="prose">
+        <p>Type a few words from the question — <em>“invested in gold”</em>, <em>“equivalent asset”</em>, <em>“expected shortfall”</em> — or scan the groups. Each row opens the part of this page that teaches it, and names the <strong>Excel solver sheet</strong> that computes it. For anything else on the page, use the full search: <span class="keys">Ctrl</span>+<span class="keys">K</span> or <span class="keys">/</span>.</p>
+      </div>
+      <div class="finder">
+        <div class="finder-bar">
+          <input id="finderInput" type="search" placeholder="Words from your question…" autocomplete="off" aria-label="Filter the question finder">
+          <span class="srch-count" id="finderCount"></span>
+          <button class="btn ghost" type="button" id="finderFull">Search the whole page</button>
+        </div>
+        <div id="finderList" aria-live="polite"></div>
+      </div>
+      <details class="finder-xl" style="margin-top:12px">
+        <summary style="cursor:pointer;font-size:14px;color:var(--mute)">The Excel solver's sheets, at a glance</summary>
+        <div class="sheet" style="margin-top:8px"><table><thead><tr><th class="l">Sheet</th><th class="l">Use it for</th></tr></thead><tbody id="xlGuide"></tbody></table></div>
+      </details>
+    </section>
 
     <section class="block">
       <h3>Pick your clock</h3>
@@ -89,14 +108,14 @@
     <section class="block">
       <h3>Shortcuts</h3>
       <div class="fxlist">
-        <div class="fxrow"><code><span class="keys">Ctrl</span>+<span class="keys">K</span> &nbsp;or&nbsp; <span class="keys">/</span></code><div>Jump to any panel, section, formula, worked problem, trap or flashcard by typing a few letters.</div></div>
+        <div class="fxrow"><code><span class="keys">Ctrl</span>+<span class="keys">K</span> &nbsp;or&nbsp; <span class="keys">/</span></code><div>Search everything on the page — sections, worked problems, every quiz question, formulas, flashcards, Excel notes, and the question finder. Several words must all match; <b>Tab</b> steps through the filters. Works offline.</div></div>
         <div class="fxrow"><code><span class="keys">S</span></code><div>Open the one-page sheet — the whole course on one A4, with a print button.</div></div>
         <div class="fxrow"><code><span class="keys">1</span> … <span class="keys">9</span></code><div>Jump straight to a tail. <span class="keys">[</span> and <span class="keys">]</span> step through them in order.</div></div>
         <div class="fxrow"><code><span class="keys">T</span> · <span class="keys">C</span> · <span class="keys">?</span></code><div>Theme · talk to Kasumi · this list.</div></div>
       </div>
       <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn" type="button" id="openSheetBtn">Open the one-page sheet</button>
-        <button class="btn ghost" type="button" id="openPalBtn">Jump to anything</button>
+        <button class="btn ghost" type="button" id="openPalBtn">Search the page</button>
       </div>
     </section>
   </article>

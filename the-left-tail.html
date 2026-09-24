@@ -377,6 +377,65 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
 .pal-item .where{font-family:var(--mono);font-size:10.5px;color:var(--faint);flex:0 0 auto}
 .pal-foot{padding:7px 12px;border-top:1px solid var(--rule);background:var(--band);font-size:11.5px;color:var(--faint);display:flex;gap:14px;flex-wrap:wrap}
 .pal-empty{padding:18px;color:var(--mute);font-size:14px}
+
+/* ============ search (full text) ============ */
+.srch-top{display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--rule);padding-right:10px}
+.srch-top input{border-bottom:0!important}
+.srch-count{font-family:var(--mono);font-size:11px;color:var(--faint);white-space:nowrap}
+.srch-chips{display:flex;gap:6px;flex-wrap:wrap;padding:8px 10px;border-bottom:1px solid var(--rule);background:var(--band)}
+.srch-chips button{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;padding:3px 8px;border:1px solid var(--rule);border-radius:12px;background:var(--card);color:var(--mute);cursor:pointer}
+.srch-chips button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.srch-chips button:disabled{opacity:.4;cursor:default}
+.pal-item .lab .snip{display:block;font-size:12.5px;color:var(--mute);margin-top:3px;line-height:1.45}
+.pal-item mark,.srch-hit{background:var(--gold-soft);color:inherit;border-radius:2px;padding:0 1px;box-shadow:0 0 0 1px var(--gold) inset}
+.pal-item .kind.k-finder{color:var(--accent);font-weight:600}
+.srch-tips{padding:12px 14px;font-size:13.5px;color:var(--mute);line-height:1.6}
+.srch-tips b{color:var(--ink)}
+.srch-tips .try{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.srch-tips .try button{font-size:12.5px;padding:3px 9px;border:1px solid var(--rule);border-radius:12px;background:var(--card);color:var(--accent);cursor:pointer}
+
+/* ============ question finder (GO panel) ============ */
+.finder{border:1px solid var(--rule);background:var(--card);border-radius:2px}
+.finder-bar{display:flex;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--rule);background:var(--band);flex-wrap:wrap}
+.finder-bar input{flex:1 1 260px;font:inherit;font-size:15px;padding:8px 11px;border:1px solid var(--rule);border-radius:2px;background:var(--card);color:var(--ink)}
+.finder-bar input:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.fg-h{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);padding:10px 12px 4px;border-top:1px solid var(--rule)}
+.fg-h:first-child{border-top:0}
+.fg-row{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(150px,250px);gap:6px 14px;align-items:start;padding:8px 12px;border-top:1px dashed var(--rule)}
+.fg-row:hover{background:var(--band)}
+.fg-q{font:inherit;font-size:14.5px;line-height:1.4;color:var(--ink);background:none;border:0;padding:0;text-align:left;cursor:pointer}
+.fg-q:hover,.fg-q:focus-visible{color:var(--accent);text-decoration:underline}
+.fg-q::before{content:"▸ ";color:var(--accent)}
+.fg-w{font-size:12.5px;color:var(--mute);line-height:1.45}
+.fg-w .need{display:block;color:var(--faint);font-family:var(--mono);font-size:11px;margin-top:2px}
+.fg-go{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.fg-go button{font-family:var(--mono);font-size:10.5px;padding:3px 7px;border:1px solid var(--rule);border-radius:2px;background:var(--card);color:var(--accent);cursor:pointer;white-space:nowrap}
+.fg-go button:hover{border-color:var(--accent)}
+.fg-go .xl{font-family:var(--mono);font-size:10.5px;padding:3px 7px;border:1px dashed var(--good);color:var(--good);border-radius:2px;white-space:nowrap}
+.fg-empty{padding:16px 12px;color:var(--mute);font-size:14px}
+@media (max-width:900px){.fg-row{grid-template-columns:minmax(0,1fr)}.fg-go{justify-content:flex-start}}
+
+/* ============ formula bank (FX panel) ============ */
+.fbank{border:1px solid var(--rule);background:var(--card);border-radius:2px}
+.fb-row{display:grid;grid-template-columns:minmax(0,170px) minmax(0,1.25fr) minmax(0,1fr);gap:6px 16px;padding:9px 12px;border-top:1px dashed var(--rule);align-items:start}
+.fb-row:first-child{border-top:0}
+.fb-n{font-weight:600;font-size:14px;line-height:1.35}
+.fb-f{font-family:var(--mono);font-size:13.5px;line-height:1.6;color:var(--accent);overflow-wrap:anywhere}
+.fb-w{font-size:13px;color:var(--mute);line-height:1.5}
+.fb-w > span{display:block;margin-top:3px}
+.fb-x code{font-family:var(--mono);font-size:12px;color:var(--ink);background:var(--band);padding:1px 4px;border-radius:2px;overflow-wrap:anywhere}
+.fb-s{font-family:var(--mono);font-size:11px;color:var(--good)}
+.fb-t{font-size:12.5px;color:var(--bad)}
+.fb-tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold);border-radius:8px;padding:0 5px;margin-left:5px;white-space:nowrap;font-weight:500}
+@media (max-width:900px){.fb-row{grid-template-columns:minmax(0,1fr)}}
+.chain{border:1px solid var(--rule);border-left:3px solid var(--accent);background:var(--card);border-radius:0 2px 2px 0;padding:10px 13px;margin-top:10px}
+.chain-h{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;margin-bottom:6px}
+.chain-h b{font-family:var(--serif);font-size:16px}
+.chain-h span{font-size:12.5px;color:var(--faint);font-style:italic}
+.chain ol{margin:0;padding-left:22px}
+.chain li{font-size:13.5px;line-height:1.55;margin-bottom:3px}
+.chain li::marker{color:var(--accent);font-family:var(--mono);font-size:12px}
+.chain code{font-family:var(--mono);font-size:12.5px;color:var(--accent)}
 @keyframes jumpflash{0%{background:var(--gold-soft)}100%{background:transparent}}
 .jumped{animation:jumpflash 1.6s ease-out}
 
@@ -442,7 +501,7 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
       <span class="chip xpchip" id="xpChip"><b id="hudLvl">Lv 1</b><span class="xpbar"><i id="hudBar"></i></span><span id="hudXp">0 XP</span></span>
       <span class="chip" title="Correct answers in a row">Streak <b id="hudStreak">0</b></span>
       <span class="chip" id="chipProgress"><b>0</b>/0</span>
-      <button class="tbtn" id="palBtn" type="button" title="Jump to anything on the page (Ctrl+K)">⌕ Jump</button>
+      <button class="tbtn" id="palBtn" type="button" title="Search questions, keywords, formulas and numbers on the page (Ctrl+K or /)">⌕ Search</button>
       <button class="tbtn" id="sheetBtn" type="button" title="The one-page sheet, ready to print (S)">▤ A4 sheet</button>
       <button class="tbtn" id="themeBtn" type="button">◐ Theme</button>
     </div>
@@ -690,8 +749,27 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
     <div class="panel-head">
       <span class="eyebrow">Tail GO · Exam day</span>
       <h2>When the clock is running</h2>
-      <p class="lede">Everything on this page, sorted by how much time you have left. Pick a clock, work the list, and use the router below whenever a question looks unfamiliar — it almost never is.</p>
+      <p class="lede">Find the question type first, then everything on this page sorted by how much time you have left. Use the finder and the router below whenever a question looks unfamiliar — it almost never is.</p>
     </div>
+
+    <section class="block" id="finderBlock">
+      <h3>Find your question</h3>
+      <div class="prose">
+        <p>Type a few words from the question — <em>“invested in gold”</em>, <em>“equivalent asset”</em>, <em>“expected shortfall”</em> — or scan the groups. Each row opens the part of this page that teaches it, and names the <strong>Excel solver sheet</strong> that computes it. For anything else on the page, use the full search: <span class="keys">Ctrl</span>+<span class="keys">K</span> or <span class="keys">/</span>.</p>
+      </div>
+      <div class="finder">
+        <div class="finder-bar">
+          <input id="finderInput" type="search" placeholder="Words from your question…" autocomplete="off" aria-label="Filter the question finder">
+          <span class="srch-count" id="finderCount"></span>
+          <button class="btn ghost" type="button" id="finderFull">Search the whole page</button>
+        </div>
+        <div id="finderList" aria-live="polite"></div>
+      </div>
+      <details class="finder-xl" style="margin-top:12px">
+        <summary style="cursor:pointer;font-size:14px;color:var(--mute)">The Excel solver's sheets, at a glance</summary>
+        <div class="sheet" style="margin-top:8px"><table><thead><tr><th class="l">Sheet</th><th class="l">Use it for</th></tr></thead><tbody id="xlGuide"></tbody></table></div>
+      </details>
+    </section>
 
     <section class="block">
       <h3>Pick your clock</h3>
@@ -775,14 +853,14 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
     <section class="block">
       <h3>Shortcuts</h3>
       <div class="fxlist">
-        <div class="fxrow"><code><span class="keys">Ctrl</span>+<span class="keys">K</span> &nbsp;or&nbsp; <span class="keys">/</span></code><div>Jump to any panel, section, formula, worked problem, trap or flashcard by typing a few letters.</div></div>
+        <div class="fxrow"><code><span class="keys">Ctrl</span>+<span class="keys">K</span> &nbsp;or&nbsp; <span class="keys">/</span></code><div>Search everything on the page — sections, worked problems, every quiz question, formulas, flashcards, Excel notes, and the question finder. Several words must all match; <b>Tab</b> steps through the filters. Works offline.</div></div>
         <div class="fxrow"><code><span class="keys">S</span></code><div>Open the one-page sheet — the whole course on one A4, with a print button.</div></div>
         <div class="fxrow"><code><span class="keys">1</span> … <span class="keys">9</span></code><div>Jump straight to a tail. <span class="keys">[</span> and <span class="keys">]</span> step through them in order.</div></div>
         <div class="fxrow"><code><span class="keys">T</span> · <span class="keys">C</span> · <span class="keys">?</span></code><div>Theme · talk to Kasumi · this list.</div></div>
       </div>
       <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn" type="button" id="openSheetBtn">Open the one-page sheet</button>
-        <button class="btn ghost" type="button" id="openPalBtn">Jump to anything</button>
+        <button class="btn ghost" type="button" id="openPalBtn">Search the page</button>
       </div>
     </section>
   </article>
@@ -2190,6 +2268,213 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
       <div class="note"><span class="eyebrow">Your A4 sheet</span>Add three non-formulas: <strong>VaR is negative in this course</strong>; <strong>the mean stays in</strong>; and <strong>σ, y and T must share one time unit</strong>. Those three sentences prevent more lost marks than any extra formula would win.</div>
     </section>
   </article>
+
+  <!-- ==================== PANEL: formulas & functions (generated by excel/generator/formula_bank.py) ==================== -->
+  <article class="panel" id="p-fx" hidden>
+    <div class="panel-head">
+      <span class="eyebrow">Tail FX · Formulas &amp; functions</span>
+      <h2>Every formula, and the Excel that computes it</h2>
+      <p class="lede">The exam is four long questions, so each one chains several of these. Every row gives the formula, when you need it, the Excel that computes it and the solver sheet that does it for you. The step chains below show how the formulas string together in the question types that come up.</p>
+    </div>
+    <section class="block">
+      <h3>Returns, data and statistics</h3>
+      <div class="fbank">
+        <div class="fb-row"><div class="fb-n">Simple return</div><div class="fb-f">r = (P₁ + D − P₀) / P₀</div><div class="fb-w">prices given; the additional-questions workbook (Q2, Q3)<span class="fb-x">Excel: <code>=(B3-B2)/B2</code></span><span class="fb-s">Solver: Data</span></div></div>
+        <div class="fb-row"><div class="fb-n">Log (continuous) return <span class=fb-tag>in your notes</span></div><div class="fb-f">r = ln(P₁ / P₀)</div><div class="fb-w">prices given; the SET-index and option example workbooks; your notes use it for stocks and the ZRR index<span class="fb-x">Excel: <code>=LN(B3/B2)</code></span><span class="fb-s">Solver: Data</span><span class="fb-t">⚠ LOG() is base 10 — use LN()</span></div></div>
+        <div class="fb-row"><div class="fb-n">Change in a rate <span class=fb-tag>in your notes</span></div><div class="fb-f">dy = (y_t − y_t−1) / 100</div><div class="fb-w">spot rates or yields quoted in %<span class="fb-x">Excel: <code>=(B3-B2)/100</code></span><span class="fb-s">Solver: Data</span><span class="fb-t">⚠ forget the /100 and every bond VaR is 100× too big; a 6-month T-bill rate is also ÷2</span></div></div>
+        <div class="fb-row"><div class="fb-n">Mean</div><div class="fb-f">μ̂ = Σ r / T</div><div class="fb-w">every μ<span class="fb-x">Excel: <code>=AVERAGE(range)</code></span><span class="fb-s">Solver: Data</span></div></div>
+        <div class="fb-row"><div class="fb-n">Standard deviation</div><div class="fb-f">σ̂ = √[ Σ (r − μ̂)² / (T − 1) ]</div><div class="fb-w">every σ<span class="fb-x">Excel: <code>=STDEV(range)  (= STDEV.S)</code></span><span class="fb-s">Solver: Data</span><span class="fb-t">⚠ STDEVP divides by T, not T − 1</span></div></div>
+        <div class="fb-row"><div class="fb-n">Covariance <span class=fb-tag>in your notes</span></div><div class="fb-f">σ_xy = Σ (x − x̄)(y − ȳ) / (n − 1) = ρ·σ_x·σ_y</div><div class="fb-w">off-diagonal of Ω<span class="fb-x">Excel: <code>=COVARIANCE.S(x,y)  or  =COVAR(x,y)*n/(n−1)</code></span><span class="fb-s">Solver: Data</span><span class="fb-t">⚠ COVAR is the POPULATION covariance (÷ n)</span></div></div>
+        <div class="fb-row"><div class="fb-n">Correlation</div><div class="fb-f">ρ = σ_xy / (σ_x·σ_y)</div><div class="fb-w">given σ&#x27;s and ρ, or checking data<span class="fb-x">Excel: <code>=CORREL(x,y)</code></span><span class="fb-s">Solver: Data</span></div></div>
+        <div class="fb-row"><div class="fb-n">Ω from σ&#x27;s and ρ&#x27;s <span class=fb-tag>in your notes</span></div><div class="fb-f">Ω_ii = σ_i² ;  Ω_ij = ρ_ij·σ_i·σ_j</div><div class="fb-w">&quot;daily volatilities … correlation …&quot;<span class="fb-x">Excel: <code>=ρ*σi*σj</code></span><span class="fb-s">Solver: Asset VaR</span></div></div>
+        <div class="fb-row"><div class="fb-n">Annualise <span class=fb-tag>in your notes</span></div><div class="fb-f">μ_year = μ_day × n ;  σ_year = σ_day × √n   (n = 252)</div><div class="fb-w">daily data → yearly σ for Black-Scholes<span class="fb-x">Excel: <code>=STDEV(r)*SQRT(252)</code></span><span class="fb-s">Solver: Data</span><span class="fb-t">⚠ σ for Black-Scholes comes from PRICE returns, not rate changes</span></div></div>
+        <div class="fb-row"><div class="fb-n">t-test of H₀: μ = 0</div><div class="fb-f">t = μ̂·√T / σ̂ ,  df = T − 1</div><div class="fb-w">&quot;is the mean significantly different from zero?&quot;<span class="fb-x">Excel: <code>=TINV(0.05,df)  ·  =TDIST(ABS(t),df,2)</code></span><span class="fb-s">Solver: Normal VaR</span><span class="fb-t">⚠ the slide and SET-index workbook use T − 2</span></div></div>
+        <div class="fb-row"><div class="fb-n">Skewness, kurtosis</div><div class="fb-f">SKEW = asymmetry ;  KURT = excess kurtosis (normal = 0)</div><div class="fb-w">fat tails make a normal VaR too small<span class="fb-x">Excel: <code>=SKEW(range)  ·  =KURT(range)</code></span><span class="fb-s">Solver: Data</span></div></div>
+      </div>
+    </section>
+    <section class="block">
+      <h3>VaR and ES of one return</h3>
+      <div class="fbank">
+        <div class="fb-row"><div class="fb-n">VaR definition <span class=fb-tag>in your notes</span></div><div class="fb-f">the worst loss over a horizon at a confidence level (1 − α)</div><div class="fb-w">any &quot;define VaR&quot; question<span class="fb-t">⚠ reported NEGATIVE in this course</span></div></div>
+        <div class="fb-row"><div class="fb-n">z-value</div><div class="fb-f">z_α = NORMSINV(α)   (1% −2.326348 · 2.5% −1.959964 · 5% −1.644854 · 10% −1.281552)</div><div class="fb-w">every VaR<span class="fb-x">Excel: <code>=NORMSINV(0.01)</code></span><span class="fb-s">Solver: Start ▸ z mode</span><span class="fb-t">⚠ −1.96 is the 2.5% value, NOT 5%</span></div></div>
+        <div class="fb-row"><div class="fb-n">VaR as a return <span class=fb-tag>in your notes</span></div><div class="fb-f">r_α = μ + z_α·σ</div><div class="fb-w">μ and σ of one return<span class="fb-x">Excel: <code>=mu+NORMSINV(a)*sd</code></span><span class="fb-s">Solver: Normal VaR</span></div></div>
+        <div class="fb-row"><div class="fb-n">VaR in money</div><div class="fb-f">VaR = r_α × W₀</div><div class="fb-w">&quot;in Baht&quot;<span class="fb-x">Excel: <code>=C16*W0</code></span><span class="fb-s">Solver: Normal VaR</span></div></div>
+        <div class="fb-row"><div class="fb-n">Zero-mean VaR <span class=fb-tag>in your notes</span></div><div class="fb-f">VaR = z_α·σ</div><div class="fb-w">short horizons: μ grows with T but σ with √T, so μ is negligible<span class="fb-x">Excel: <code>=NORMSINV(a)*sd</code></span><span class="fb-s">Solver: Normal VaR</span><span class="fb-t">⚠ keep μ unless the question drops it</span></div></div>
+        <div class="fb-row"><div class="fb-n">VaR over T periods <span class=fb-tag>in your notes</span></div><div class="fb-f">VaR_T = μ·T + z·σ·√T</div><div class="fb-w">&quot;10-day VaR&quot; from daily data<span class="fb-x">Excel: <code>=mu*T+NORMSINV(a)*sd*SQRT(T)</code></span><span class="fb-s">Solver: Normal VaR</span><span class="fb-t">⚠ never multiply a VaR that includes μ by √T</span></div></div>
+        <div class="fb-row"><div class="fb-n">Probability of a loss</div><div class="fb-f">P(r &lt; X) = NORMSDIST((X − μ)/σ)</div><div class="fb-w">&quot;probability of losing more than …&quot;<span class="fb-x">Excel: <code>=NORMSDIST((X-mu)/sd)</code></span><span class="fb-s">Solver: Normal VaR</span></div></div>
+        <div class="fb-row"><div class="fb-n">Expected shortfall <span class=fb-tag>in your notes</span></div><div class="fb-f">ES = μ − σ·φ(z_α)/α ,  φ(z) = e^(−z²/2)/√(2π)</div><div class="fb-w">&quot;average loss beyond the VaR&quot;<span class="fb-x">Excel: <code>=mu-sd*EXP(-(z^2)/2)/(SQRT(2*PI())*a)</code></span><span class="fb-s">Solver: Normal VaR</span><span class="fb-t">⚠ multiplier φ/α: 2.665214 (1%), 2.337803 (2.5%), 2.062713 (5%)</span></div></div>
+        <div class="fb-row"><div class="fb-n">Discrete VaR and ES</div><div class="fb-f">VaR = smallest L with P(loss ≤ L) ≥ 1 − α ;  ES = average of the worst α</div><div class="fb-w">a few loss outcomes with probabilities<span class="fb-x">Excel: <code>=SMALL(losses,COUNTIF(cum,&quot;&lt;&quot;&amp;(1-α))+1)</code></span><span class="fb-s">Solver: Discrete VaR-ES</span><span class="fb-t">⚠ VaR can fail subadditivity; ES cannot</span></div></div>
+        <div class="fb-row"><div class="fb-n">EWMA <span class=fb-tag>in your notes</span></div><div class="fb-f">σ²_n = λ·σ²_n−1 + (1 − λ)·u²_n−1</div><div class="fb-w">&quot;λ = 0.94, update the volatility&quot;<span class="fb-x">Excel: <code>=lam*s^2+(1-lam)*u^2</code></span><span class="fb-s">Solver: EWMA</span><span class="fb-t">⚠ u is yesterday&#x27;s return; the answer is a VARIANCE until you take √</span></div></div>
+        <div class="fb-row"><div class="fb-n">EWMA over a series</div><div class="fb-f">recursive: σ²_t = λσ²_t−1 + (1 − λ)u²_t−1 from σ²₁ = u₁²  ·  weighted sum: σ² = Σ λ^(k−1)·u²_k / Σ λ^(k−1), k = 1 the latest</div><div class="fb-w">a column of daily returns and λ (the class EWMA workbook: 0.97)<span class="fb-x">Excel: <code>=SQRT(SUMPRODUCT(weights,u^2)/SUM(weights))</code></span><span class="fb-s">Solver: EWMA</span><span class="fb-t">⚠ the recursive σ on the last day excludes that day&#x27;s return; tomorrow&#x27;s includes it</span></div></div>
+        <div class="fb-row"><div class="fb-n">Equal-weight volatility</div><div class="fb-f">σ = √( Σ u² / n )   (zero mean)</div><div class="fb-w">the class EWMA sheet&#x27;s &#x27;STDEV&#x27; line<span class="fb-x">Excel: <code>=SQRT(SUMSQ(u)/COUNT(u))</code></span><span class="fb-s">Solver: EWMA</span></div></div>
+        <div class="fb-row"><div class="fb-n">GARCH(1,1) <span class=fb-tag>in your notes</span></div><div class="fb-f">σ²_n = ω + α·u²_n−1 + β·σ²_n−1 ;  long-run variance = ω/(1 − α − β)</div><div class="fb-w">textbook context (Hull); EWMA is the case ω = 0, α = 1 − λ, β = λ</div></div>
+        <div class="fb-row"><div class="fb-n">Solvency</div><div class="fb-f">PD = NORMSDIST((−E₀/A₀ − μ_A)/σ_A) ;  capital = −(μ_A + NORMSINV(PD)·σ_A)</div><div class="fb-w">assets, debt, target rating<span class="fb-x">Excel: <code>=NORMSDIST((-E0/A0-muA)/sA)</code></span><span class="fb-s">Solver: Solvency</span></div></div>
+      </div>
+    </section>
+    <section class="block">
+      <h3>Portfolios: the matrix form</h3>
+      <div class="fbank">
+        <div class="fb-row"><div class="fb-n">Weights</div><div class="fb-f">w_i = V_i / W₀</div><div class="fb-w">money in each asset<span class="fb-x">Excel: <code>=C11/SUM($C$11:$C$15)</code></span><span class="fb-s">Solver: Asset VaR</span></div></div>
+        <div class="fb-row"><div class="fb-n">Portfolio mean <span class=fb-tag>in your notes</span></div><div class="fb-f">μ_P = wᵀμ = Σ w_i·μ_i</div><div class="fb-w">every portfolio<span class="fb-x">Excel: <code>=SUMPRODUCT(w,mu)  or  =MMULT(TRANSPOSE(w),mu)</code></span><span class="fb-s">Solver: every engine</span></div></div>
+        <div class="fb-row"><div class="fb-n">Portfolio variance <span class=fb-tag>in your notes</span></div><div class="fb-f">σ_P² = wᵀΩw   (1×n)(n×n)(n×1)</div><div class="fb-w">every portfolio<span class="fb-x">Excel: <code>=MMULT(MMULT(TRANSPOSE(w),Om),w)  ·  =SUMPRODUCT(w,MMULT(Om,w))</code></span><span class="fb-s">Solver: every engine</span><span class="fb-t">⚠ Ctrl+Shift+Enter in Excel 2019 and earlier</span></div></div>
+        <div class="fb-row"><div class="fb-n">Two assets, written out</div><div class="fb-f">σ_P² = w₁²σ₁² + 2w₁w₂σ₁₂ + w₂²σ₂²</div><div class="fb-w">hand working for two assets<span class="fb-s">Solver: Asset VaR</span></div></div>
+        <div class="fb-row"><div class="fb-n">Portfolio VaR <span class=fb-tag>in your notes</span></div><div class="fb-f">VaR = μ_P + z·σ_P ;  × W₀ for money</div><div class="fb-w">every portfolio<span class="fb-x">Excel: <code>=muP+NORMSINV(a)*sdP</code></span><span class="fb-s">Solver: every engine</span></div></div>
+        <div class="fb-row"><div class="fb-n">Individual VaR</div><div class="fb-f">VaR_i = (μ_i + z·σ_i) × V_i</div><div class="fb-w">before the diversification benefit<span class="fb-s">Solver: Asset VaR</span></div></div>
+        <div class="fb-row"><div class="fb-n">Diversification benefit <span class=fb-tag>in your notes</span></div><div class="fb-f">benefit = VaR_P − Σ VaR_i   (&gt; 0)</div><div class="fb-w">&quot;how much does diversification reduce risk?&quot;<span class="fb-s">Solver: Asset VaR</span><span class="fb-t">⚠ your notes: Σ individual − portfolio with VaR positive — same number</span></div></div>
+        <div class="fb-row"><div class="fb-n">Marginal VaR <span class=fb-tag>in your notes</span></div><div class="fb-f">mVaR_i = μ_i + z·(Ωw)_i / σ_P ;  × W₀ for money</div><div class="fb-w">&quot;adding one unit of asset i changes VaR by …&quot;<span class="fb-x">Excel: <code>=mu_i+NORMSINV(a)*MMULT(Om,w)/sdP</code></span><span class="fb-s">Solver: Asset VaR</span><span class="fb-t">⚠ (Ωw)_i is row i of Ω times w — Cov(asset i, portfolio)</span></div></div>
+        <div class="fb-row"><div class="fb-n">Component VaR <span class=fb-tag>in your notes</span></div><div class="fb-f">cVaR_i = w_i × mVaR_i ;  Σ cVaR_i = VaR_P</div><div class="fb-w">&quot;how much of the VaR comes from asset i?&quot;<span class="fb-x">Excel: <code>=w_i*mVaR_i</code></span><span class="fb-s">Solver: Asset VaR</span><span class="fb-t">⚠ share = cVaR_i / VaR_P</span></div></div>
+        <div class="fb-row"><div class="fb-n">Incremental VaR</div><div class="fb-f">iVaR_i = VaR_P − VaR(portfolio without i)</div><div class="fb-w">&quot;what if we sold asset i?&quot;<span class="fb-s">Solver: Asset VaR</span><span class="fb-t">⚠ close to, but not equal to, component VaR</span></div></div>
+      </div>
+    </section>
+    <section class="block">
+      <h3>Fixed income</h3>
+      <div class="fbank">
+        <div class="fb-row"><div class="fb-n">Zero-coupon price</div><div class="fb-f">B = F / (1 + y/m)ⁿ ;  continuous: F·e^(−yT)</div><div class="fb-w">T-bill, ZCB<span class="fb-x">Excel: <code>=F/(1+y/m)^n</code></span><span class="fb-s">Solver: ZCB</span></div></div>
+        <div class="fb-row"><div class="fb-n">ZCB durations <span class=fb-tag>in your notes</span></div><div class="fb-f">D_mac = n ;  D_mod = D_mac / (1 + y/m)</div><div class="fb-w">T-bill; continuous: D_mod = T<span class="fb-x">Excel: <code>=n/(1+y/m)</code></span><span class="fb-s">Solver: ZCB</span><span class="fb-t">⚠ durations are in PERIODS of the compounding</span></div></div>
+        <div class="fb-row"><div class="fb-n">Bond return from yield change <span class=fb-tag>in your notes</span></div><div class="fb-f">r_B = −D_mod·dy ⇒ μ_B = −D_mod·μ_dy ,  σ_B = D_mod·σ_dy</div><div class="fb-w">every bond VaR<span class="fb-s">Solver: ZCB</span></div></div>
+        <div class="fb-row"><div class="fb-n">ZCB VaR <span class=fb-tag>in your notes</span></div><div class="fb-f">VaR = −D_mod·μ_dy + z·D_mod·σ_dy ;  × B for money</div><div class="fb-w">&quot;VaR of the T-bill&quot;<span class="fb-x">Excel: <code>=-Dmod*AVERAGE(dy)+NORMSINV(a)*Dmod*STDEV(dy)</code></span><span class="fb-s">Solver: ZCB</span></div></div>
+        <div class="fb-row"><div class="fb-n">Coupon bond price <span class=fb-tag>in your notes</span></div><div class="fb-f">B = Σ CF_t / (1 + y_t)^t   (each flow at its OWN spot rate)</div><div class="fb-w">coupon bond + spot curve<span class="fb-x">Excel: <code>=SUMPRODUCT(CF,1/(1+y)^t)</code></span><span class="fb-s">Solver: Coupon Bond</span><span class="fb-t">⚠ not one yield for all flows</span></div></div>
+        <div class="fb-row"><div class="fb-n">PV weight <span class=fb-tag>in your notes</span></div><div class="fb-f">w_t = PV_t / B</div><div class="fb-w">coupon bond as a portfolio of zeros<span class="fb-x">Excel: <code>=G20/$G$33</code></span><span class="fb-s">Solver: Coupon Bond</span></div></div>
+        <div class="fb-row"><div class="fb-n">Macaulay and modified duration <span class=fb-tag>in your notes</span></div><div class="fb-f">D_mac = Σ t·w_t ;  D_mod = D_mac / (1 + ytm)</div><div class="fb-w">&quot;find the duration&quot;<span class="fb-x">Excel: <code>=SUMPRODUCT(t,w)  ·  ytm: =IRR(−B,CF₁,…,CFₙ)</code></span><span class="fb-s">Solver: Coupon Bond</span></div></div>
+        <div class="fb-row"><div class="fb-n">Adjusted weight <span class=fb-tag>in your notes</span></div><div class="fb-f">w_t × (−t)   [formula sheet]  or  w_t × (−t/(1 + y_t))   [modified]</div><div class="fb-w">the coupon bond&#x27;s exposure to each dy_t<span class="fb-x">Excel: <code>=H20*-B20</code></span><span class="fb-s">Solver: Coupon Bond</span><span class="fb-t">⚠ your notes use −D_mod; the class keys use −t (identical when discounting is continuous)</span></div></div>
+        <div class="fb-row"><div class="fb-n">Coupon bond VaR <span class=fb-tag>in your notes</span></div><div class="fb-f">μ_B = Σ adj_t·μ_dy,t ;  σ_B = √(adjᵀ Ω_dy adj) ;  VaR = μ_B + z·σ_B</div><div class="fb-w">&quot;VaR of the coupon bond&quot;<span class="fb-x">Excel: <code>=SQRT(MMULT(MMULT(TRANSPOSE(adj),Om),adj))</code></span><span class="fb-s">Solver: Coupon Bond</span><span class="fb-t">⚠ Ω is the RAW yield-change matrix; durations live in w</span></div></div>
+        <div class="fb-row"><div class="fb-n">Bonds + stocks <span class=fb-tag>in your notes</span></div><div class="fb-f">stock: multiplier 1 on its return ;  ZCB: −D_mod on its rate change</div><div class="fb-w">mixed portfolio (additional Q2)<span class="fb-s">Solver: Portfolio A</span><span class="fb-t">⚠ weight = holding value / total portfolio value</span></div></div>
+      </div>
+    </section>
+    <section class="block">
+      <h3>Options</h3>
+      <div class="fbank">
+        <div class="fb-row"><div class="fb-n">d₁, d₂ <span class=fb-tag>in your notes</span></div><div class="fb-f">d₁ = [ln(S/K) + (y + σ²/2)T] / (σ√T) ;  d₂ = d₁ − σ√T</div><div class="fb-w">every Black-Scholes question<span class="fb-x">Excel: <code>=(LN(S/K)+(y+s^2/2)*T)/(s*SQRT(T))</code></span><span class="fb-s">Solver: Option BSM</span><span class="fb-t">⚠ σ, y and T in the SAME time unit</span></div></div>
+        <div class="fb-row"><div class="fb-n">Black-Scholes <span class=fb-tag>in your notes</span></div><div class="fb-f">C = S·N(d₁) − K·e^(−yT)·N(d₂) ;  P = K·e^(−yT)·N(−d₂) − S·N(−d₁)</div><div class="fb-w">option prices<span class="fb-x">Excel: <code>=S*NORMSDIST(d1)-K*EXP(-y*T)*NORMSDIST(d2)</code></span><span class="fb-s">Solver: Option BSM</span></div></div>
+        <div class="fb-row"><div class="fb-n">Put-call parity</div><div class="fb-f">C + K·e^(−yT) = P + S</div><div class="fb-w">check, or price one from the other<span class="fb-s">Solver: Option BSM</span></div></div>
+        <div class="fb-row"><div class="fb-n">Delta <span class=fb-tag>in your notes</span></div><div class="fb-f">Δ_C = N(d₁) ;  Δ_P = N(d₁) − 1 = −N(−d₁)</div><div class="fb-w">stock-price risk<span class="fb-x">Excel: <code>=NORMSDIST(d1)</code></span><span class="fb-s">Solver: Option BSM</span></div></div>
+        <div class="fb-row"><div class="fb-n">Rho <span class=fb-tag>in your notes</span></div><div class="fb-f">ρ_C = T·K·e^(−yT)·N(d₂) ;  ρ_P = −T·K·e^(−yT)·N(−d₂)</div><div class="fb-w">interest-rate risk<span class="fb-x">Excel: <code>=T*K*EXP(-y*T)*NORMSDIST(d2)</code></span><span class="fb-s">Solver: Option BSM</span><span class="fb-t">⚠ use the actual Rho (hundreds), not a 0–1 number</span></div></div>
+        <div class="fb-row"><div class="fb-n">Gamma, Vega, Theta</div><div class="fb-f">Γ = φ(d₁)/(Sσ√T) ;  Vega = S√T·φ(d₁) ;  Θ (class calc) = K·e^(−yT)(σφ(d₂)/(2√T) + y·N(d₂))</div><div class="fb-w">&quot;all the Greeks&quot;<span class="fb-x">Excel: <code>=EXP(-(d1^2)/2)/SQRT(2*PI())</code></span><span class="fb-s">Solver: Option BSM</span><span class="fb-t">⚠ PI(), not 22/7</span></div></div>
+        <div class="fb-row"><div class="fb-n">Option return, Greeks method <span class=fb-tag>in your notes</span></div><div class="fb-f">r_Op = Δ·(S/Op)·r_S + (ρ/Op)·dy ⇒ w = [Δ·S/Op ; ρ/Op]</div><div class="fb-w">option VaR, approach 1<span class="fb-x">Excel: <code>=Delta*S/Op  ·  =Rho/Op</code></span><span class="fb-s">Solver: Option BSM</span><span class="fb-t">⚠ check: w_rS − w_dy/T = 1</span></div></div>
+        <div class="fb-row"><div class="fb-n">Working in periods</div><div class="fb-f">σ_period = σ_daily·√(252 × life) ;  y_period = y_year × life ;  T = 1</div><div class="fb-w">the class 3-month exercise: everything measured in 3-month periods<span class="fb-x">Excel: <code>=SQRT(VAR(r)*252*0.25)  ·  =y/100*0.25</code></span><span class="fb-s">Solver: Option BSM ▸ build σ, y and T</span><span class="fb-t">⚠ same prices and Delta as years with T = life; Rho and the dy weight are per unit of the period&#x27;s rate</span></div></div>
+        <div class="fb-row"><div class="fb-n">Option inside a portfolio <span class=fb-tag>in your notes</span></div><div class="fb-f">multiply the option&#x27;s two weights by its share of the portfolio value</div><div class="fb-w">shares + an option (additional Q3)<span class="fb-s">Solver: Portfolio B</span></div></div>
+        <div class="fb-row"><div class="fb-n">Binomial moves <span class=fb-tag>in your notes</span></div><div class="fb-f">u = e^σ − 1 ,  d = e^(−σ) − 1 ;  need d &lt; y &lt; u (else one asset dominates)</div><div class="fb-w">building block, approach 2<span class="fb-x">Excel: <code>=EXP(s)-1</code></span><span class="fb-s">Solver: Option Binomial</span></div></div>
+        <div class="fb-row"><div class="fb-n">Equivalent asset <span class=fb-tag>in your notes</span></div><div class="fb-f">Δ = (X₁u − X₁d)/(S(u − d)) ;  B = [X₁d(1+u) − X₁u(1+d)] / [(1+y)(u − d)] ;  price = ΔS + B</div><div class="fb-w">&quot;construct the equivalent asset&quot;<span class="fb-x">Excel: <code>=(Xu-Xd)/(S*(u-d))</code></span><span class="fb-s">Solver: Option Binomial</span><span class="fb-t">⚠ call = long stock + short bond (B &lt; 0); put = short stock + long bond</span></div></div>
+        <div class="fb-row"><div class="fb-n">Units of bonds</div><div class="fb-f">units = B × (1 + y)^T   (face-1 zero-coupon bonds)</div><div class="fb-w">the equivalent asset stated in bonds, as the class binomial workbook<span class="fb-x">Excel: <code>=B*(1+y)</code></span><span class="fb-s">Solver: Option Binomial</span></div></div>
+        <div class="fb-row"><div class="fb-n">Building-block weights <span class=fb-tag>in your notes</span></div><div class="fb-f">w = [ΔS/Op ; −(B/Op)·T/(1+y)]</div><div class="fb-w">option VaR, approach 2<span class="fb-s">Solver: Option Binomial</span><span class="fb-t">⚠ the two block weights ΔS/Op and B/Op sum to 1</span></div></div>
+        <div class="fb-row"><div class="fb-n">Numerical Greek</div><div class="fb-f">f′(x) ≈ [f(x + h) − f(x − h)] / (2h)</div><div class="fb-w">&quot;check Delta numerically&quot;<span class="fb-s">Solver: Option BSM</span></div></div>
+        <div class="fb-row"><div class="fb-n">Digital (cash-or-nothing)</div><div class="fb-f">C = e^(−yT)·N(d₂) ;  Δ = e^(−yT)·φ(d₂)/(Sσ√T)</div><div class="fb-w">&quot;pays 1 if …&quot;<span class="fb-x">Excel: <code>=EXP(-y*T)*NORMSDIST(d2)</code></span><span class="fb-s">Solver: Option BSM</span><span class="fb-t">⚠ Delta uses the density φ(d₂), not N(d₂)</span></div></div>
+        <div class="fb-row"><div class="fb-n">Delta and rho hedge</div><div class="fb-f">shares = −n·Δ ;  ZCBs (face 1) = n·ρ / (T·e^(−yT))</div><div class="fb-w">&quot;hedge the option position&quot;<span class="fb-x">Excel: <code>=-n*Delta</code></span><span class="fb-s">Solver: Hedge</span></div></div>
+      </div>
+    </section>
+    <section class="block">
+      <h3>Forwards, futures and hedging</h3>
+      <div class="fbank">
+        <div class="fb-row"><div class="fb-n">Forward = call − put <span class=fb-tag>in your notes</span></div><div class="fb-f">long 1 call + short 1 put at K = forward price ⇒ V_F = C − P = S − K·e^(−yT)</div><div class="fb-w">forward contract value<span class="fb-x">Excel: <code>=C-P</code></span><span class="fb-s">Solver: Forward</span></div></div>
+        <div class="fb-row"><div class="fb-n">Forward weights</div><div class="fb-f">w_rS = S/V_F ;  w_dy = T·K·e^(−yT)/V_F</div><div class="fb-w">forward VaR<span class="fb-x">Excel: <code>=S/VF</code></span><span class="fb-s">Solver: Forward</span><span class="fb-t">⚠ huge when V_F is small — quote the VaR in money</span></div></div>
+        <div class="fb-row"><div class="fb-n">Cost of carry <span class=fb-tag>in your notes</span></div><div class="fb-f">₀F_T = S₀·e^(y_T·T)</div><div class="fb-w">futures on a stock or index<span class="fb-x">Excel: <code>=S0*EXP(yT*T)</code></span><span class="fb-s">Solver: Futures §1</span><span class="fb-t">⚠ replication: borrow money, buy the stock</span></div></div>
+        <div class="fb-row"><div class="fb-n">Futures on an asset <span class=fb-tag>in your notes</span></div><div class="fb-f">dFu = S₀·r_S + T·S₀·dy_T ⇒ w = [S₀ ; T·S₀]</div><div class="fb-w">futures VaR<span class="fb-s">Solver: Futures §1</span><span class="fb-t">⚠ weights are MONEY — a futures is worth 0 when opened</span></div></div>
+        <div class="fb-row"><div class="fb-n">Futures on a ZCB <span class=fb-tag>in your notes</span></div><div class="fb-f">B₀ = X·e^(−y_T+N·(T+N)) ;  ₀F_T = B₀·e^(y_T·T) ;  w = [−(T+N)·B₀ ; +T·B₀]</div><div class="fb-w">bond futures<span class="fb-x">Excel: <code>=X*EXP(-yTN*(T+N))</code></span><span class="fb-s">Solver: Futures §2</span><span class="fb-t">⚠ replication: borrow money, buy the ZCB</span></div></div>
+        <div class="fb-row"><div class="fb-n">Forward rate</div><div class="fb-f">(T)f(N) = [y_T+N·(T+N) − y_T·T] / N</div><div class="fb-w">check a bond-futures price<span class="fb-s">Solver: Futures §2</span></div></div>
+        <div class="fb-row"><div class="fb-n">Futures on a coupon bond <span class=fb-tag>in your notes</span></div><div class="fb-f">₀F_T = Σ X_k·e^(−y_T+k·(T+k)) × e^(y_T·T)   (post-delivery flows only)</div><div class="fb-w">coupon-bond futures<span class="fb-s">Solver: Futures §3</span><span class="fb-t">⚠ price must lie below the undiscounted Σ X_k; the financing row carries T</span></div></div>
+        <div class="fb-row"><div class="fb-n">Hedge ratio (one instrument)</div><div class="fb-f">h* = ρ·σ_S/σ_F ;  N* = h*·Q_A/Q_F</div><div class="fb-w">&quot;how many futures contracts?&quot;<span class="fb-x">Excel: <code>=rho*sS/sF</code></span><span class="fb-s">Solver: Hedge §1</span></div></div>
+        <div class="fb-row"><div class="fb-n">Best hedge with several futures</div><div class="fb-f">minimise (p + Hn)ᵀΩ(p + Hn) ⇒ (HᵀΩH)·n = −HᵀΩp</div><div class="fb-w">&quot;minimise the risk; can it be eliminated?&quot;<span class="fb-x">Excel: <code>=MMULT(MINVERSE(HtOH),-HtOp)  or Solver</code></span><span class="fb-s">Solver: Hedge §2</span><span class="fb-t">⚠ fewer instruments than factors ⇒ a residual is left</span></div></div>
+      </div>
+    </section>
+    <section class="block">
+      <h3>Multi-step chains: how the formulas string together</h3>
+      <div class="prose"><p>A long exam question is one of these chains with numbers. Write the step names down first, then fill them in — the order is the marking scheme.</p></div>
+      <div class="chain"><div class="chain-h"><b>Portfolio of assets from money, σ and ρ</b><span>&quot;$X in A and $Y in B, daily volatilities, correlation … VaR, benefit, marginal, component&quot;</span></div><ol>
+        <li><b>weights</b> — <code>w_i = V_i/W₀</code> <span class=fb-s>Asset VaR ▸ Weights</span></li>
+        <li><b>Ω</b> — <code>Ω_ij = ρ_ij σ_i σ_j</code> <span class=fb-s>Asset VaR ▸ Ω table</span></li>
+        <li><b>μ_P and σ_P</b> — <code>wᵀμ ;  √(wᵀΩw)</code> <span class=fb-s>Asset VaR ▸ Answers</span></li>
+        <li><b>VaR, % and money</b> — <code>μ_P + zσ_P ;  × W₀</code> <span class=fb-s>=NORMSINV(α)</span></li>
+        <li><b>T-day VaR</b> — <code>μ_P·T + zσ_P√T</code> <span class=fb-s>Horizon T</span></li>
+        <li><b>ES</b> — <code>μ_P − σ_P φ(z)/α</code></li>
+        <li><b>individual VaRs and the benefit</b> — <code>VaR_P − Σ VaR_i</code> <span class=fb-s>individual table</span></li>
+        <li><b>marginal, component, incremental</b> — <code>μ_i + z(Ωw)_i/σ_P ; w_i × marginal ; check Σ = VaR</code> <span class=fb-s>individual table</span></li>
+      </ol></div>
+      <div class="chain"><div class="chain-h"><b>Raw data → a mixed portfolio&#x27;s VaR</b><span>&quot;the table gives eleven days of spot rates and prices; the portfolio holds ZCBs, shares (and an option)&quot;</span></div><ol>
+        <li><b>changes</b> — <code>dy = Δrate/100 ;  r = ΔP/P (or ln)</code> <span class=fb-s>Data ▸ paste, set &#x27;becomes a factor via&#x27;</span></li>
+        <li><b>μ and Ω</b> — <code>AVERAGE ; covariance matrix</code> <span class=fb-s>Data ▸ statistics, Ω</span></li>
+        <li><b>price each holding</b> — <code>ZCB F/(1+y)^T ; option by BSM or binomial</code> <span class=fb-s>Portfolio A/B ▸ holdings</span></li>
+        <li><b>value weights</b> — <code>value / W₀</code> <span class=fb-s>Portfolio ▸ each holding</span></li>
+        <li><b>multipliers</b> — <code>stock 1 ; ZCB −D_mod ; option Δ·S/Op and ρ/Op</code> <span class=fb-s>Portfolio ▸ each holding</span></li>
+        <li><b>adjusted weight per factor</b> — <code>Σ weight × multiplier on that factor</code> <span class=fb-s>Portfolio ▸ adjusted weight per factor</span></li>
+        <li><b>μ_P, σ_P, VaR</b> — <code>wᵀμ ; √(wᵀΩw) ; μ_P + zσ_P ; × W₀</code> <span class=fb-s>Portfolio ▸ Answers</span></li>
+      </ol></div>
+      <div class="chain"><div class="chain-h"><b>A coupon bond&#x27;s VaR</b><span>&quot;coupon bond, spot curve, statistics of the yield changes&quot;</span></div><ol>
+        <li><b>PV of each flow</b> — <code>CF_t/(1+y_t)^t</code> <span class=fb-s>Coupon Bond ▸ cash flows</span></li>
+        <li><b>price and weights</b> — <code>B = Σ PV ; w_t = PV_t/B</code></li>
+        <li><b>durations</b> — <code>D_mac = Σ t w_t ; D_mod = D_mac/(1+ytm)</code> <span class=fb-s>=IRR for ytm</span></li>
+        <li><b>adjusted weights</b> — <code>w_t × (−t)</code></li>
+        <li><b>μ_B, σ_B</b> — <code>adjᵀμ_dy ; √(adjᵀΩ adj)</code> <span class=fb-s>type μ and Ω of the dy&#x27;s</span></li>
+        <li><b>VaR, % and money</b> — <code>μ_B + zσ_B ; × B × number held</code> <span class=fb-s>Coupon Bond ▸ Answers</span></li>
+      </ol></div>
+      <div class="chain"><div class="chain-h"><b>An option&#x27;s VaR, both ways, and its hedge</b><span>&quot;call / put on a stock … VaR by the option pricing model and the building-block approach … hedge&quot;</span></div><ol>
+        <li><b>d₁, d₂, price</b> — <code>BSM</code> <span class=fb-s>Option BSM ▸ price and Greeks</span></li>
+        <li><b>Δ and ρ</b> — <code>N(d₁) ; TKe^(−yT)N(d₂)</code></li>
+        <li><b>weights, check</b> — <code>[ΔS/Op ; ρ/Op] ; w_rS − w_dy/T = 1</code> <span class=fb-s>Option BSM ▸ position A/B</span></li>
+        <li><b>VaR (approach 1)</b> — <code>wᵀμ + z√(wᵀΩw) over [r_S ; dy]</code> <span class=fb-s>type μ and Ω</span></li>
+        <li><b>tree: u, d, payoffs</b> — <code>e^σ − 1 ; e^(−σ) − 1</code> <span class=fb-s>Option Binomial</span></li>
+        <li><b>Δ, B, price, weights</b> — <code>equivalent asset ; [ΔS/Op ; −(B/Op)T/(1+y)]</code> <span class=fb-s>Option Binomial</span></li>
+        <li><b>VaR (approach 2), compare</b> <span class=fb-s>Option Binomial ▸ Answers</span></li>
+        <li><b>hedge</b> — <code>−nΔ shares ; nρ/(Te^(−yT)) bonds</code> <span class=fb-s>Hedge §3</span></li>
+      </ol></div>
+      <div class="chain"><div class="chain-h"><b>Futures and forwards</b><span>&quot;price the futures … weights … VaR … forward rate … value the forward&quot;</span></div><ol>
+        <li><b>price</b> — <code>cost of carry ; B₀e^(y_T T) ; ΣX_kB_k e^(y_T T)</code> <span class=fb-s>Futures §1/§2/§3</span></li>
+        <li><b>check</b> — <code>forward rate reprices ; price &lt; undiscounted Σ X_k</code></li>
+        <li><b>weights in money</b> — <code>[S₀ ; TS₀] ; [−(T+N)B₀ ; TB₀]</code></li>
+        <li><b>VaR in money</b> — <code>wᵀμ + z√(wᵀΩw)</code> <span class=fb-s>type μ and Ω</span></li>
+        <li><b>forward</b> — <code>V_F = C − P ; [S/V_F ; TKe^(−yT)/V_F]</code> <span class=fb-s>Forward</span></li>
+      </ol></div>
+      <div class="chain"><div class="chain-h"><b>Minimise a position&#x27;s risk with futures</b><span>&quot;use the futures to minimise the bond&#x27;s risk; can it be eliminated?&quot;</span></div><ol>
+        <li><b>position exposures p</b> — <code>adjusted weight × value, per dy</code> <span class=fb-s>Hedge §2 (or pull from Coupon Bond)</span></li>
+        <li><b>contract exposures H</b> — <code>−(T+N)B and +TB per futures</code> <span class=fb-s>Hedge §2 ▸ instruments</span></li>
+        <li><b>solve</b> — <code>(HᵀΩH)n = −HᵀΩp</code> <span class=fb-s>Hedge §2 ▸ elimination</span></li>
+        <li><b>risk before and after</b> — <code>√(pᵀΩp) → √(eᵀΩe)</code></li>
+        <li><b>verdict</b> — <code>more factors than instruments ⇒ residual</code></li>
+      </ol></div>
+    </section>
+    <section class="block">
+      <h3>The Excel functions you will actually type</h3>
+      <div class="sheet"><table><thead><tr><th class="l">Function</th><th class="l">Returns</th><th class="l">Used for</th><th class="l">Trap</th></tr></thead><tbody>
+        <tr><td class="l"><code>NORMSINV(p)</code></td><td class="l">z with P(Z ≤ z) = p</td><td class="l">z_α for every VaR; =NORMSINV(0.01) = −2.326348</td><td class="l">modern name NORM.S.INV; answer is negative for p &lt; 0.5</td></tr>
+        <tr><td class="l"><code>NORMSDIST(z)</code></td><td class="l">P(Z ≤ z)</td><td class="l">N(d₁), N(d₂), probability of a loss, PD</td><td class="l">modern NORM.S.DIST(z,TRUE) — the TRUE is required</td></tr>
+        <tr><td class="l"><code>EXP(x) · LN(x)</code></td><td class="l">eˣ · natural log</td><td class="l">discounting e^(−yT), log returns, d₁</td><td class="l">LOG(x) is base 10</td></tr>
+        <tr><td class="l"><code>SQRT(x) · PI()</code></td><td class="l">√x · π</td><td class="l">σ from variance, √T scaling, φ(z)</td><td class="l">never 22/7</td></tr>
+        <tr><td class="l"><code>AVERAGE(r)</code></td><td class="l">mean</td><td class="l">μ of returns and rate changes</td><td class="l"></td></tr>
+        <tr><td class="l"><code>STDEV(r) · STDEVP(r)</code></td><td class="l">SD with n − 1 · with n</td><td class="l">σ of returns and rate changes</td><td class="l">the course uses STDEV (n − 1)</td></tr>
+        <tr><td class="l"><code>VAR(r)</code></td><td class="l">variance, n − 1</td><td class="l">diagonal of Ω</td><td class="l"></td></tr>
+        <tr><td class="l"><code>COVAR(x,y) · COVARIANCE.S(x,y)</code></td><td class="l">covariance ÷ n · ÷ (n − 1)</td><td class="l">off-diagonal of Ω</td><td class="l">COVAR is population; the current class VarCovar() uses n − 1</td></tr>
+        <tr><td class="l"><code>CORREL(x,y)</code></td><td class="l">correlation</td><td class="l">ρ from data</td><td class="l"></td></tr>
+        <tr><td class="l"><code>Data ▸ Data Analysis ▸ Covariance</code></td><td class="l">whole Ω at once (static, ÷ n)</td><td class="l">the quick way to Ω in an exam lab</td><td class="l">fills only the lower triangle; population divisor</td></tr>
+        <tr><td class="l"><code>MMULT(A,B) · TRANSPOSE(A)</code></td><td class="l">matrix product · transpose</td><td class="l">wᵀμ, Ωw, wᵀΩw</td><td class="l">Ctrl+Shift+Enter in Excel 2019 and earlier; select the output range first</td></tr>
+        <tr><td class="l"><code>SUMPRODUCT(a,b)</code></td><td class="l">Σ aᵢbᵢ</td><td class="l">μ_P, D_mac, wᵀΩw without arrays: =SUMPRODUCT(w,MMULT(Om,w))</td><td class="l"></td></tr>
+        <tr><td class="l"><code>MINVERSE(M)</code></td><td class="l">matrix inverse</td><td class="l">solving the normal equations of the several-futures hedge</td><td class="l">array formula</td></tr>
+        <tr><td class="l"><code>IRR(values)</code></td><td class="l">rate that sets NPV to 0</td><td class="l">yield to maturity of a coupon bond: IRR(−B, CF₁, …, CFₙ)</td><td class="l">per period</td></tr>
+        <tr><td class="l"><code>TINV(α,df) · TDIST(|t|,df,2)</code></td><td class="l">two-tailed critical t · p-value</td><td class="l">t-test of the mean</td><td class="l">modern T.INV.2T, T.DIST.2T</td></tr>
+        <tr><td class="l"><code>SKEW(r) · KURT(r)</code></td><td class="l">skewness · excess kurtosis</td><td class="l">is the normal assumption reasonable?</td><td class="l"></td></tr>
+        <tr><td class="l"><code>MAX(a,b)</code></td><td class="l">larger of two</td><td class="l">option payoffs max(S − K, 0)</td><td class="l"></td></tr>
+        <tr><td class="l"><code>SMALL(range,k) · COUNTIF</code></td><td class="l">k-th smallest · count</td><td class="l">discrete VaR</td><td class="l"></td></tr>
+        <tr><td class="l"><code>F4 (absolute reference)</code></td><td class="l">$A$1</td><td class="l">fix W₀, z or Ω while copying down</td><td class="l">a missing $ is the commonest copy-down error</td></tr>
+        <tr><td class="l"><code>Goal Seek · Solver</code></td><td class="l">solve for one input · optimise</td><td class="l">implied volatility; minimum-variance hedge</td><td class="l">Solver is an add-in — the Hedge sheet solves it without</td></tr>
+      </tbody></table></div>
+    </section>
+    <section class="block">
+      <h3>Your handwritten notes, checked</h3>
+      <div class="prose"><p>Each line of your one-page summary against the course materials. Rows marked <span class="fb-tag">in your notes</span> above come from it.</p></div>
+      <div class="fxlist">
+        <div class="fxrow"><code>VaR = μ + z(α)·σ, z negative</code><div>Matches the course convention: VaR is reported negative and the mean is kept.</div></div>
+        <div class="fxrow"><code>Annualise: μ × n, σ × √n; μ is negligible over short horizons</code><div>Correct, and the reason the zero-mean VaR z·σ is a fair shortcut for one or ten days. Over T periods use μT + zσ√T.</div></div>
+        <div class="fxrow"><code>Bond rates: Δi = new − old; stocks and ZRR: ln(new/old)</code><div>Right for the example workbooks. The additional-questions workbook (Q2, Q3) uses SIMPLE returns (new/old − 1); use what the question&#x27;s key uses. Rates quoted in % also need /100.</div></div>
+        <div class="fxrow"><code>ZCB VaR = E(r) + z(D_mod × σ_Δi), E(r) = −D_mod × average(Δi)</code><div>Correct; D_mod = D_mac/(1 + YTM/m).</div></div>
+        <div class="fxrow"><code>Coupon bond: weight × −D_mod</code><div>The formula sheet and every key use weight × (−t). −D_mod per cash flow is the modified-duration version; the two agree exactly under continuous discounting.</div></div>
+        <div class="fxrow"><code>Diversification benefit = Σ individual VaR − portfolio VaR</code><div>Same number as VaR_P − Σ VaR_i here, because this course&#x27;s VaRs are negative.</div></div>
+        <div class="fxrow"><code>Marginal VaR = E(r)_A + z·[Ω·w]_A/σ_port; mVaR$ = portfolio size × mVaR%</code><div>Correct — the Ωw row for asset A is its covariance with the portfolio.</div></div>
+        <div class="fxrow"><code>Component VaR$ = investment_A × mVaR_A%; ratio = cVaR_A/ΣcVaR</code><div>Correct, and the components add up to the portfolio VaR exactly.</div></div>
+        <div class="fxrow"><code>Options: σ = stdev(Δprice) × √252, not Δinterest; interest rate of NOW</code><div>Correct and worth underlining: y is the latest spot rate, not an average.</div></div>
+        <div class="fxrow"><code>Option weights × weight of the option in the portfolio; use the actual (big) Rho</code><div>Correct: Rho is in money per unit of rate (hundreds), and the option&#x27;s weights are scaled by its portfolio share.</div></div>
+        <div class="fxrow"><code>Binomial: d &lt; r &lt; u; call = long stock + short bond, put = short stock + long bond</code><div>Correct — the no-arbitrage condition and the signs of Δ and B.</div></div>
+        <div class="fxrow"><code>Futures replication: long call + short put at K = forward price; borrow and buy the stock / ZCB / coupon bond</code><div>Correct; this is why futures weights are in money.</div></div>
+      </div>
+    </section>
+  </article>
   </main>
 </div>
 
@@ -2338,6 +2623,9 @@ var TOPICS = [
 
   {id:"xl", n:"XL", t:"The spreadsheet layer", panel:"p-xl",
    ctx:"Cross-cutting Excel reference. The eight-step skeleton every class workbook shares: raw data; factor changes (=(B5-B4)/100 for dy, =LN(E5/E4) for returns); means (=AVERAGE); Omega (=varcovar, a custom VBA function); the instrument (price, PV weights, durations or Greeks); w; mu_P and sigma_P as two array formulas; VaR. Steps 1-4 and 7-8 are identical everywhere - only 5 and 6 change between lectures. Legacy-to-modern map: NORMSINV = NORM.S.INV (identical); NORMSDIST(z) = NORM.S.DIST(z,TRUE) (the modern one NEEDS the TRUE, and with FALSE gives the density); STDEV = STDEV.S (both n-1); STDEVP = STDEV.P (both n); COVAR = COVARIANCE.P, the POPULATION version dividing by n, NOT COVARIANCE.S. The class sheets pair STDEV^2 (n-1) on the diagonal with COVAR (n) off it, making off-diagonals 0.4% too small at n=250 - Cov(dy,r_S) = 6.682909e-08 where the consistent sample value is 6.709748e-08; the VaR effect is in the fifth decimal place. NORMSDIST takes no second argument, so there is no legacy way to get the density, which is why the calculators build it by hand. varcovar is a VBA UDF supplied with the course, not standard Excel; reproduce it with Data Analysis > Covariance (static, population divisor), a grid of COVARIANCE.S, or =MMULT(TRANSPOSE(dev),dev)/(n-1) on mean-centred data. Array formulas: Ctrl+Shift+Enter is required in Excel 2019 and earlier; without it an array formula returns only the TOP-LEFT element with no error, and the classic symptom is a portfolio sigma that is far too small. Select the whole output range before entering. Microsoft 365 spills automatically and shows #SPILL! if blocked. Functions by job: NORMSINV/NORMSDIST for quantiles and the CDF; AVERAGE/STDEV/COVAR/CORREL for mu and Omega; LN/EXP for log returns and continuous discounting; SQRT; MMULT/TRANSPOSE for the quadratic form; SUMPRODUCT for Macaulay duration and as a TRANSPOSE-free alternative =SUMPRODUCT(w,MMULT(Om,w)); SUM/INDEX; MAX for binomial payoffs; PI() for the density; Goal Seek and Solver for implied volatility and for the minimum-risk hedge. NOTABLY ABSENT: no PRICE, YIELD, DURATION or MDURATION anywhere in the course, because those take a single yield to maturity and real dates, while this course discounts every cash flow at its own spot rate over integer periods. Do not reach for MDURATION in an exam here - build the column. Trap list: -1.96 for a 95% VaR (it belongs to 2.5%); forgetting the /100 on dy; sigma labelled as sigma^2; w order not matching Omega order (the option sheet puts dy FIRST); missing Ctrl+Shift+Enter; mixing continuous PV with discrete duration; 22/7 for pi; scaling a whole VaR by SQRT(T); expecting a percentage return on a futures contract; STDEV^2 beside COVAR; annual sigma with T in months; LOG instead of LN; including pre-delivery coupons in a futures price; and dropping the T from the financing row of a coupon-bond-futures weight vector."},
+
+  {id:"fx", n:"FX", t:"Formulas & functions", panel:"p-fx",
+   ctx:"Formula bank: every formula of the course grouped by returns and statistics, VaR and ES of one return, portfolios in matrix form, fixed income, options, and forwards/futures/hedging, each with when to use it, the Excel that computes it, the solver sheet, and its trap. Also six multi-step chains (portfolio from money and correlations; raw data to a mixed portfolio; coupon bond VaR; option VaR both ways plus hedge; futures and forwards; minimum-variance hedge with futures), a dictionary of the Excel functions used (NORMSINV, NORMSDIST, EXP, LN, SQRT, PI, AVERAGE, STDEV, VAR, COVAR vs COVARIANCE.S, CORREL, Data Analysis Covariance, MMULT, TRANSPOSE, SUMPRODUCT, MINVERSE, IRR, TINV, TDIST, SKEW, KURT, MAX, SMALL, F4, Goal Seek, Solver), and a line-by-line check of the student's handwritten notes: log vs simple returns, weight x -D_mod vs -t, diversification benefit sign, marginal and component VaR, sigma from price returns and y = latest rate for BSM, binomial d < r < u, call = long stock + short bond, futures replication. The exam is four long multi-step questions."},
 
   {id:"pset", n:"AS", t:"Assignments", panel:"p-pset",
    ctx:"All three additional questions from Additional question_ans_Market risk.xlsm, worked in full, plus the two practice problems the decks set. Q1: $300,000 gold and $500,000 silver, daily volatilities 1.8% and 1.2%, correlation 0.6 - find the 10-day 97.5% portfolio VaR, the diversification benefit, and the marginal and component VaR of each. Uses =_xlfn.NORM.S.INV(0.025) = -1.9599639845. Weights 0.375 and 0.625; sigma_P = 0.01275 exactly; 1-day VaR = -2.498954% = -$19,991.63; 10-day = -$63,219.09; sum of individual 10-day VaRs = -$70,656.63 so the diversification benefit is $7,437.54. Marginal VaR = (z/sigma_P)*MMULT(VCV,w) = -0.0311288 gold and -0.0213060 silver, or -$24,903.07 and -$17,044.77 on the $800,000 book. Component VaR = marginal x weight = -0.0116733 and -0.0133162, or -$9,338.65 and -$10,652.98, summing to exactly -$19,991.63. Shares 46.71% gold and 53.29% silver. Q2: eleven days of 1Y and 2Y spot rates and prices of stocks A and B; portfolio of 20 one-year ZCBs, 20 two-year ZCBs, 100 shares of A and 100 of B, FV THB 1,000, annual compounding, 1-day 99% VaR. Uses SIMPLE returns for the stocks, =(D29-D28)/D28. Bond values 1000/1.0736 = 931.4456 times 20 = 18,628.91 and 1000/1.0801^2 = 857.1801 times 20 = 17,143.60; stocks 12,800 and 4,200; W0 = 52,772.51. Weights 0.3530041, 0.3248585, 0.2425505, 0.0795869. Modified durations 1/(1+y1) = 0.9314456 and 2/(1+y2) = 1.8516804, stocks 1. Adjusted weights -0.3288041, -0.6015342, +0.2425505, +0.0795869. mu_P = 0.0086619, sigma_P = 0.0186555, VaR = mu + NORMSINV(1-0.99)*sigma = -3.47372% = -THB 1,833.17. Q3: the same data plus a stock index, portfolio of 5 shares of A, 10 of B and one long put on the index with strike 1,050 and T = 1 year, 1-day 99% VaR, done BOTH ways. Option-pricing-model approach: sigma annualised as (Var_daily*252)^0.5 = 0.0731397, y = 0.0736, S = 1,071.37; d1 = 1.3183363, d2 = 1.2451966, N(d1) = 0.90630445, N(d2) = 0.8934702; call 99.4112839, put 3.5366825; Delta_put = -0.09369555, Rho_put = -103.9192839; W0 = 640 + 420 + 3.5367 = 1,063.5367; weights for dy -0.0977110 and for the index -0.0943857, stock A 0.6017658, stock B 0.3949088; mu = 0.0302928, sigma = 0.0592202, VaR = -10.74739%. Building-block approach: u = EXP(sigma)-1 = 0.0758809, d = -0.0705290, S1u = 1,152.6665 with P1u = 0, S1d = 995.8073 with P1d = 54.1927; Delta = -0.3454864, stock value -370.1437, bond value 370.9301, put price 0.7863658 - note the one-step binomial puts it at 0.7864 against Black-Scholes 3.5367; block weights -470.7017 stock and +471.7017 bond, summing to 1; W0 = 1,060.7864; adjusted weights -0.3257029 for dy and -0.3489333 for the index; mu = 0.0304842, sigma = 0.0592808, VaR = -10.74235%. The two approaches agree to within 0.005 percentage points despite the price differing by a factor of 4.5. Practice problems: the plain-vanilla and digital option exercises, and the 5-year 6% G.Bond hedged with ZCB futures."},
@@ -4806,6 +5094,579 @@ var _bootBeforeUX = boot;
 boot = function(){
   _bootBeforeUX();
   try{ initUX(); }catch(e){ console.warn("UX layer failed:", e); }
+};
+</script>
+<script id="course-search">
+/* ============================================================
+   Search layer — a full-text, offline search over everything on
+   the page (sections, worked problems, every quiz question,
+   formulas, flashcards, Excel notes) plus the question finder
+   from the Excel solver. Replaces the jump palette's matcher;
+   Ctrl+K, / and the ⌕ button all open it. Nothing leaves the page.
+   ============================================================ */
+
+/* ---------------- the question finder (same rows as the Excel solver's Start sheet) ----------------
+   q: what the question asks · w: words to look for · need: what you need · xl: solver sheet
+   go: [topic, heading or worked-problem source to land on, short label]                      */
+var FINDER = [
+  {g:"One asset or one return · lecture 2", rows:[
+    {q:"Find the VaR of one asset whose return has mean μ and SD σ", w:"“normally distributed” · N(μ, σ) · 1% / 5% quantile · VaR in Baht", need:"μ, σ, α, amount", xl:"Normal VaR",
+     go:[["mr","The deck's worked example","worked example"],["mr","VaR and ES bench","bench"]]},
+    {q:"Find expected shortfall, a 10-day VaR, or the chance of a loss", w:"“expected shortfall” · C-VaR · “10-day” · “probability of a loss”", need:"μ, σ, α, days", xl:"Normal VaR",
+     go:[["mr","Expected shortfall, and why","ES"],["mr","Changing the horizon","horizon"]]},
+    {q:"Test whether the mean return is significantly different from zero", w:"“t-statistic” · “significantly different” · H₀: μ = 0", need:"n, mean, SD or variance", xl:"Normal VaR",
+     go:[["mr","The t-test","t-test"]]}
+  ]},
+  {g:"Money spread over several assets · lecture 2", rows:[
+    {q:"Find the VaR of money invested in two or more assets", w:"“invested $X in … and $Y in …” · gold and silver · daily volatility · correlation", need:"amounts, σ's, ρ's, α, days", xl:"Asset VaR",
+     go:[["pset","Additional question 1","additional Q1"]]},
+    {q:"Find the diversification benefit, or marginal / component / incremental VaR", w:"“benefit of diversification” · marginal · component · incremental · “increase gold by 1%”", need:"(same as above)", xl:"Asset VaR",
+     go:[["fix","Marginal and component VaR","marginal & component"],["pset","Additional question 1","additional Q1"]]},
+    {q:"Find the VaR when the weights w and the covariance matrix Ω are given", w:"weight vector · variance-covariance matrix · wᵀΩw", need:"w, μ, Ω", xl:"Custom w",
+     go:[["start","The whole course in three symbols","master formula"]]}
+  ]},
+  {g:"Working from a table of data · lecture 2", rows:[
+    {q:"Work out μ, σ, covariances and correlations from past prices or rates", w:"“the table below shows … days of” · estimate · skewness · kurtosis", need:"paste the table", xl:"Data",
+     go:[["mr","Estimating μ and σ","estimating"],["xl","The build order","Excel steps"]]},
+    {q:"Update a volatility estimate with EWMA", w:"EWMA · λ = 0.94 · exponentially weighted", need:"λ, yesterday's σ and return", xl:"EWMA",
+     go:[["mr","EWMA bench","EWMA"]]}
+  ]},
+  {g:"T-bills and zero-coupon bonds · lecture 3", rows:[
+    {q:"Price a T-bill / zero-coupon bond, or find its duration", w:"T-bill · discount rate · Macaulay / modified duration", need:"face, yield, maturity, compounding", xl:"ZCB",
+     go:[["fix","The T-bill example","T-bill example"],["fix","From Taylor to duration","duration"]]},
+    {q:"Find the VaR of a T-bill / zero-coupon bond", w:"past discount rates · change in yield · VaR of the T-bill", need:"past rates, or μ_dy and σ_dy", xl:"ZCB",
+     go:[["fix","The T-bill example","T-bill example"],["fix","Zero-coupon VaR bench","bench"]]}
+  ]},
+  {g:"Coupon bonds · lecture 3", rows:[
+    {q:"Price a coupon bond from spot rates; its weights and duration", w:"coupon · paid annually / semi-annually · spot (zero) curve · portfolio of zeros", need:"face, coupon %, maturity, spot rates", xl:"Coupon Bond",
+     go:[["fix","A coupon bond is a portfolio of zeros","portfolio of zeros"],["fix","The five-year coupon bond","5-year bond"]]},
+    {q:"Find the VaR of a coupon bond", w:"VaR of the bond · yield changes dy₁ … dyₙ · adjusted weights", need:"+ μ and Ω of the yield changes", xl:"Coupon Bond",
+     go:[["fix","The five-year coupon bond","5-year bond"],["pset","Lecture 5 practice","practice problem"]]}
+  ]},
+  {g:"A portfolio mixing bonds, stocks and options · lectures 3–4", rows:[
+    {q:"Find the VaR of a portfolio of bonds AND stocks", w:"“20 one-year ZCBs and 100 shares of …” · additional Q2 · basic assets", need:"one row per holding", xl:"Portfolio A",
+     go:[["pset","Additional question 2","additional Q2"],["fix","A portfolio of basic assets","bond + stock"]]},
+    {q:"Find the VaR of stocks plus an option — Greeks or building block", w:"“shares plus a put on the index” · additional Q3", need:"one row per holding", xl:"Portfolio B",
+     go:[["pset","Additional question 3","additional Q3"]]}
+  ]},
+  {g:"Options · lecture 4", rows:[
+    {q:"Price a call or put with Black-Scholes; Delta, Rho, Gamma, Vega, Theta", w:"Black-Scholes · Greeks · European call / put · d₁, d₂", need:"S, K, y, σ, T", xl:"Option BSM",
+     go:[["opt","Black-Scholes-Merton","BSM"],["opt","Two Greeks, not five","Greeks"]]},
+    {q:"Find an option's VaR using its Delta and Rho (Greeks method)", w:"“option pricing model approach” · r_Op = Δ(S/Op)·r_S + (ρ/Op)·dy", need:"+ μ and Ω of [r_S ; dy]", xl:"Option BSM",
+     go:[["opt","The main example","main example"],["opt","Option VaR bench","bench"]]},
+    {q:"Find an option's VaR with the building-block (binomial) method", w:"equivalent asset · replicating portfolio · building block · LEGO · up / down", need:"S, K, σ, y, T", xl:"Option Binomial",
+     go:[["opt","The building block route","building block"]]},
+    {q:"Price a digital (cash-or-nothing) option; its Delta and Rho", w:"digital · binary · cash-or-nothing · “pays 1 if”", need:"S, K, y, σ, T", xl:"Option BSM",
+     go:[["pset","Lecture 4 practice","exercise"]]},
+    {q:"Check a Greek numerically by bumping S or y", w:"numerical Greeks · central difference · dS, dy", need:"ΔS, Δy", xl:"Option BSM",
+     go:[["opt","Greeks by numerical differentiation","numerical Greeks"]]},
+    {q:"Check put-call parity, or say whether the call or the put is riskier", w:"put-call parity · “compare the risk of the call and the put”", need:"(same as Black-Scholes)", xl:"Option BSM",
+     go:[["opt","The main example","main example"],["exam","Moderately difficult · 2","exam item"]]},
+    {q:"Delta-hedge or rho-hedge an option, or cut the risk another way", w:"delta hedge · rho hedge · reduce exposure · diversify", need:"option inputs, number held", xl:"Hedge",
+     go:[["opt","Managing the risk","managing risk"]]}
+  ]},
+  {g:"Forwards and futures · lecture 5", rows:[
+    {q:"Find the value and VaR of a forward contract", w:"forward · long call + short put · delivery price", need:"S, K, σ, y, T", xl:"Forward",
+     go:[["fut","The forward example","forward example"],["exam","Difficult · 2","exam item"]]},
+    {q:"Price a futures on a stock or index, and find its VaR", w:"futures · cost of carry · TFEX · SET50 futures · weights in money", need:"S₀, y_T, T", xl:"Futures",
+     go:[["fut","Cost of carry","cost of carry"]]},
+    {q:"Price a futures on a zero-coupon bond; the forward rate", w:"futures on a ZCB · forward rate (T)f(N)", need:"T, N, y_T, y_(T+N)", xl:"Futures",
+     go:[["fut","Zero-coupon bond futures","ZCB futures"]]},
+    {q:"Price a futures on a coupon bond, or check whether a quote is possible", w:"futures on a coupon bond · “is this price correct?”", need:"cash flows, spot rates", xl:"Futures",
+     go:[["fut","Coupon bond futures","CB futures"],["exam","Difficult · 1","exam item"]]}
+  ]},
+  {g:"Hedging · lectures 4–5", rows:[
+    {q:"Minimise a bond's risk with several futures — can the risk be removed?", w:"“minimise the risk” · optimal number of futures · “eliminate” · basis risk", need:"exposures (defaults = the practice)", xl:"Hedge",
+     go:[["fut","The practice problem","practice problem"],["pset","Lecture 5 practice","worked"]]},
+    {q:"Find the hedge ratio and how many futures contracts to short", w:"hedge ratio · h* = ρσ_S/σ_F · number of contracts", need:"σ_S, σ_F, ρ, sizes", xl:"Hedge", go:[]}
+  ]},
+  {g:"Other calculations · lectures 1–2", rows:[
+    {q:"Find a bank's probability of bankruptcy, or the capital a rating needs", w:"assets · debt · probability of default · BBB rating · equity ratio", need:"A₀, D₀, μ_A, σ_A, rating", xl:"Solvency",
+     go:[["fi","Bankruptcy is a statement","bankruptcy"],["fi","Solvency bench","bench"]]},
+    {q:"Find VaR and ES from a list of possible losses; is VaR subadditive?", w:"“loses X with probability p” · two projects · subadditive · coherent", need:"losses, probabilities, α", xl:"Discrete VaR-ES",
+     go:[["mr","The counterexample, worked in full","counterexample"],["mr","Subadditivity bench","bench"]]}
+  ]},
+  {g:"Explain-in-words and Excel questions", rows:[
+    {q:"Explain the types of risk, or regulation versus supervision", w:"market / credit / operational risk · Basel · BIS · supervision", need:"—", xl:"",
+     go:[["fi","Activity in, risk out","risk types"],["fi","Regulation, supervision","regulation"]]},
+    {q:"Explain why VaR is not a coherent risk measure, and why ES is", w:"coherent · subadditivity · monotonicity · translation invariance", need:"—", xl:"",
+     go:[["mr","Expected shortfall, and why","coherence"]]},
+    {q:"Compare historical, parametric and Monte Carlo VaR, or backtesting", w:"historical simulation · Monte Carlo · backtest · exceptions", need:"—", xl:"",
+     go:[["mr","Three ways to compute a VaR","three approaches"],["mr","How you find out the model was wrong","backtesting"]]},
+    {q:"Which Excel function, or why an array formula returns one number", w:"NORMSINV · MMULT · Ctrl+Shift+Enter · COVAR vs COVARIANCE.S", need:"—", xl:"Formula Sheet",
+     go:[["xl","Every function used in the course","functions"],["xl","Array formulas","array formulas"],["xl","The trap list","traps"]]},
+    {q:"Practise a full exam-length question (four long questions, every step worked)", w:"mock exam · multi-step · long question · four questions", need:"—", xl:"Practice Qs",
+     go:[["exam","A four-question mock","4-question mock"]]},
+    {q:"Look up a formula, the Excel function for it, or the order of steps", w:"formula sheet · Excel function · NORMSINV · MMULT · step chain", need:"—", xl:"Formula Sheet",
+     go:[["fx","Portfolios: the matrix form","formula bank"],["fx","Multi-step chains","step chains"]]},
+    {q:"Practise with the course's own questions (answer keys included)", w:"additional questions · practice problems · mock paper", need:"—", xl:"Practice Qs",
+     go:[["pset","Additional questions","worked problems"],["exam","Sit a paper","mock paper"]]}
+  ]}
+];
+var XL_GUIDE = [
+  ["Start", "The same question finder, and every sheet's live answer"],
+  ["Practice Qs", "The course's own questions with answer keys — a live ✓ self-test"],
+  ["Normal VaR", "One asset: VaR, ES, chance of a loss, T-day VaR, t-test of the mean"],
+  ["Asset VaR", "Money in several assets: portfolio VaR, diversification, marginal / component / incremental VaR and ES"],
+  ["Data", "Paste prices or rates → μ, σ, Ω, correlations, skewness, kurtosis, t-tests"],
+  ["ZCB", "T-bill / zero-coupon bond: price, durations, VaR"],
+  ["Coupon Bond", "Coupon bond from a spot curve: price, weights, duration, VaR"],
+  ["Portfolio A / B", "Any mix of bonds, stocks and options (additional Q2 / Q3)"],
+  ["Option BSM", "Black-Scholes price and every Greek, digital options, parity, option VaR"],
+  ["Option Binomial", "Building-block (equivalent-asset) option VaR"],
+  ["Forward", "Forward = long call + short put: value, weights, VaR"],
+  ["Futures", "Futures on an asset, a ZCB or a coupon bond: price, weights, VaR"],
+  ["Hedge", "Hedge ratio, best hedge with several futures, delta / rho hedge"],
+  ["Custom w", "Any w and Ω you already have → VaR"],
+  ["Discrete VaR-ES", "VaR and ES from a list of losses; subadditivity"],
+  ["Solvency", "Probability of bankruptcy; capital for a target rating"],
+  ["EWMA", "EWMA volatility update"],
+  ["Formula Sheet", "Every formula with its Excel function and sheet, the Excel functions, step chains for long questions, your notes checked"]
+];
+
+/* ---------------- text normalising and synonyms ---------------- */
+var SR_SUB = {"₀":"0","₁":"1","₂":"2","₃":"3","₄":"4","₅":"5","₆":"6","₇":"7","₈":"8","₉":"9","⁰":"0","¹":"1","²":"2","³":"3","⁴":"4","⁵":"5","⁶":"6","⁷":"7","⁸":"8","⁹":"9","ᵀ":"t","ₙ":"n","ₜ":"t","−":"-","–":"-","—":"-","‑":"-","’":"'","“":"\"","”":"\""};
+function srNorm(s){
+  s = String(s || "").replace(/[₀-₉⁰-⁹¹²³ᵀₙₜ−–—‑’“”]/g, function(c){ return SR_SUB[c] || c; });
+  try{ s = s.normalize("NFKD").replace(/[̀-ͯ]/g, ""); }catch(e){}
+  return s.toLowerCase().replace(/\s+/g, " ");
+}
+var SR_STOP = {"the":1,"a":1,"an":1,"of":1,"to":1,"and":1,"in":1,"on":1,"for":1,"is":1,"it":1,"how":1,"what":1,"do":1,"i":1,"find":1,"with":1,"by":1,"my":1,"this":1,"that":1,"are":1,"be":1,"from":1,"at":1,"its":1};
+var SR_SYN = {
+  "sigma":["σ","sd","standard deviation","volatility"], "σ":["sigma","sd","volatility","standard deviation"],
+  "sd":["σ","standard deviation"], "vol":["volatility","σ"], "volatility":["σ","vol"],
+  "mu":["μ","mean"], "μ":["mu","mean"], "mean":["μ","average"],
+  "omega":["ω","covariance","varcovar"], "ω":["omega","covariance"], "cov":["covariance","ω","covar"], "covariance":["ω","covar","varcovar"],
+  "corr":["correlation","ρ"], "correlation":["ρ","corr"], "rho":["ρ"], "ρ":["rho"],
+  "delta":["δ","Δ"], "δ":["delta"], "gamma":["γ"], "alpha":["α","confidence"], "α":["alpha"], "lambda":["λ"], "λ":["lambda","ewma"],
+  "var":["value at risk"], "es":["expected shortfall","cvar","c-var"], "cvar":["expected shortfall","c-var"], "shortfall":["es"],
+  "bsm":["black-scholes","black scholes"], "bs":["black-scholes"], "blackscholes":["black-scholes"],
+  "zcb":["zero-coupon","zero coupon","t-bill"], "zero":["zcb"], "tbill":["t-bill","treasury bill"], "bill":["t-bill"],
+  "dmod":["d_mod","modified duration"], "dmac":["d_mac","macaulay"], "duration":["d_mod","d_mac"],
+  "binomial":["building block","equivalent asset","up and down"], "lego":["building block"], "replicating":["equivalent asset","building block"],
+  "greeks":["delta","rho"], "greek":["delta","rho"], "digital":["cash-or-nothing","binary"], "binary":["digital","cash-or-nothing"],
+  "pd":["probability of default","bankruptcy"], "bankrupt":["bankruptcy","default"], "default":["bankruptcy"],
+  "ytm":["yield to maturity"], "spot":["zero curve","spot rate"], "fwd":["forward"], "futures":["future"], "carry":["cost of carry"],
+  "hedging":["hedge"], "hedge":["hedging"], "array":["ctrl+shift+enter","mmult"], "mmult":["array","matrix"],
+  "normsinv":["norm.s.inv","z"], "ttest":["t-test","t-stat"], "t-test":["t-stat","t-statistic"], "tstat":["t-stat","t-statistic"],
+  "coherent":["subadditivity","subadditive"], "subadditive":["subadditivity","coherent"], "backtest":["backtesting","exceptions"],
+  "montecarlo":["monte carlo"], "mc":["monte carlo"], "hist":["historical simulation"], "ewma":["λ","exponentially weighted"]
+};
+function srEsc(s){ return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+function srTerms(q){
+  var n = srNorm(q).replace(/black[\s-]scholes(-merton)?/g, "black-scholes").replace(/monte carlo/g, "montecarlo")
+                   .replace(/t[\s-]test/g, "t-test").replace(/cash[\s-]or[\s-]nothing/g, "cash-or-nothing");
+  return n.split(/[\s,;:()]+/).filter(function(t){ return t && !SR_STOP[t]; }).map(function(t){
+    var alts = [t].concat((SR_SYN[t] || []).map(srNorm));
+    var stem = t.replace(/(ments?|ings?|ed|es|s|ly)$/, "");   /* invested → invest (matches investment) */
+    if(stem !== t && stem.length >= 4) alts.push(stem);
+    if(t === "montecarlo") alts.push("monte carlo");
+    return {t:t, alts:alts, res:alts.map(function(a){
+      return /^[a-z0-9]{1,2}$/.test(a) ? new RegExp("(^|[^a-z0-9])" + srEsc(a) + "([^a-z0-9]|$)") : null;
+    })};
+  });
+}
+function srHas(text, term){
+  for(var i = 0; i < term.alts.length; i++){
+    if(term.res[i] ? term.res[i].test(text) : text.indexOf(term.alts[i]) >= 0) return i;
+  }
+  return -1;
+}
+/* regex over the ORIGINAL text for highlighting (case-insensitive, whole alternatives) */
+function srMarkRe(terms){
+  var parts = [];
+  terms.forEach(function(t){ t.alts.forEach(function(a){ if(a.length > 2 || /[^\x00-\x7f]/.test(a)) parts.push(srEsc(a)); }); });
+  if(!parts.length) return null;
+  parts.sort(function(a, b){ return b.length - a.length; });
+  return new RegExp("(" + parts.join("|") + ")", "gi");
+}
+function srHi(s, re){
+  s = String(s);
+  if(!re) return esc(s);
+  var out = "", last = 0, m;
+  re.lastIndex = 0;
+  while((m = re.exec(s))){
+    if(!m[0]){ re.lastIndex++; continue; }
+    out += esc(s.slice(last, m.index)) + "<mark>" + esc(m[0]) + "</mark>";
+    last = m.index + m[0].length;
+  }
+  return out + esc(s.slice(last));
+}
+function srSnip(body, re, n){
+  body = String(body).replace(/\s+/g, " ").trim();
+  n = n || 180;
+  if(!body) return "";
+  var i = -1;
+  if(re){ re.lastIndex = 0; var m = re.exec(body); if(m) i = m.index; }
+  if(i < 0) return uxClip(body, n);
+  var a = Math.max(0, i - 60), b = Math.min(body.length, a + n);
+  if(a > 0){ var sp = body.indexOf(" ", a); if(sp > 0 && sp < i) a = sp + 1; }
+  return (a > 0 ? "…" : "") + body.slice(a, b).trim() + (b < body.length ? "…" : "");
+}
+
+/* ---------------- where a finder row lands ---------------- */
+function srTarget(topic, find){
+  var t = TOPICS.filter(function(x){ return x.id === topic; })[0];
+  var panel = t ? $("#" + t.panel) : null;
+  var low = find.toLowerCase();
+  function look(root){
+    return $$("h3, h4, caption, .pset .src", root).filter(function(h){
+      return (h.textContent || "").toLowerCase().indexOf(low) >= 0;
+    })[0];
+  }
+  var hit = (panel && look(panel)) || look(document);   /* fall back to anywhere on the page */
+  if(!hit) return null;
+  return hit.closest(".pset") || hit.closest(".tool") || hit.closest("section.block") || hit;
+}
+function srTopicLabel(id){
+  var t = TOPICS.filter(function(x){ return x.id === id; })[0];
+  return t ? (isNumbered(t) ? COURSE.unit + " " + t.n : t.n) : "";
+}
+
+/* ---------------- the index ---------------- */
+var SR_IDX = null;
+var SR_KIND = {finder:"finder", topic:"section", section:"section", bench:"formula", formula:"formula", excel:"formula",
+               trap:"formula", erratum:"formula", problem:"problem", question:"question", card:"card"};
+var SR_WEIGHT = {finder:9, topic:7, section:5, problem:5, bench:4, formula:4, excel:3, trap:3, erratum:2, question:2, card:1};
+function srIndex(){
+  if(SR_IDX) return SR_IDX;
+  var out = [];
+  function add(kind, lab, body, topic, node, extra){
+    lab = String(lab || "").replace(/\s+/g, " ").trim();
+    body = String(body || "").replace(/\s+/g, " ").trim();
+    if(lab.length < 3) return;
+    var e = {kind:kind, lab:lab, body:body, topic:topic, node:node, labN:srNorm(lab), bodyN:srNorm(body)};
+    if(extra) Object.assign(e, extra);
+    out.push(e);
+  }
+  function textOf(node, drop){
+    var c = node.cloneNode(true);
+    $$(drop || "", c).forEach(function(x){ x.remove(); });
+    $$("button.btn, .keys", c).forEach(function(x){ x.remove(); });
+    return c.textContent;
+  }
+  FINDER.forEach(function(g){ g.rows.forEach(function(r){
+    add("finder", r.q, r.w + " · need: " + r.need + (r.xl ? " · Excel sheet: " + r.xl : "") + " · " + g.g +
+        " · " + r.go.map(function(x){ return x[1]; }).join(" · "), r.go[0] ? r.go[0][0] : "cram", null, {row:r});
+  }); });
+  TOPICS.forEach(function(t){
+    var p = $("#" + t.panel), lede = p ? $(".lede", p) : null;
+    add("topic", (isNumbered(t) ? COURSE.unit + " " + t.n + " · " : "") + t.t, lede ? lede.textContent : "", t.id, p ? $(".panel-head", p) : null);
+  });
+  var DROP = ".qitem, .pset, .fc, .tool, [data-quiz], [data-flash], .quiz-h, .tierbar";
+  $$(".panel section.block").forEach(function(b){
+    if(b.id === "finderBlock") return;   /* its rows are indexed above; its instructions would match everything */
+    var h = b.querySelector("h3");
+    add("section", h ? h.textContent : "", textOf(b, DROP), uxTopicOf(b), b);
+  });
+  $$(".panel .tool").forEach(function(tl){
+    var h = tl.querySelector(".tool-h h4");
+    add("bench", h ? h.textContent : "", textOf(tl, "select, .num"), uxTopicOf(tl), tl);
+  });
+  $$(".panel .fb-row").forEach(function(r){
+    var n = r.querySelector(".fb-n"), fm = r.querySelector(".fb-f"), w = r.querySelector(".fb-w");
+    add("formula", (n ? n.textContent.replace("in your notes", "") : "") + " — " + (fm ? fm.textContent : ""), w ? w.textContent : "", uxTopicOf(r), r);
+  });
+  $$(".panel .chain").forEach(function(c){
+    var h = c.querySelector(".chain-h b");
+    add("section", "Step chain: " + (h ? h.textContent : ""), c.textContent, uxTopicOf(c), c);
+  });
+  $$(".panel .eq").forEach(function(e){
+    var lbl = e.querySelector(".lbl"), head = e.cloneNode(true);
+    $$(".lbl", head).forEach(function(x){ x.remove(); });
+    add("formula", head.textContent, lbl ? lbl.textContent : "", uxTopicOf(e), e);
+  });
+  $$(".panel .fxrow").forEach(function(r){
+    var c = r.querySelector("code"), d = r.querySelector("div");
+    add(r.classList.contains("trap") ? "trap" : "excel", c ? c.textContent : "", d ? d.textContent : "", uxTopicOf(r), r);
+  });
+  $$(".panel .warn").forEach(function(w){
+    add("erratum", uxClip(w.textContent.replace(/^(Slide check|Workbook check|Check with your lecturer)/, ""), 110), w.textContent, uxTopicOf(w), w);
+  });
+  $$(".panel .pset").forEach(function(p){
+    var src = p.querySelector(".src"), q = p.querySelector(".pset-q"), a = p.querySelector(".pset-a");
+    var qt = q ? textOf(q, ".src, .btn") : "";
+    add("problem", (src ? src.textContent.replace(/\s+/g, " ").trim() + " — " : "") + uxClip(qt, 110), qt + " " + (a ? a.textContent : ""), uxTopicOf(p), p);
+  });
+  $$(".panel .qitem").forEach(function(q){
+    var qq = q.querySelector(".qq");
+    if(!qq) return;
+    var c = qq.cloneNode(true);
+    $$(".n, .qsrc, .tier", c).forEach(function(x){ x.remove(); });
+    var opts = $$(".opt", q).map(function(o){ return o.textContent; }).join(" · ");
+    add("question", c.textContent, "Options: " + opts, uxTopicOf(q), q);
+  });
+  $$(".panel .fc").forEach(function(c){
+    var t = c.querySelector(".fct"), h = c.querySelector(".fcb");
+    add("card", t ? t.textContent : "", (h ? h.textContent : "") + " " + c.textContent, uxTopicOf(c), c);
+  });
+  SR_IDX = out;
+  return out;
+}
+function srSearch(q){
+  var terms = srTerms(q);
+  if(!terms.length) return {terms:terms, hits:[]};
+  var whole = srNorm(q).trim();
+  var hits = [];
+  srIndex().forEach(function(e){
+    var score = SR_WEIGHT[e.kind] || 0;
+    for(var i = 0; i < terms.length; i++){
+      var inLab = srHas(e.labN, terms[i]);
+      if(inLab >= 0){
+        var a = terms[i].alts[inLab], at = e.labN.indexOf(a);
+        score += 12 - (inLab ? 3 : 0);
+        if(at === 0) score += 3;
+        if(at >= 0 && (at === 0 || e.labN.charAt(at - 1) === " ")) score += 4;   /* whole word beats part of a word */
+        continue;
+      }
+      var inBody = srHas(e.bodyN, terms[i]);
+      if(inBody < 0) return;
+      score += 4 - (inBody ? 1 : 0);
+    }
+    if(terms.length > 1 && whole.length > 3){
+      if(e.labN.indexOf(whole) >= 0) score += 18;
+      else if(e.bodyN.indexOf(whole) >= 0) score += 7;
+    }
+    hits.push([score, e]);
+  });
+  hits.sort(function(a, b){ return b[0] - a[0]; });
+  return {terms:terms, hits:hits.map(function(h){ return h[1]; })};
+}
+
+/* ---------------- highlight the words on the page you land on ---------------- */
+function srMarkIn(node, re){
+  if(!node || !re) return;
+  var walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT, {acceptNode:function(t){
+    return t.parentNode && /^(SCRIPT|STYLE|TEXTAREA|INPUT)$/.test(t.parentNode.nodeName) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+  }});
+  var texts = [], t, n = 0;
+  while((t = walker.nextNode())) texts.push(t);
+  texts.forEach(function(tn){
+    if(n > 40) return;
+    re.lastIndex = 0;
+    var s = tn.nodeValue;
+    if(!re.test(s)) return;
+    re.lastIndex = 0;
+    var frag = document.createDocumentFragment(), last = 0, m;
+    while((m = re.exec(s))){
+      if(!m[0]){ re.lastIndex++; continue; }
+      frag.appendChild(document.createTextNode(s.slice(last, m.index)));
+      var mk = document.createElement("mark"); mk.className = "srch-hit"; mk.textContent = m[0];
+      frag.appendChild(mk); n++;
+      last = m.index + m[0].length;
+    }
+    frag.appendChild(document.createTextNode(s.slice(last)));
+    tn.parentNode.replaceChild(frag, tn);
+  });
+  setTimeout(function(){
+    $$("mark.srch-hit", node).forEach(function(mk){
+      var p = mk.parentNode; if(!p) return;
+      p.replaceChild(document.createTextNode(mk.textContent), mk);
+      p.normalize();
+    });
+  }, 6000);
+}
+function srReveal(node){
+  if(!node) return;
+  if(node.classList.contains("qitem") && node.hidden){   /* hidden by a tier filter: switch the filter to All */
+    var bar = node.parentNode && node.parentNode.querySelector(".tierbar");
+    var all = bar && bar.querySelector("button");
+    if(all) all.click();
+  }
+  var pa = node.closest(".pset") && node.closest(".pset").querySelector(".pset-a");
+  if(pa && pa.hidden){ var b = node.closest(".pset").querySelector(".pset-q .btn"); if(b) b.click(); }
+}
+function srLand(topic, node, re){
+  if(!node) return;
+  srReveal(node);
+  uxJump(topic, null, node);
+  setTimeout(function(){ srMarkIn(node, re); }, topic && topic !== state.topic ? 160 : 60);
+}
+function srGoFinder(row, k){
+  var g = row.go[k || 0];
+  if(!g) return;
+  var node = srTarget(g[0], g[1]);
+  if(node) srLand(uxTopicOf(node) || g[0], node, null);
+  else uxJump(g[0], g[1]);
+}
+
+/* ---------------- the search overlay (takes over the jump palette) ---------------- */
+var SR = null, srShown = [], srSel = 0, srFilter = "all", srLast = "", srRe = null;
+var SR_CHIPS = [["all","All"],["finder","Question finder"],["section","Sections"],["problem","Worked problems"],
+                ["question","Quiz questions"],["formula","Formulas & Excel"],["card","Flashcards"]];
+function srRender(){
+  var q = $("#srInput").value, list = $("#palList"), res = srSearch(q);
+  srLast = q;
+  srRe = srMarkRe(res.terms);
+  var counts = {all:res.hits.length};
+  res.hits.forEach(function(e){ var k = SR_KIND[e.kind]; counts[k] = (counts[k] || 0) + 1; });
+  $$(".srch-chips button", SR).forEach(function(b){
+    var k = b.dataset.k, n = counts[k] || 0;
+    b.textContent = b.dataset.lab + (q.trim() ? " · " + n : "");
+    b.setAttribute("aria-pressed", String(k === srFilter));
+    b.disabled = !!q.trim() && !n && k !== "all";
+  });
+  list.innerHTML = "";
+  srSel = 0;
+  if(!q.trim()){
+    $("#srCount").textContent = "";
+    var tips = el("div", "srch-tips");
+    tips.innerHTML = 'Search <b>everything on the page</b> — every section, worked problem, quiz question, formula, flashcard and Excel note — or type words from an exam question to find its type. ' +
+      'Several words must all match; <b>σ</b>, <b>sigma</b> and <b>volatility</b> count as the same thing. Works offline.<div class="try"></div>';
+    ["expected shortfall", "equivalent asset", "invested in gold", "coupon bond VaR", "put-call parity", "t-test", "Ctrl+Shift+Enter", "121.42", "cost of carry"].forEach(function(s){
+      var b = el("button", null, s); b.type = "button";
+      b.addEventListener("click", function(){ $("#srInput").value = s; srRender(); $("#srInput").focus(); });
+      $(".try", tips).appendChild(b);
+    });
+    list.appendChild(tips);
+    srShown = srIndex().filter(function(e){ return e.kind === "finder" || e.kind === "topic"; });
+    if(srFilter !== "all") srShown = srShown.filter(function(e){ return SR_KIND[e.kind] === srFilter; });
+  } else {
+    srShown = res.hits.filter(function(e){ return srFilter === "all" || SR_KIND[e.kind] === srFilter; });
+    $("#srCount").textContent = srShown.length + (srShown.length === 1 ? " match" : " matches");
+    if(!srShown.length){
+      list.innerHTML = '<div class="pal-empty">Nothing matches “' + esc(q) + '”' + (srFilter !== "all" ? " in this group — try All." : ". Try fewer words, a symbol (σ, ρ, Ω), a number from the slides, or an Excel function.") + '</div>';
+      return;
+    }
+  }
+  srShown.slice(0, 80).forEach(function(it, i){
+    var b = el("div", "pal-item");
+    b.setAttribute("role", "option");
+    b.setAttribute("aria-selected", String(i === 0));
+    var snip = "", labHit = false;
+    if(srRe){ srRe.lastIndex = 0; labHit = srRe.test(it.lab); }
+    if(it.kind === "finder") snip = srHi(it.row.w + (it.row.xl ? "  ·  Excel: " + it.row.xl : ""), srRe);
+    /* long entries always show where the words matched; short ones only when the title did not */
+    else if(q.trim() && it.body && (!labHit || it.kind === "section" || it.kind === "problem")) snip = srHi(srSnip(it.body, srRe), srRe);
+    b.innerHTML = '<span class="kind' + (it.kind === "finder" ? " k-finder" : "") + '">' + (it.kind === "finder" ? "question type" : it.kind) + '</span>' +
+      '<span class="lab">' + srHi(uxClip(it.lab, 120), srRe) + (snip ? '<span class="snip">' + snip + '</span>' : '') + '</span>' +
+      '<span class="where">' + esc(srTopicLabel(it.topic)) + '</span>';
+    b.addEventListener("mouseenter", function(){ palSelect(i); });
+    b.addEventListener("click", function(){ srGo(i); });
+    list.appendChild(b);
+  });
+}
+function srGo(i){
+  var it = srShown[i == null ? srSel : i];
+  if(!it) return;
+  var re = srRe;
+  palClose();
+  if(it.kind === "finder") srGoFinder(it.row, 0);
+  else srLand(it.topic, it.node, re);
+  react("jump", false, {vars:{what: esc(uxClip(it.lab, 60))}});
+}
+function srOpen(prefill){
+  if(!SR){
+    SR = el("div", "pal-back");
+    SR.innerHTML = '<div class="pal" role="dialog" aria-label="Search the page">' +
+      '<div class="srch-top"><input id="srInput" type="search" placeholder="Search questions, keywords, formulas, numbers…" autocomplete="off" spellcheck="false" aria-label="Search the page"><span class="srch-count" id="srCount"></span></div>' +
+      '<div class="srch-chips" role="group" aria-label="Filter results"></div>' +
+      '<div class="pal-list" id="palList" role="listbox"></div>' +
+      '<div class="pal-foot"><span><span class="keys">↑</span><span class="keys">↓</span> move</span><span><span class="keys">↵</span> open</span><span><span class="keys">Tab</span> next filter</span><span><span class="keys">Esc</span> close</span><span>searches this page only · works offline</span></div></div>';
+    document.body.appendChild(SR);
+    SR_CHIPS.forEach(function(c){
+      var b = el("button", null, c[1]); b.type = "button"; b.dataset.k = c[0]; b.dataset.lab = c[1];
+      b.addEventListener("click", function(){ srFilter = c[0]; srRender(); $("#srInput").focus(); });
+      $(".srch-chips", SR).appendChild(b);
+    });
+    SR.addEventListener("click", function(ev){ if(ev.target === SR) palClose(); });
+    var inp = $("#srInput", SR), timer = null;
+    inp.addEventListener("input", function(){ clearTimeout(timer); timer = setTimeout(srRender, 70); });
+    inp.addEventListener("keydown", function(ev){
+      if(ev.key === "ArrowDown"){ ev.preventDefault(); palSelect(srSel + 1); }
+      else if(ev.key === "ArrowUp"){ ev.preventDefault(); palSelect(srSel - 1); }
+      else if(ev.key === "Enter"){ ev.preventDefault(); srGo(); }
+      else if(ev.key === "Escape"){ ev.preventDefault(); palClose(); }
+      else if(ev.key === "Tab"){
+        ev.preventDefault();
+        var ks = $$(".srch-chips button", SR).filter(function(b){ return !b.disabled; }).map(function(b){ return b.dataset.k; });
+        var j = ks.indexOf(srFilter);
+        srFilter = ks[(j + (ev.shiftKey ? ks.length - 1 : 1)) % ks.length] || "all";
+        srRender();
+      }
+    });
+  }
+  PAL = SR;
+  SR.style.display = "flex";
+  var inp = $("#srInput");
+  if(typeof prefill === "string"){ inp.value = prefill; srFilter = "all"; }
+  else inp.value = srLast;
+  srRender();
+  inp.focus();
+  inp.select();
+  react("palette", true);
+}
+/* the palette's selection helper drives this list too */
+palSelect = function(i){
+  var items = $$(".pal-item", $("#palList"));
+  srSel = Math.max(0, Math.min(items.length - 1, i));
+  items.forEach(function(n, j){ n.setAttribute("aria-selected", String(j === srSel)); });
+  if(items[srSel]) items[srSel].scrollIntoView({block:"nearest"});
+};
+palOpen = function(){ srOpen(); };
+palClose = function(){ if(SR) SR.style.display = "none"; };
+palIsOpen = function(){ return !!SR && SR.style.display !== "none"; };
+
+/* ---------------- the finder, rendered in the GO panel ---------------- */
+function finderPaint(){
+  var host = $("#finderList");
+  if(!host) return;
+  var q = $("#finderInput").value, terms = srTerms(q), re = srMarkRe(terms), shown = 0, total = 0;
+  host.innerHTML = "";
+  FINDER.forEach(function(g){
+    var rows = g.rows.filter(function(r){
+      total++;
+      if(!terms.length) return true;
+      var hay = srNorm([r.q, r.w, r.need, r.xl, g.g].concat(r.go.map(function(x){ return x[1] + " " + x[2]; })).join(" · "));
+      return terms.every(function(t){ return srHas(hay, t) >= 0; });
+    });
+    if(!rows.length) return;
+    host.appendChild(el("div", "fg-h", esc(g.g)));
+    rows.forEach(function(r){
+      shown++;
+      var row = el("div", "fg-row");
+      var qb = el("button", "fg-q"); qb.type = "button"; qb.innerHTML = srHi(r.q, re);
+      qb.addEventListener("click", function(){ r.go.length ? srGoFinder(r, 0) : null; });
+      if(!r.go.length){ qb.disabled = true; qb.title = "Covered by the Excel solver only"; qb.style.cursor = "default"; }
+      var w = el("div", "fg-w", srHi(r.w, re) + '<span class="need">you need: ' + esc(r.need) + '</span>');
+      var goes = el("div", "fg-go");
+      r.go.forEach(function(x, k){
+        var b = el("button", null, esc(srTopicLabel(x[0]) + " · " + x[2]) + " ▸"); b.type = "button";
+        b.title = "Open: " + x[1];
+        b.addEventListener("click", function(){ srGoFinder(r, k); });
+        goes.appendChild(b);
+      });
+      if(r.xl) goes.appendChild(el("span", "xl", "Excel · " + esc(r.xl)));
+      row.appendChild(qb); row.appendChild(w); row.appendChild(goes);
+      host.appendChild(row);
+    });
+  });
+  $("#finderCount").textContent = terms.length ? shown + " of " + total : total + " question types";
+  if(!shown){
+    var e = el("div", "fg-empty", 'No question type matches “' + esc(q) + '”. ');
+    var b = el("button", "btn ghost", "Search the whole page for it"); b.type = "button";
+    b.addEventListener("click", function(){ srOpen(q); });
+    e.appendChild(b);
+    host.appendChild(e);
+  }
+}
+function finderInit(){
+  if(!$("#finderList")) return;
+  var t = null;
+  $("#finderInput").addEventListener("input", function(){ clearTimeout(t); t = setTimeout(finderPaint, 60); });
+  $("#finderInput").addEventListener("keydown", function(ev){
+    if(ev.key === "Enter"){ ev.preventDefault(); var first = $("#finderList .fg-q:not([disabled])"); if(first) first.click(); }
+    if(ev.key === "Escape"){ this.value = ""; finderPaint(); }
+  });
+  $("#finderFull").addEventListener("click", function(){ srOpen($("#finderInput").value); });
+  var tb = $("#xlGuide");
+  if(tb) XL_GUIDE.forEach(function(r){ tb.appendChild(el("tr", null, '<td class="l"><b>' + esc(r[0]) + '</b></td><td class="l">' + esc(r[1]) + '</td>')); });
+  finderPaint();
+}
+var _bootBeforeSearch = boot;
+boot = function(){
+  _bootBeforeSearch();
+  try{ finderInit(); }catch(e){ console.warn("Search layer failed:", e); }
 };
 </script>
 <script>boot();</script>

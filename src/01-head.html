@@ -377,6 +377,65 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
 .pal-item .where{font-family:var(--mono);font-size:10.5px;color:var(--faint);flex:0 0 auto}
 .pal-foot{padding:7px 12px;border-top:1px solid var(--rule);background:var(--band);font-size:11.5px;color:var(--faint);display:flex;gap:14px;flex-wrap:wrap}
 .pal-empty{padding:18px;color:var(--mute);font-size:14px}
+
+/* ============ search (full text) ============ */
+.srch-top{display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--rule);padding-right:10px}
+.srch-top input{border-bottom:0!important}
+.srch-count{font-family:var(--mono);font-size:11px;color:var(--faint);white-space:nowrap}
+.srch-chips{display:flex;gap:6px;flex-wrap:wrap;padding:8px 10px;border-bottom:1px solid var(--rule);background:var(--band)}
+.srch-chips button{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;padding:3px 8px;border:1px solid var(--rule);border-radius:12px;background:var(--card);color:var(--mute);cursor:pointer}
+.srch-chips button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.srch-chips button:disabled{opacity:.4;cursor:default}
+.pal-item .lab .snip{display:block;font-size:12.5px;color:var(--mute);margin-top:3px;line-height:1.45}
+.pal-item mark,.srch-hit{background:var(--gold-soft);color:inherit;border-radius:2px;padding:0 1px;box-shadow:0 0 0 1px var(--gold) inset}
+.pal-item .kind.k-finder{color:var(--accent);font-weight:600}
+.srch-tips{padding:12px 14px;font-size:13.5px;color:var(--mute);line-height:1.6}
+.srch-tips b{color:var(--ink)}
+.srch-tips .try{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.srch-tips .try button{font-size:12.5px;padding:3px 9px;border:1px solid var(--rule);border-radius:12px;background:var(--card);color:var(--accent);cursor:pointer}
+
+/* ============ question finder (GO panel) ============ */
+.finder{border:1px solid var(--rule);background:var(--card);border-radius:2px}
+.finder-bar{display:flex;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--rule);background:var(--band);flex-wrap:wrap}
+.finder-bar input{flex:1 1 260px;font:inherit;font-size:15px;padding:8px 11px;border:1px solid var(--rule);border-radius:2px;background:var(--card);color:var(--ink)}
+.finder-bar input:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.fg-h{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);padding:10px 12px 4px;border-top:1px solid var(--rule)}
+.fg-h:first-child{border-top:0}
+.fg-row{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(150px,250px);gap:6px 14px;align-items:start;padding:8px 12px;border-top:1px dashed var(--rule)}
+.fg-row:hover{background:var(--band)}
+.fg-q{font:inherit;font-size:14.5px;line-height:1.4;color:var(--ink);background:none;border:0;padding:0;text-align:left;cursor:pointer}
+.fg-q:hover,.fg-q:focus-visible{color:var(--accent);text-decoration:underline}
+.fg-q::before{content:"▸ ";color:var(--accent)}
+.fg-w{font-size:12.5px;color:var(--mute);line-height:1.45}
+.fg-w .need{display:block;color:var(--faint);font-family:var(--mono);font-size:11px;margin-top:2px}
+.fg-go{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.fg-go button{font-family:var(--mono);font-size:10.5px;padding:3px 7px;border:1px solid var(--rule);border-radius:2px;background:var(--card);color:var(--accent);cursor:pointer;white-space:nowrap}
+.fg-go button:hover{border-color:var(--accent)}
+.fg-go .xl{font-family:var(--mono);font-size:10.5px;padding:3px 7px;border:1px dashed var(--good);color:var(--good);border-radius:2px;white-space:nowrap}
+.fg-empty{padding:16px 12px;color:var(--mute);font-size:14px}
+@media (max-width:900px){.fg-row{grid-template-columns:minmax(0,1fr)}.fg-go{justify-content:flex-start}}
+
+/* ============ formula bank (FX panel) ============ */
+.fbank{border:1px solid var(--rule);background:var(--card);border-radius:2px}
+.fb-row{display:grid;grid-template-columns:minmax(0,170px) minmax(0,1.25fr) minmax(0,1fr);gap:6px 16px;padding:9px 12px;border-top:1px dashed var(--rule);align-items:start}
+.fb-row:first-child{border-top:0}
+.fb-n{font-weight:600;font-size:14px;line-height:1.35}
+.fb-f{font-family:var(--mono);font-size:13.5px;line-height:1.6;color:var(--accent);overflow-wrap:anywhere}
+.fb-w{font-size:13px;color:var(--mute);line-height:1.5}
+.fb-w > span{display:block;margin-top:3px}
+.fb-x code{font-family:var(--mono);font-size:12px;color:var(--ink);background:var(--band);padding:1px 4px;border-radius:2px;overflow-wrap:anywhere}
+.fb-s{font-family:var(--mono);font-size:11px;color:var(--good)}
+.fb-t{font-size:12.5px;color:var(--bad)}
+.fb-tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold);border-radius:8px;padding:0 5px;margin-left:5px;white-space:nowrap;font-weight:500}
+@media (max-width:900px){.fb-row{grid-template-columns:minmax(0,1fr)}}
+.chain{border:1px solid var(--rule);border-left:3px solid var(--accent);background:var(--card);border-radius:0 2px 2px 0;padding:10px 13px;margin-top:10px}
+.chain-h{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;margin-bottom:6px}
+.chain-h b{font-family:var(--serif);font-size:16px}
+.chain-h span{font-size:12.5px;color:var(--faint);font-style:italic}
+.chain ol{margin:0;padding-left:22px}
+.chain li{font-size:13.5px;line-height:1.55;margin-bottom:3px}
+.chain li::marker{color:var(--accent);font-family:var(--mono);font-size:12px}
+.chain code{font-family:var(--mono);font-size:12.5px;color:var(--accent)}
 @keyframes jumpflash{0%{background:var(--gold-soft)}100%{background:transparent}}
 .jumped{animation:jumpflash 1.6s ease-out}
 
@@ -442,7 +501,7 @@ svg.chart .axis{stroke:var(--ink);stroke-width:1.1}
       <span class="chip xpchip" id="xpChip"><b id="hudLvl">Lv 1</b><span class="xpbar"><i id="hudBar"></i></span><span id="hudXp">0 XP</span></span>
       <span class="chip" title="Correct answers in a row">Streak <b id="hudStreak">0</b></span>
       <span class="chip" id="chipProgress"><b>0</b>/0</span>
-      <button class="tbtn" id="palBtn" type="button" title="Jump to anything on the page (Ctrl+K)">⌕ Jump</button>
+      <button class="tbtn" id="palBtn" type="button" title="Search questions, keywords, formulas and numbers on the page (Ctrl+K or /)">⌕ Search</button>
       <button class="tbtn" id="sheetBtn" type="button" title="The one-page sheet, ready to print (S)">▤ A4 sheet</button>
       <button class="tbtn" id="themeBtn" type="button">◐ Theme</button>
     </div>
